@@ -1,9 +1,8 @@
 # Terms of Service for PetList
 
 > **Reviewed informally — not a substitute for legal advice.**
-> This document was grounded in what the app actually does, per the audit
-> described in the Privacy Policy's own closing section — not copied from
-> a generic template — and its identifying details (entity, contact,
+> This document was grounded in what the app actually does — not copied
+> from a generic template — and its identifying details (entity, contact,
 > governing law) have since been filled in with real values. It has still
 > never been drafted or reviewed by a qualified lawyer, and the boilerplate
 > legal sections below (limitation of liability, warranty disclaimer,
@@ -189,8 +188,14 @@ original ticket's content requirement), governing law, the minimum-age
 representation, and the "changes to these terms" process. The Limitation
 of Liability section previously had no actual clause, only a placeholder
 noting one was needed — it now has real (if boilerplate, non-lawyer-drafted)
-text. No code or data-practice change prompted this pass. Note: the app's
-own About screen (`profile.tsx`'s `SUPPORT_EMAIL` constant) still shows
-the old placeholder `support@petlist.app`, not the real address now used
-here — that file was out of scope for this pass and needs a separate
-update to stay consistent.
+text. No code or data-practice change prompted this pass. This pass also
+left the app's own About screen (`profile.tsx`'s `SUPPORT_EMAIL`
+constant) out of sync with the real address used here — fixed in a
+same-day follow-up, so the two now match.
+
+**2026-08-11 (later same day):** this changelog-style section itself was
+removed from the *published* petlist-legal pages (it read as internal
+commentary on what's meant to be a finished-looking public document) —
+it remains here in the source markdown, which is the actual audit trail
+for future engineers. See the petlist-legal repo's own commit history for
+the public-site build change.

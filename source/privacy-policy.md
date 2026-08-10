@@ -2,12 +2,11 @@
 
 > **Reviewed informally — not a substitute for legal advice.**
 > This document was grounded in an engineering audit of what the PetList
-> app actually does (see "How this draft was produced" at the bottom for
-> exactly what was checked and how), and its identifying details (entity,
-> contact, governing law) have since been filled in with real values. It
-> has still never been drafted or reviewed by a qualified privacy lawyer.
-> If you have concerns about its legal sufficiency for a particular
-> distribution market, have it reviewed before relying on it as final.
+> app actually does, and its identifying details (entity, contact,
+> governing law) have since been filled in with real values. It has still
+> never been drafted or reviewed by a qualified privacy lawyer. If you
+> have concerns about its legal sufficiency for a particular distribution
+> market, have it reviewed before relying on it as final.
 
 **Last updated:** `2026-08-11`
 
@@ -229,8 +228,13 @@ resolved with real values — contact email, entity name, governing law,
 Expo's own privacy policy link, and the "changes to this policy" process.
 No code or data-practice change prompted this pass, only identifying
 details that were previously unfilled; the audit above still reflects the
-current codebase. Note: the app's own About screen (`profile.tsx`'s
-`SUPPORT_EMAIL` constant) still shows the old placeholder
-`support@petlist.app`, not the real address now used here — that file was
-out of scope for this pass and needs a separate update to stay
-consistent.
+current codebase. This pass also left the app's own About screen
+(`profile.tsx`'s `SUPPORT_EMAIL` constant) out of sync with the real
+address used here — fixed in a same-day follow-up, so the two now match.
+
+**2026-08-11 (later same day):** this changelog-style section itself was
+removed from the *published* petlist-legal pages (it read as internal
+commentary on what's meant to be a finished-looking public document) —
+it remains here in the source markdown, which is the actual audit trail
+for future engineers. See the petlist-legal repo's own commit history for
+the public-site build change.

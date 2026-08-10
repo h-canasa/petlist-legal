@@ -114,9 +114,8 @@
     <h1>Terms of Service for PetList</h1>
 <blockquote>
 <p><strong>Reviewed informally — not a substitute for legal advice.</strong>
-This document was grounded in what the app actually does, per the audit
-described in the Privacy Policy&#39;s own closing section — not copied from
-a generic template — and its identifying details (entity, contact,
+This document was grounded in what the app actually does — not copied
+from a generic template — and its identifying details (entity, contact,
 governing law) have since been filled in with real values. It has still
 never been drafted or reviewed by a qualified lawyer, and the boilerplate
 legal sections below (limitation of liability, warranty disclaimer,
@@ -238,46 +237,6 @@ proprietorship (there is no separate registered company). No physical
 mailing address is listed, as none is currently required for this app&#39;s
 distribution markets; one will be added here if a specific market&#39;s
 requirements make it necessary.</p>
-<hr>
-<h2>How this draft was re-verified (PET-130 hosting pass)</h2>
-<p>The original draft (<code>a042c5f</code>) was written alongside the Privacy Policy&#39;s
-first version. Since then, <code>docs/privacy-policy.md</code> was re-audited and
-updated for PET-232 (the vet-summary PDF export); this document had not
-been re-checked against that change until now. Re-verified for this pass:</p>
-<ul>
-<li><strong>Section 3 (Household)</strong> — added. The original draft never addressed
-whether &quot;household&quot; implies multi-device or shared-account behavior,
-which this ticket&#39;s own investigation steps asked to confirm.
-Confirmed via <code>src/lib/petData.ts</code>&#39;s household functions
-(<code>getAllHouseholds</code>/<code>setActiveHousehold</code>/<code>createHousehold</code>) and
-<code>CLAUDE.md</code>&#39;s documented household model: multi-household support exists
-at the data layer, but nothing in the app creates a second household,
-switches between them, or shares one across devices/people.</li>
-<li><strong>Section 4 (Your data)</strong> — corrected. It previously stated PetList &quot;has
-no ... export feature,&quot; which was accurate when written (Aug 7) but is
-now stale: PET-232 added the vet-summary PDF export/share (Aug 9-10).
-Reworded to match the Privacy Policy&#39;s own &quot;Exporting a vet summary&quot;
-section exactly, so the two documents don&#39;t contradict each other on
-this point — the flagged risk in this ticket&#39;s own verification steps.</li>
-<li><strong>No accounts / no login</strong> — re-confirmed with a fresh search of <code>src/</code>
-for authentication, login, sign-up, or credential handling; still none
-exists anywhere in the codebase or its schema.</li>
-<li>All other sections (warranty, liability, IP, termination, governing law,
-contact) were reviewed and found still accurate — no other code changes
-since the original draft affect their content.</li>
-</ul>
-<p><strong>2026-08-11 (PET-130 follow-up):</strong> all remaining bracketed placeholders
-resolved with real values — contact email, entity name (including an
-explicit mascot/artwork mention in Intellectual Property, matching the
-original ticket&#39;s content requirement), governing law, the minimum-age
-representation, and the &quot;changes to these terms&quot; process. The Limitation
-of Liability section previously had no actual clause, only a placeholder
-noting one was needed — it now has real (if boilerplate, non-lawyer-drafted)
-text. No code or data-practice change prompted this pass. Note: the app&#39;s
-own About screen (<code>profile.tsx</code>&#39;s <code>SUPPORT_EMAIL</code> constant) still shows
-the old placeholder <code>support@petlist.app</code>, not the real address now used
-here — that file was out of scope for this pass and needs a separate
-update to stay consistent.</p>
 
 
   </div>

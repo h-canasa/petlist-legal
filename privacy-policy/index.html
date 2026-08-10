@@ -115,12 +115,11 @@
 <blockquote>
 <p><strong>Reviewed informally — not a substitute for legal advice.</strong>
 This document was grounded in an engineering audit of what the PetList
-app actually does (see &quot;How this draft was produced&quot; at the bottom for
-exactly what was checked and how), and its identifying details (entity,
-contact, governing law) have since been filled in with real values. It
-has still never been drafted or reviewed by a qualified privacy lawyer.
-If you have concerns about its legal sufficiency for a particular
-distribution market, have it reviewed before relying on it as final.</p>
+app actually does, and its identifying details (entity, contact,
+governing law) have since been filled in with real values. It has still
+never been drafted or reviewed by a qualified privacy lawyer. If you
+have concerns about its legal sufficiency for a particular distribution
+market, have it reviewed before relying on it as final.</p>
 </blockquote>
 <p><strong>Last updated:</strong> <code>2026-08-11</code></p>
 <h2>Overview</h2>
@@ -270,52 +269,6 @@ requirements make it necessary.</p>
 <p>These practices, and this policy, are governed by the laws of the
 Republic of the Philippines, without regard to its conflict-of-law
 principles.</p>
-<hr>
-<h2>How this draft was produced</h2>
-<p>Written by auditing the actual codebase as of this commit, not assumed
-from a template. Specifically checked:</p>
-<ul>
-<li><code>package.json</code> — full dependency list reviewed; no analytics, ads,
-crash-reporting, or backend/cloud SDK of any kind is a dependency.</li>
-<li>Every network-capable call in <code>src/</code> — no <code>fetch</code>, <code>axios</code>, or other
-HTTP client calls exist anywhere in the app&#39;s own code.</li>
-<li><code>app.json</code> — confirms the only permission-requesting plugin is
-<code>expo-image-picker</code> (camera + photo library, with the exact permission
-strings shown to the user), and confirms <code>expo-updates</code>&#39; OTA endpoint is
-Expo&#39;s own (<code>u.expo.dev</code>).</li>
-<li><code>src/lib/database.ts</code> / <code>src/lib/schema.ts</code> — all persistence is local
-SQLite via <code>expo-sqlite</code>, no remote database client exists.</li>
-<li><code>src/lib/pet-photos.ts</code> — photos are copied into the app&#39;s own local
-document-directory storage (<code>expo-file-system</code>), never uploaded.</li>
-<li><code>src/lib/notifications.ts</code> — every scheduled notification is a <strong>local</strong>
-<code>expo-notifications</code> trigger; no push-token registration or remote
-push-notification call exists anywhere in the code.</li>
-<li><code>src/lib/vet-summary-export.ts</code> / <code>src/utils/vet-summary-html.ts</code> — the
-vet-summary PDF is built from a local HTML string and rendered by
-<code>expo-print</code> on-device, written to the app&#39;s own cache directory via
-<code>expo-file-system</code>, and passed to <code>expo-sharing</code>&#39;s system share sheet.
-There is no network call on that path, and the app never learns which
-destination the user picks. Re-audited when that feature shipped
-(PET-232), which is what this section&#39;s own closing paragraph requires.</li>
-<li>A general bulk export/backup (ticket PET-70) is still not built — the
-vet summary is scoped to one pet&#39;s health records and is the only export
-that exists.</li>
-</ul>
-<p>This audit reflects the code as it exists right now. If new dependencies,
-permissions, or data flows are added later (analytics, crash reporting,
-cloud sync, an export/share feature, etc.), this document needs to be
-re-audited and updated before it can be considered accurate again — it is
-not &quot;set and forget.&quot;</p>
-<p><strong>2026-08-11 (PET-129 follow-up):</strong> all remaining bracketed placeholders
-resolved with real values — contact email, entity name, governing law,
-Expo&#39;s own privacy policy link, and the &quot;changes to this policy&quot; process.
-No code or data-practice change prompted this pass, only identifying
-details that were previously unfilled; the audit above still reflects the
-current codebase. Note: the app&#39;s own About screen (<code>profile.tsx</code>&#39;s
-<code>SUPPORT_EMAIL</code> constant) still shows the old placeholder
-<code>support@petlist.app</code>, not the real address now used here — that file was
-out of scope for this pass and needs a separate update to stay
-consistent.</p>
 
 
   </div>

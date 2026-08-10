@@ -1,12 +1,36 @@
 const fs = require('fs');
+const os = require('os');
 const path = require('path');
 const { execFileSync } = require('child_process');
 
+// The source docs end with a "How this draft was produced/re-verified"
+// audit-trail section, marked off by its own `---` horizontal rule. That
+// section is real engineering history (useful in the source repo, where
+// it's also backed by git blame) but reads as internal changelog
+// commentary on a page meant to look like a finished public document, so
+// it's cut before rendering rather than published. The source markdown
+// itself is untouched - only this generated site omits it.
+function stripAuditTrail(markdown) {
+  const match = markdown.match(/\r?\n---\r?\n/);
+  if (!match) {
+    throw new Error('Expected a `---` audit-trail marker in the source markdown, found none.');
+  }
+  return markdown.slice(0, match.index);
+}
+
 function markdownToHtml(mdPath) {
-  return execFileSync('npx', ['--yes', 'marked', mdPath], {
-    encoding: 'utf8',
-    shell: true,
-  });
+  const raw = fs.readFileSync(mdPath, 'utf8');
+  const trimmed = stripAuditTrail(raw);
+  const tmpFile = path.join(os.tmpdir(), `petlist-legal-${path.basename(mdPath)}`);
+  fs.writeFileSync(tmpFile, trimmed);
+  try {
+    return execFileSync('npx', ['--yes', 'marked', tmpFile], {
+      encoding: 'utf8',
+      shell: true,
+    });
+  } finally {
+    fs.unlinkSync(tmpFile);
+  }
 }
 
 const STYLE = `
