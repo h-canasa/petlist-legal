@@ -1,26 +1,27 @@
 # Terms of Service for PetList
 
-> **⚠️ DRAFT — NOT FINAL. NOT LEGALLY REVIEWED.**
-> This document was generated as a first draft (PET-130) alongside
-> PetList's draft [Privacy Policy](privacy-policy.md) — it is **not** a
-> substitute for review by a qualified lawyer, and it must not be
-> published, linked from the app, or submitted to any app store until
-> that review happens and every `[bracketed placeholder]` below is filled
-> in. It was written grounded in what the app actually does, per the audit
+> **Reviewed informally — not a substitute for legal advice.**
+> This document was grounded in what the app actually does, per the audit
 > described in the Privacy Policy's own closing section — not copied from
-> a generic template, though the boilerplate legal sections below (limitation
-> of liability, indemnification, dispute resolution, etc.) are exactly the
-> kind of clause that most needs a lawyer's eyes, not an engineer's.
+> a generic template — and its identifying details (entity, contact,
+> governing law) have since been filled in with real values. It has still
+> never been drafted or reviewed by a qualified lawyer, and the boilerplate
+> legal sections below (limitation of liability, warranty disclaimer,
+> governing law) are exactly the kind of clause that most needs a lawyer's
+> eyes, not an engineer's. If you have concerns about its legal
+> sufficiency for a particular distribution market, have it reviewed
+> before relying on it as final.
 
-**Last updated:** `[DATE — set on actual publish]`
+**Last updated:** `2026-08-11`
 
 ## 1. Acceptance of these terms
 
 By downloading, installing, or using PetList ("the app"), you agree to
-these Terms of Service. If you don't agree, don't use the app.
-`[Placeholder — confirm minimum age requirement for accepting these terms
-in your distribution markets; the app itself has no age-gating and, per
-the Privacy Policy, collects no data that would let it verify age.]`
+these Terms of Service. If you don't agree, don't use the app. By using
+the app, you represent that you are of legal age to agree to these terms
+in your jurisdiction, or that you have a parent's or guardian's
+permission to do so. The app itself has no age-gating and, per the
+Privacy Policy, collects no data that would let it verify age.
 
 ## 2. What PetList is
 
@@ -61,8 +62,8 @@ summary" section) — that is the only export capability that exists today.
 There is no cloud backup and no export of your full database, so data lost
 from uninstalling the app, resetting your device, or device loss/damage
 cannot be recovered by the developer, because the developer never has a
-copy of it. `[Placeholder: revisit this section once/if a general
-backup/export feature (tracked internally as PET-70) ships.]`
+copy of it. (This section will be revisited if a general backup/export
+feature, tracked internally as PET-70, ships.)
 
 ## 5. License to use the app
 
@@ -80,9 +81,9 @@ You agree not to:
 
 ## 6. Intellectual property
 
-The app, including its design, code, and branding, is owned by
-`[Placeholder: developer/company legal name]` and is protected by
-applicable intellectual property laws. These terms do not grant you any
+The app, including its design, code, mascot character and artwork, logo,
+icon, and all other branding, is owned by Harley Canasa and is protected
+by applicable intellectual property laws. These terms do not grant you any
 ownership interest in the app itself. You retain all rights to the
 content you enter (pet names, notes, photos, etc.) — the app claims no
 ownership over it, consistent with the fact that it never leaves your
@@ -90,8 +91,9 @@ device in the first place.
 
 ## 7. No warranty
 
-`[Placeholder — standard "AS IS" disclaimer, needs legal drafting for your
-jurisdiction.]` THE APP IS PROVIDED "AS IS" AND "AS AVAILABLE," WITHOUT
+The following is standard "AS IS" boilerplate language; it has not been
+drafted or reviewed by a lawyer for enforceability in any specific
+jurisdiction. THE APP IS PROVIDED "AS IS" AND "AS AVAILABLE," WITHOUT
 WARRANTIES OF ANY KIND, WHETHER EXPRESS OR IMPLIED, INCLUDING BUT NOT
 LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
 PURPOSE, OR NON-INFRINGEMENT. In particular, and per Section 2 above, the
@@ -100,41 +102,55 @@ are accurate, complete, or sufficient for your pet's actual health needs.
 
 ## 8. Limitation of liability
 
-`[Placeholder — standard limitation-of-liability clause, needs legal
-drafting for your jurisdiction; typically caps liability and excludes
-indirect/consequential damages, but the exact enforceable language varies
-significantly by jurisdiction and should not be engineer-drafted.]`
+The following is standard limitation-of-liability boilerplate; like the
+warranty disclaimer above, it has not been drafted or reviewed by a
+lawyer, and enforceable language for this kind of clause varies
+significantly by jurisdiction. To the maximum extent permitted by
+applicable law, the developer (Harley Canasa) shall not be liable for any
+indirect, incidental, special, consequential, or punitive damages, or any
+loss of data, arising out of or related to your use of (or inability to
+use) the app — including, without limitation, any harm to a pet resulting
+from reliance on a reminder, record, or export the app produced. Because
+all data lives solely on your device and nowhere else, the developer is
+in no position to prevent, mitigate, or recover from data loss on your
+device, and disclaims liability for it accordingly.
 
 ## 9. Termination
 
 You may stop using the app at any time by uninstalling it, which — per
 the Privacy Policy — also removes its locally-stored data from your
-device. `[Placeholder: describe any circumstances under which the
-developer could restrict access, if applicable — currently the app has no
-account system and no remote kill-switch, so there is nothing today for
-the developer to unilaterally revoke beyond app-store-level removal.]`
+device. There are no circumstances today under which the developer could
+unilaterally restrict your access to the app, since it has no account
+system and no remote kill-switch — the only way access to the app could
+end on the developer's side is removal from an app store, which affects
+new installs, not a copy already on your device.
 
 ## 10. Changes to the app or these terms
 
 The app may be updated from time to time (see the Privacy Policy's "App
-updates" section for how updates are delivered). `[Placeholder: describe
-the actual process for notifying users of material changes to these
-terms once decided.]`
+updates" section for how updates are delivered). The current version of
+these terms is always published at
+<https://h-canasa.github.io/petlist-legal/terms-of-service/>. When they
+change, the "Last updated" date at the top of this document will be
+updated to match. This app does not currently link to these terms or
+notify you in-app of changes to them; if that changes, this section will
+be updated to describe how.
 
 ## 11. Governing law
 
-`[Placeholder — governing law and jurisdiction for disputes; depends on
-where the developer is legally based and where the app is distributed.]`
+These terms, and any dispute arising from them or your use of the app,
+are governed by the laws of the Republic of the Philippines, without
+regard to its conflict-of-law principles.
 
 ## 12. Contact
 
-Questions about these terms: `support@petlist.app`
-**(placeholder address — replace with a real, monitored inbox before
-publishing, same as the placeholder flagged in the app's own About
-screen and in the Privacy Policy.)**
+Questions about these terms: `petlist.app.support@gmail.com`
 
-`[Placeholder: developer/company legal name and, if required, physical
-mailing address.]`
+These terms are issued by Harley Canasa, operating as a sole
+proprietorship (there is no separate registered company). No physical
+mailing address is listed, as none is currently required for this app's
+distribution markets; one will be added here if a specific market's
+requirements make it necessary.
 
 ---
 
@@ -165,3 +181,16 @@ been re-checked against that change until now. Re-verified for this pass:
 - All other sections (warranty, liability, IP, termination, governing law,
   contact) were reviewed and found still accurate — no other code changes
   since the original draft affect their content.
+
+**2026-08-11 (PET-130 follow-up):** all remaining bracketed placeholders
+resolved with real values — contact email, entity name (including an
+explicit mascot/artwork mention in Intellectual Property, matching the
+original ticket's content requirement), governing law, the minimum-age
+representation, and the "changes to these terms" process. The Limitation
+of Liability section previously had no actual clause, only a placeholder
+noting one was needed — it now has real (if boilerplate, non-lawyer-drafted)
+text. No code or data-practice change prompted this pass. Note: the app's
+own About screen (`profile.tsx`'s `SUPPORT_EMAIL` constant) still shows
+the old placeholder `support@petlist.app`, not the real address now used
+here — that file was out of scope for this pass and needs a separate
+update to stay consistent.

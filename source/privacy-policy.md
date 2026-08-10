@@ -1,15 +1,15 @@
 # Privacy Policy for PetList
 
-> **⚠️ DRAFT — NOT FINAL. NOT LEGALLY REVIEWED.**
-> This document was generated as a first draft (PET-129) grounded in an
-> engineering audit of what the PetList app actually does as of this
-> writing — it is **not** a substitute for review by a qualified privacy
-> lawyer, and it must not be published, linked from the app, or submitted
-> to any app store until that review happens and every `[bracketed
-> placeholder]` below is filled in. See "How this draft was produced"
-> at the bottom for exactly what was checked and how.
+> **Reviewed informally — not a substitute for legal advice.**
+> This document was grounded in an engineering audit of what the PetList
+> app actually does (see "How this draft was produced" at the bottom for
+> exactly what was checked and how), and its identifying details (entity,
+> contact, governing law) have since been filled in with real values. It
+> has still never been drafted or reviewed by a qualified privacy lawyer.
+> If you have concerns about its legal sufficiency for a particular
+> distribution market, have it reviewed before relying on it as final.
 
-**Last updated:** `[DATE — set on actual publish]`
+**Last updated:** `2026-08-11`
 
 ## Overview
 
@@ -131,21 +131,20 @@ servers, which — like any network request — necessarily involves standard
 technical information such as your device's platform and the app's current
 version/build. This is operational infrastructure for delivering app
 updates, not data collection by the developer, and no data from your
-pet/health/expense records is involved. `[Placeholder: confirm and link
-Expo's own privacy policy for their update/EAS service once this is
-reviewed, since that's a data flow to a third-party infrastructure
-provider (Expo), even though no app content is included in it.]`
+pet/health/expense records is involved. This is a data flow to a
+third-party infrastructure provider (Expo), even though no app content is
+included in it — Expo's own privacy policy, covering their update/EAS
+service, is published at <https://expo.dev/privacy>.
 
 ## Children's privacy
 
-`[Placeholder — needs real legal review.]` PetList is not directed at
-children and, based on the "What the app does not do" section above (no
-accounts, no analytics, no advertising), the app does not knowingly
-collect personal information from anyone, including children under 13 or
-the relevant age in your jurisdiction. If this policy is published for
-real, this section should be reviewed against COPPA (US) and any other
-applicable children's-privacy law for the app's actual distribution
-markets.
+PetList is not directed at children and, based on the "What the app does
+not do" section above (no accounts, no analytics, no advertising), the
+app does not knowingly collect personal information from anyone,
+including children under 13 or the relevant age in your jurisdiction.
+This assessment is an engineering-level judgment, not a lawyer's review
+against COPPA (US) or any other applicable children's-privacy law for the
+app's actual distribution markets — treat it accordingly.
 
 ## Data deletion
 
@@ -163,22 +162,28 @@ behalf, because none is ever created.
 
 ## Changes to this policy
 
-`[Placeholder — describe the actual process once decided: e.g., how
-users will be notified of changes, where the current version will be
-published (this file, or a hosted page), and how "last updated" will be
-maintained.]`
+The current version of this policy is always published at
+<https://h-canasa.github.io/petlist-legal/privacy-policy/>. When it
+changes, the "Last updated" date at the top of this document will be
+updated to match. This app does not currently link to this policy or
+notify you in-app of changes to it; if that changes, this section will be
+updated to describe how.
 
 ## Contact
 
-Questions about this policy: `support@petlist.app`
-**(placeholder address — replace with a real, monitored inbox before
-publishing, same as the placeholder flagged in the app's own About
-screen.)**
+Questions about this policy: `petlist.app.support@gmail.com`
 
-`[Placeholder: developer/company legal name and, if required in your
-distribution markets, a physical mailing address.]`
+This policy is issued by Harley Canasa, operating as a sole
+proprietorship (there is no separate registered company). No physical
+mailing address is listed, as none is currently required for this app's
+distribution markets; one will be added here if a specific market's
+requirements make it necessary.
 
-`[Placeholder: governing law / jurisdiction.]`
+## Governing law
+
+These practices, and this policy, are governed by the laws of the
+Republic of the Philippines, without regard to its conflict-of-law
+principles.
 
 ---
 
@@ -218,3 +223,14 @@ permissions, or data flows are added later (analytics, crash reporting,
 cloud sync, an export/share feature, etc.), this document needs to be
 re-audited and updated before it can be considered accurate again — it is
 not "set and forget."
+
+**2026-08-11 (PET-129 follow-up):** all remaining bracketed placeholders
+resolved with real values — contact email, entity name, governing law,
+Expo's own privacy policy link, and the "changes to this policy" process.
+No code or data-practice change prompted this pass, only identifying
+details that were previously unfilled; the audit above still reflects the
+current codebase. Note: the app's own About screen (`profile.tsx`'s
+`SUPPORT_EMAIL` constant) still shows the old placeholder
+`support@petlist.app`, not the real address now used here — that file was
+out of scope for this pass and needs a separate update to stay
+consistent.
