@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy Policy — PetList</title>
+<meta name="description" content="PetList app Privacy Policy">
+<meta name="robots" content="noindex">
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #ECECEE;
+    --card: #ffffff;
+    --text: #1B163F;
+    --text-secondary: #55506e;
+    --border: #d8d6e0;
+    --accent: #2D1B69;
+    --banner-bg: #fff4e5;
+    --banner-border: #e0a933;
+    --banner-text: #6b4a00;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #151519;
+      --card: #201d29;
+      --text: #ECECEE;
+      --text-secondary: #b3aec4;
+      --border: #34303f;
+      --accent: #A79DDE;
+      --banner-bg: #3a2e0f;
+      --banner-border: #a97a1f;
+      --banner-text: #f0cf8a;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+  }
+  header.site-nav {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 24px 20px 0;
+    display: flex;
+    gap: 20px;
+    font-size: 14px;
+  }
+  header.site-nav a {
+    color: var(--text-secondary);
+    text-decoration: none;
+  }
+  header.site-nav a[aria-current="page"] {
+    color: var(--accent);
+    font-weight: 600;
+  }
+  main {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 24px 20px 80px;
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 32px 36px;
+  }
+  h1 { font-size: 1.7rem; margin-top: 0; }
+  h2 { font-size: 1.25rem; margin-top: 2em; border-top: 1px solid var(--border); padding-top: 1em; }
+  h2:first-of-type { border-top: none; padding-top: 0; }
+  blockquote {
+    background: var(--banner-bg);
+    border: 1px solid var(--banner-border);
+    color: var(--banner-text);
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin: 0 0 24px;
+    font-size: 0.92rem;
+  }
+  blockquote p { margin: 0.4em 0; }
+  code {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.1em 0.4em;
+    font-size: 0.9em;
+  }
+  hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 2.5em 0;
+  }
+  a { color: var(--accent); }
+  ul, ol { padding-left: 1.4em; }
+  footer.site-footer {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 20px 40px;
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+</style>
+</head>
+<body>
+<header class="site-nav">
+  <a href="../">PetList Legal</a>
+  <a href="../privacy-policy/" aria-current="page">Privacy Policy</a>
+  <a href="../terms-of-service/">Terms of Service</a>
+</header>
+<main>
+  <div class="card">
+    <h1>Privacy Policy for PetList</h1>
+<blockquote>
+<p><strong>⚠️ DRAFT — NOT FINAL. NOT LEGALLY REVIEWED.</strong>
+This document was generated as a first draft (PET-129) grounded in an
+engineering audit of what the PetList app actually does as of this
+writing — it is <strong>not</strong> a substitute for review by a qualified privacy
+lawyer, and it must not be published, linked from the app, or submitted
+to any app store until that review happens and every <code>[bracketed placeholder]</code> below is filled in. See &quot;How this draft was produced&quot;
+at the bottom for exactly what was checked and how.</p>
+</blockquote>
+<p><strong>Last updated:</strong> <code>[DATE — set on actual publish]</code></p>
+<h2>Overview</h2>
+<p>PetList (&quot;the app&quot;) is a mobile app for organizing multi-pet household
+records — vaccination and deworming history, health event timelines, and
+expense tracking. This policy explains what information the app handles
+and, just as importantly, what it does not.</p>
+<p><strong>The short version:</strong> PetList stores everything you enter — your pets&#39;
+profiles, health records, expenses, and photos — in a database on your own
+device. As of this writing, the app has no user accounts, does not send
+your data to any server the developer operates, includes no analytics or
+advertising SDKs, and includes no crash-reporting service. The only
+network activity the app performs on its own is checking for app updates
+(see &quot;App updates&quot; below).</p>
+<h2>Information the app stores</h2>
+<p>All of the following is entered directly by you and stored <strong>only in a
+local SQLite database on your device</strong> (via <code>expo-sqlite</code>), plus a local
+photos folder in the app&#39;s own document storage (via <code>expo-file-system</code>)
+for pet profile photos:</p>
+<ul>
+<li>Household name(s)</li>
+<li>Pet profiles: name, species, breed, birthdate, weight, gender, photo</li>
+<li>Health event records: vaccinations, deworming, vet visits, medications,
+grooming, neuter/spay records, weight logs, and free-text notes/location
+you enter for any of them</li>
+<li>Reminders and their scheduling (due dates, recurrence, time of day)</li>
+<li>Expense records: amounts, categories, descriptions, dates</li>
+<li>Daily-task checklists and completion history</li>
+<li>App preferences (currency, units, theme, notification settings)</li>
+</ul>
+<p>None of this is transmitted to the developer, to the developer&#39;s
+infrastructure, or to any analytics or advertising company, because no
+code path in the app sends it anywhere. It is not backed up to any cloud
+service by the app itself. If your device is lost, or the app is
+uninstalled, this data is not recoverable by the developer — the developer
+never had a copy of it.</p>
+<p><strong>Multiple pets/households:</strong> the app can organize records for more than
+one pet or (in principle) more than one household, but this is a purely
+local organizational grouping within the on-device database — it is not a
+shared or synced feature between different people&#39;s devices. Nothing about
+adding another pet or household sends anything off your device either.</p>
+<h2>Permissions the app requests</h2>
+<h3>Camera and Photo Library</h3>
+<p>The app asks for camera and/or photo library access only when you choose
+to set or change a pet&#39;s profile photo. The photo you pick or take is
+copied into the app&#39;s own local storage on your device and displayed
+within the app. It is not uploaded anywhere. You can deny these
+permissions and still use every other feature of the app — a pet simply
+has no photo.</p>
+<h3>Notifications</h3>
+<p>The app asks for notification permission so it can remind you about
+upcoming health events and daily tasks. These are <strong>local notifications</strong>
+scheduled directly on your device by the app itself — the app does not use
+push notifications, does not register your device with any push
+notification service, and does not collect a device token or any other
+identifier for this purpose. You can decline or later revoke notification
+permission in your device&#39;s Settings; the app continues to show upcoming
+items in-app either way, it just won&#39;t alert you.</p>
+<h2>Exporting a vet summary</h2>
+<p>PetList can generate a PDF summary of a single pet&#39;s health records —
+identity details, logged health events, vaccinations, spay/neuter status,
+current medications and recent weight readings — and hand it to your
+device&#39;s own share sheet. It is reached from the &quot;...&quot; menu on that pet&#39;s
+profile screen and only ever runs when you tap it.</p>
+<p>What happens, precisely:</p>
+<ul>
+<li>The PDF is created <strong>on your device</strong>, from data already stored locally.
+Nothing is sent anywhere to produce it.</li>
+<li>It is written to the app&#39;s own temporary storage, so your device can
+reclaim that space automatically. It is not added to your photo library
+or to any shared folder.</li>
+<li>It is then passed to your operating system&#39;s standard share sheet.
+<strong>Where it goes next is entirely your choice</strong> — PetList does not upload
+it, does not send it anywhere on your behalf, and has no knowledge of
+what you pick. If you send it to another app, that app&#39;s own privacy
+policy governs whatever happens to it from that point on.</li>
+<li>Expense records are deliberately excluded from this summary; it contains
+health information only.</li>
+</ul>
+<h2>What the app does not do</h2>
+<p>As of this writing, PetList does <strong>not</strong>:</p>
+<ul>
+<li>Require or offer an account, login, sign-up, or any form of
+authentication</li>
+<li>Collect your name, email address, or any other contact information
+(other than the free-text pet/household names you choose to enter, which
+stay local)</li>
+<li>Include any analytics, advertising, or tracking SDK of any kind</li>
+<li>Include any crash-reporting or error-monitoring service</li>
+<li>Sync or back up your data to any cloud service</li>
+<li>Share, sell, or transmit your data to any third party — including the
+vet summary above, which your device shares at your instruction, not the
+app</li>
+<li>Offer any bulk export of your whole database. The vet summary above is
+the only export that exists, and it covers one pet&#39;s health records.
+<strong>A general export/backup feature remains planned (tracked internally as
+PET-70) and has not been built.</strong> If and when it ships, this policy will
+be updated to describe exactly what it does before it&#39;s published.</li>
+</ul>
+<h2>App updates</h2>
+<p>PetList uses Expo&#39;s over-the-air update service (<code>expo-updates</code>) to check
+for and deliver app updates without requiring a full app store
+reinstall. As part of this, your device communicates with Expo&#39;s update
+servers, which — like any network request — necessarily involves standard
+technical information such as your device&#39;s platform and the app&#39;s current
+version/build. This is operational infrastructure for delivering app
+updates, not data collection by the developer, and no data from your
+pet/health/expense records is involved. <code>[Placeholder: confirm and link Expo&#39;s own privacy policy for their update/EAS service once this is reviewed, since that&#39;s a data flow to a third-party infrastructure provider (Expo), even though no app content is included in it.]</code></p>
+<h2>Children&#39;s privacy</h2>
+<p><code>[Placeholder — needs real legal review.]</code> PetList is not directed at
+children and, based on the &quot;What the app does not do&quot; section above (no
+accounts, no analytics, no advertising), the app does not knowingly
+collect personal information from anyone, including children under 13 or
+the relevant age in your jurisdiction. If this policy is published for
+real, this section should be reviewed against COPPA (US) and any other
+applicable children&#39;s-privacy law for the app&#39;s actual distribution
+markets.</p>
+<h2>Data deletion</h2>
+<p>Because all data lives only on your device, you control its deletion
+directly:</p>
+<ul>
+<li>Delete an individual pet, health event, or expense from within the app.</li>
+<li>&quot;Clear household data&quot; and &quot;Delete household&quot; (in Profile settings)
+remove all pets and records for a household from the local database.</li>
+<li>Uninstalling the app removes its local database and photo storage
+entirely, per your device OS&#39;s normal app-data handling.</li>
+</ul>
+<p>There is currently no server-side copy for the developer to delete on your
+behalf, because none is ever created.</p>
+<h2>Changes to this policy</h2>
+<p><code>[Placeholder — describe the actual process once decided: e.g., how users will be notified of changes, where the current version will be published (this file, or a hosted page), and how &quot;last updated&quot; will be maintained.]</code></p>
+<h2>Contact</h2>
+<p>Questions about this policy: <code>support@petlist.app</code>
+<strong>(placeholder address — replace with a real, monitored inbox before
+publishing, same as the placeholder flagged in the app&#39;s own About
+screen.)</strong></p>
+<p><code>[Placeholder: developer/company legal name and, if required in your distribution markets, a physical mailing address.]</code></p>
+<p><code>[Placeholder: governing law / jurisdiction.]</code></p>
+<hr>
+<h2>How this draft was produced</h2>
+<p>Written by auditing the actual codebase as of this commit, not assumed
+from a template. Specifically checked:</p>
+<ul>
+<li><code>package.json</code> — full dependency list reviewed; no analytics, ads,
+crash-reporting, or backend/cloud SDK of any kind is a dependency.</li>
+<li>Every network-capable call in <code>src/</code> — no <code>fetch</code>, <code>axios</code>, or other
+HTTP client calls exist anywhere in the app&#39;s own code.</li>
+<li><code>app.json</code> — confirms the only permission-requesting plugin is
+<code>expo-image-picker</code> (camera + photo library, with the exact permission
+strings shown to the user), and confirms <code>expo-updates</code>&#39; OTA endpoint is
+Expo&#39;s own (<code>u.expo.dev</code>).</li>
+<li><code>src/lib/database.ts</code> / <code>src/lib/schema.ts</code> — all persistence is local
+SQLite via <code>expo-sqlite</code>, no remote database client exists.</li>
+<li><code>src/lib/pet-photos.ts</code> — photos are copied into the app&#39;s own local
+document-directory storage (<code>expo-file-system</code>), never uploaded.</li>
+<li><code>src/lib/notifications.ts</code> — every scheduled notification is a <strong>local</strong>
+<code>expo-notifications</code> trigger; no push-token registration or remote
+push-notification call exists anywhere in the code.</li>
+<li><code>src/lib/vet-summary-export.ts</code> / <code>src/utils/vet-summary-html.ts</code> — the
+vet-summary PDF is built from a local HTML string and rendered by
+<code>expo-print</code> on-device, written to the app&#39;s own cache directory via
+<code>expo-file-system</code>, and passed to <code>expo-sharing</code>&#39;s system share sheet.
+There is no network call on that path, and the app never learns which
+destination the user picks. Re-audited when that feature shipped
+(PET-232), which is what this section&#39;s own closing paragraph requires.</li>
+<li>A general bulk export/backup (ticket PET-70) is still not built — the
+vet summary is scoped to one pet&#39;s health records and is the only export
+that exists.</li>
+</ul>
+<p>This audit reflects the code as it exists right now. If new dependencies,
+permissions, or data flows are added later (analytics, crash reporting,
+cloud sync, an export/share feature, etc.), this document needs to be
+re-audited and updated before it can be considered accurate again — it is
+not &quot;set and forget.&quot;</p>
+
+
+  </div>
+</main>
+<footer class="site-footer">
+  PetList &mdash; hosted documents for App Store / Google Play submission.
+</footer>
+</body>
+</html>
