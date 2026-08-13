@@ -728,6 +728,44 @@ a { color: inherit; }
   width: 100%;
 }
 
+/* Pre-existing bug, found while verifying round 9's lightbox entry points
+   and confirmed present at round 8 (195b4da) too -- not introduced here.
+
+   .doc-peek-trigger hangs 32% of the phone frame's height BELOW that frame
+   (bottom: -32%, i.e. ~167px at the 240px mobile frame width) while
+   .showcase-visual reserves only --space-4 (32px) of margin under itself.
+   In the single-column mobile layout that left ~135px of the preview
+   overlapping .showcase-copy, and the copy won the paint order: the
+   headline and body text rendered straight through the preview image, so
+   BOTH were illegible, and elementFromPoint at the trigger's own centre
+   returned .showcase-headline -- meaning the button could not be tapped at
+   all below 900px. Only the desktop layout, where the copy sits beside the
+   visual rather than under it, was unaffected.
+
+   Two things are needed and neither substitutes for the other:
+
+   1. Clearance, so the overhang lands in empty space instead of on the
+      copy. This is the part that actually fixes legibility.
+   2. z-index on .showcase-visual, so the trigger paints above the copy.
+      The trigger's own z-index: 2 cannot do this -- it orders the trigger
+      only among .phone-frame's children, and .showcase-copy is a sibling
+      of .showcase-visual two levels further up. zIndex orders siblings,
+      so the elevation has to be applied at the level where the two
+      subtrees actually meet.
+
+   Scoped to .is-document because it is the only item with an overhanging
+   child, and to the single-column layout because >=900px already places
+   the copy beside the visual. */
+.showcase-item.is-document .showcase-visual {
+  z-index: 1;
+}
+
+@media (max-width: 899px) {
+  .showcase-item.is-document .showcase-visual {
+    margin-bottom: calc(var(--space-4) + 150px);
+  }
+}
+
 .showcase-visual .phone-frame {
   --frame-w: 210px;
   box-shadow: 0 22px 36px -14px rgba(27, 22, 63, 0.35);
