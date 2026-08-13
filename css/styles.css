@@ -438,14 +438,40 @@ a { color: inherit; }
   animation-delay: 0.12s;
 }
 
+/* ---------- Copy emphasis (PET-205 round 9, item 3) ---------- */
+/* Coral used as EMPHASIS WITHIN A SENTENCE, which is a deliberate,
+   scoped exception to this page's otherwise CTA-only coral rule -- that
+   rule still governs buttons, fills and lines everywhere else.
+
+   Two constraints, both load-bearing for the headline's per-line reveal
+   (see splitIntoLines in index.html), neither obvious from looking at it:
+
+   1. .hero-em must stay position:static. The line grouping reads each
+      word's offsetTop, which is measured against the nearest POSITIONED
+      ancestor -- giving this span position:relative would put its words on
+      a different offset origin and scramble the grouping.
+   2. .hero-em must stay plain inline. display:inline-block would stop the
+      browser breaking lines inside it, changing the line count outright.
+
+   So: colour only. Nothing here may add positioning or change display. */
+.hero-em {
+  color: var(--coral);
+}
+
+.pitch-em {
+  color: var(--coral);
+}
+
 .hero-pitch {
   font-size: clamp(1.05rem, 2vw, 1.25rem);
   color: var(--on-dark-secondary);
   margin: 0 0 var(--space-4);
   /* .pitch-break below is what guarantees the two sentences sit on
      separate lines, so this cap only needs to be wide enough that neither
-     sentence wraps *within* itself -- 34ch was narrower than the longer
-     36-character sentence and was forcing a third line. */
+     sentence wraps *within* itself. Re-measured for round 9's copy:
+     "Organize your pet's life with ease." is 35 characters and
+     "One payment. No subscriptions. Ever." is 36 -- both inside this cap,
+     so 40ch still holds and did not need widening. */
   max-width: 40ch;
   margin-left: auto;
   margin-right: auto;
@@ -466,10 +492,15 @@ a { color: inherit; }
 }
 
 /* On the narrowest phones the longer sentence overruns its line by a few
-   pixels and orphans "ever." onto a third line. Nudging the type down
-   there keeps the tagline to a clean two lines. Measured: the break is at
-   ~355px, so this only affects 320-359px devices; 360px and up already
-   break cleanly at the sentence boundary and are left untouched. */
+   pixels and orphans its last word onto a third line. Nudging the type
+   down there keeps the tagline to a clean two lines.
+
+   Re-measured for round 9's copy: with the nudge the pitch is 2 lines at
+   every width from 320 up; without it, 320 and 340 go to 3 lines while 355
+   and 359 are already fine. So the break moved from ~355px to ~341-355px
+   when the copy changed, and this rule is still load-bearing at the narrow
+   end rather than dead code -- but it now has more slack than it did.
+   360px and up break cleanly at the sentence boundary and are untouched. */
 @media (max-width: 359px) {
   .hero-pitch {
     font-size: 0.92rem;
