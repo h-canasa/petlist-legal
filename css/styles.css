@@ -709,11 +709,28 @@ a { color: inherit; }
    image, so a second animal can be added later (a dog bleeding off an
    outer edge instead of peeking) by adding one span plus one CSS block.
    Each slot is an absolutely-positioned box carrying its photo as a
-   background, aria-hidden, and painted UNDER .phone-stage. */
+   background, aria-hidden, and painted UNDER .phone-stage.
+
+   `width: fit-content` is load-bearing, not tidiness (round 11 fix). As a
+   CSS Grid item (.hero-visual is .hero-body's second column), this element
+   stretches to fill its ENTIRE grid track by default -- at 1440px that's
+   ~486px, nearly 200px wider than the 300px phone it wraps. .hero-photos
+   below is `inset: 0` against THIS element, not against .phone-stage, so
+   every .hero-photo's percentage offset was resolving against that
+   phantom-wide box instead of the phone's real edge -- which is what made
+   the cat read as "a separate element at the viewport's far edge" rather
+   than overlapping the phone. Constraining this box to its content's actual
+   width (the phone) makes .hero-photos' bounds equal the phone's bounds, so
+   `right: -N%` below now genuinely means "N% of the phone's own width past
+   its edge." `margin: 0 auto` re-centers the now-narrower box within its
+   grid column, replacing the centering `justify-content: center` on this
+   flex container used to provide for free at full-track width. */
 .hero-visual {
   position: relative;
   display: flex;
   justify-content: center;
+  width: fit-content;
+  margin: 0 auto;
 }
 
 .hero-photos {
@@ -747,17 +764,30 @@ a { color: inherit; }
   .hero-photos { display: block; }
 
   .hero-photo--cat {
-    /* Roughly phone-lower-half height, anchored to the phone's lower
-       right. The negative right offset is what pushes the head clear of
-       the phone's edge; .hero { overflow: hidden } clips whatever runs
-       past the section, which is intended rather than tolerated. */
-    right: -6%;
-    bottom: 6%;
-    width: 62%;
-    max-width: 310px;
+    /* Round 11: sized and positioned now that .hero-photos' bounds are
+       genuinely the phone's own bounds (see the fit-content fix above),
+       not a much wider phantom box -- these percentages mean what they
+       say. Moderately sized (46% of the phone's width, was 62%) so it
+       reads as a secondary element supporting the phone rather than
+       competing with it, and pulled inward (-4%, was -6%) so most of the
+       cat's own box genuinely overlaps the phone's lower-right corner
+       instead of merely touching its edge -- only a sliver of the head
+       breaks past the frame, the "peeking around the phone, not standing
+       beside it" effect the comment below already named as the goal.
+       `.hero { overflow: hidden }` clips whatever runs past the section,
+       intended rather than tolerated. */
+    right: -18%;
+    bottom: 4%;
+    width: 44%;
+    max-width: 190px;
     aspect-ratio: 620 / 674;
     background-image: url('../assets/marketing/petlist_hero-cat-web.png');
     background-position: right bottom;
+    /* Grounds the cat in the same lit space as the phone rather than
+       floating flat against the gradient -- a soft, directional shadow
+       roughly matching the phone's own drop-shadow angle/darkness
+       (.hero .phone-frame below), scaled down for the cat's smaller size. */
+    filter: drop-shadow(0 14px 18px rgba(0, 0, 0, 0.4));
     opacity: 0;
     animation: fade-up 0.6s var(--ease-standard) 0.46s forwards;
     transform: translateY(14px);
@@ -766,8 +796,9 @@ a { color: inherit; }
 
 @media (min-width: 860px) {
   .hero-photo--cat {
-    right: -14%;
-    width: 68%;
+    right: -22%;
+    width: 48%;
+    max-width: 220px;
   }
 }
 
