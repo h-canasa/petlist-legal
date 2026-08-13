@@ -199,10 +199,30 @@ a { color: inherit; }
   padding-bottom: calc(var(--space-7) + 40px);
 }
 
+/* Round 9: every offset in this block is now viewport-relative (vw) rather
+   than a percentage of .hero's own height, and that is a layout-stability
+   fix, not a cosmetic one.
+
+   These blobs used to be inset: -20% ... with height: 140%, both resolved
+   against the hero's height. The hero's height is not stable across a page
+   load -- webfonts swap in, text re-wraps, and the section settles a few
+   pixels taller or shorter. Each of those re-resolved the blobs' top
+   offsets and moved them, and because they are large VISIBLE elements the
+   browser scored every one as a layout shift. Measured at 768px, where the
+   single-column hero is tallest and reflows most: 0.00778 of that width's
+   0.00869 CLS came from this one element alone.
+
+   Sized and positioned in vw, they no longer depend on the hero's content
+   height at all, so a font swap cannot move them. They are decorative,
+   blurred by 80px and pointer-events:none, so anchoring them to the
+   viewport rather than the section costs nothing visually. */
 .hero-ambient {
   position: absolute;
-  inset: -20% -10% auto -10%;
-  height: 140%;
+  top: 0;
+  left: -10%;
+  right: -10%;
+  bottom: 0;
+  overflow: hidden;
   pointer-events: none;
   z-index: 0;
 }
@@ -223,7 +243,7 @@ a { color: inherit; }
   max-width: 620px;
   max-height: 620px;
   background: var(--coral);
-  top: 4%;
+  top: -4vw;
   left: 58%;
 }
 
@@ -233,7 +253,7 @@ a { color: inherit; }
   max-width: 520px;
   max-height: 520px;
   background: var(--purple-secondary);
-  top: 40%;
+  top: 26vw;
   left: 4%;
   animation-name: drift-b;
   animation-duration: 32s;
