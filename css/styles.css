@@ -1012,11 +1012,20 @@ a { color: inherit; }
   transition: opacity 0.25s var(--ease-standard), visibility 0s linear 0s;
 }
 
+/* PET-205 round 9: the panel now shrink-wraps its image instead of forcing
+   it to 100% width and scrolling the overflow. That was fine while the only
+   thing this dialog ever showed was one 900x1285 document, whose 0.70 aspect
+   ratio fits 520x743 inside an 88vh box. It is NOT fine for the phone
+   screenshots the feature row now opens here: a 720x1565 shot at width:100%
+   becomes 520x1130, which overruns 88vh on any viewport shorter than
+   ~1284px and lands the user in an in-panel scrollbar. Shrink-wrapped, the
+   same shot renders ~405x880 on a 1000px-tall viewport -- fully visible,
+   no scroll. */
 .lightbox-panel {
   position: relative;
   max-width: min(520px, 92vw);
   max-height: 88vh;
-  overflow: auto;
+  overflow: hidden;
   border-radius: var(--radius-card);
   background: #fff;
   box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.5);
@@ -1030,8 +1039,10 @@ a { color: inherit; }
 
 .lightbox-panel img {
   display: block;
-  width: 100%;
+  width: auto;
   height: auto;
+  max-width: min(520px, 92vw);
+  max-height: 88vh;
 }
 
 .lightbox-close {

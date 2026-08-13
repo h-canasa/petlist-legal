@@ -141,7 +141,12 @@
                 </defs>
                 <path class="doc-connector-line" d="M680,338 C760,500 780,1000 460,1465" fill="none" mask="url(#docConnectorReveal)"/>
               </svg>
-              <button type="button" class="doc-peek-trigger" data-lightbox-trigger aria-label="View the full vet summary document">
+              <button type="button" class="doc-peek-trigger" aria-label="View the full vet summary document"
+                      data-lightbox-trigger
+                      data-lightbox-src="assets/marketing/petlist_vet-pdf-document-large.jpg"
+                      data-lightbox-w="900" data-lightbox-h="1285"
+                      data-lightbox-alt="Full PetList vet visit summary PDF document"
+                      data-lightbox-label="Vet summary document">
                 <img src="assets/marketing/petlist_vet-pdf-letterhead-web.jpg" alt="Letterhead of a generated PetList vet visit summary PDF, showing the pet's health events table" width="560" height="801" loading="lazy">
               </button>
             </div>
@@ -214,10 +219,14 @@
   </div>
 </footer>
 
-<div class="lightbox" id="vet-pdf-lightbox" role="dialog" aria-modal="true" aria-label="Vet summary document">
+<!-- One shared lightbox for every trigger on the page (PET-205 round 9).
+     The resting src/alt/dimensions are the vet PDF's, so the element is
+     never src-less; openLightbox overwrites all four from the trigger's
+     own data-lightbox-* attributes. -->
+<div class="lightbox" id="media-lightbox" role="dialog" aria-modal="true" aria-label="Vet summary document">
   <div class="lightbox-panel">
     <button type="button" class="lightbox-close" data-lightbox-close aria-label="Close">&times;</button>
-    <img src="assets/marketing/petlist_vet-pdf-document-large.jpg" alt="Full PetList vet visit summary PDF document" width="900" height="1285" loading="lazy">
+    <img id="lightbox-image" src="assets/marketing/petlist_vet-pdf-document-large.jpg" alt="Full PetList vet visit summary PDF document" width="900" height="1285" decoding="async" loading="lazy">
   </div>
 </div>
 
@@ -409,14 +418,45 @@
       updateHeader();
     }
 
-    // ---- Vet PDF lightbox: tap the peeking document to see it full-size,
-    // dismiss via the close button, a backdrop tap, or Escape. ----
-    var lightbox = document.getElementById('vet-pdf-lightbox');
-    var trigger = document.querySelector('[data-lightbox-trigger]');
+    // ---- Shared media lightbox (generalized in PET-205 round 9) ----
+    // Was hardcoded to the vet PDF: a singular querySelector for the one
+    // trigger, and a fixed <img> in the markup. Round 9 adds five more
+    // entry points (the four feature chips and the vet-PDF highlight card),
+    // so the trigger is now whatever was clicked and the image is driven
+    // from that element's own data-lightbox-* attributes.
+    //
+    // Dismiss via the close button, a backdrop tap, or Escape -- unchanged.
+    // Still no focus trap: Tab can leave the dialog. That's pre-existing and
+    // deliberately left as-is rather than growing this round's scope, but
+    // it's a real gap worth a ticket.
+    var lightbox = document.getElementById('media-lightbox');
+    var lightImg = document.getElementById('lightbox-image');
     var closeBtn = document.querySelector('[data-lightbox-close]');
+    var triggers = document.querySelectorAll('[data-lightbox-trigger]');
+    // Which trigger opened it, so focus returns to the RIGHT one on close.
+    // The old code closed over a single module-scoped `trigger`, which was
+    // correct only while exactly one existed.
+    var lastTrigger = null;
 
-    if (lightbox && trigger && closeBtn) {
-      var openLightbox = function () {
+    if (lightbox && lightImg && closeBtn && triggers.length) {
+      var openLightbox = function (trigger) {
+        // Six entry points, one dialog. Without this guard a click landing
+        // on a second trigger while the first is open would swap the image
+        // underneath the user and lose the focus-return target.
+        if (lightbox.classList.contains('is-open')) return;
+        lastTrigger = trigger;
+
+        // Dimensions BEFORE src: the width/height attributes are what give
+        // the <img> its aspect-ratio box, so setting them first means the
+        // panel reserves the right shape the instant it opens and can't
+        // resize under the user when the new file finishes decoding.
+        var src = trigger.getAttribute('data-lightbox-src');
+        lightImg.width = trigger.getAttribute('data-lightbox-w');
+        lightImg.height = trigger.getAttribute('data-lightbox-h');
+        lightImg.alt = trigger.getAttribute('data-lightbox-alt') || '';
+        if (src && lightImg.getAttribute('src') !== src) lightImg.setAttribute('src', src);
+        lightbox.setAttribute('aria-label', trigger.getAttribute('data-lightbox-label') || 'Media viewer');
+
         lightbox.classList.add('is-open');
         document.body.style.overflow = 'hidden';
         closeBtn.focus();
@@ -424,10 +464,12 @@
       var closeLightbox = function () {
         lightbox.classList.remove('is-open');
         document.body.style.overflow = '';
-        trigger.focus();
+        if (lastTrigger) lastTrigger.focus();
       };
 
-      trigger.addEventListener('click', openLightbox);
+      Array.prototype.forEach.call(triggers, function (trigger) {
+        trigger.addEventListener('click', function () { openLightbox(trigger); });
+      });
       closeBtn.addEventListener('click', closeLightbox);
       lightbox.addEventListener('click', function (event) {
         if (event.target === lightbox) closeLightbox();
