@@ -578,6 +578,68 @@ a { color: inherit; }
   max-width: 34ch;
 }
 
+/* ---------- Upcoming features (PET-205 follow-up item 6) ---------- */
+/* Deliberately lighter/flatter than the showcase strip above: no phone
+   frames, no screenshots (none exist for unbuilt features), a plain bordered
+   list rather than shadowed cards, muted (not coral) eyebrow -- this section
+   should read as "here's where we're headed," not compete with the real,
+   shipping feature showcase. */
+
+.upcoming {
+  background: var(--lavender);
+  padding: var(--space-6) 0 var(--space-7);
+}
+
+.upcoming .section-eyebrow {
+  color: var(--text-secondary);
+}
+
+.upcoming-list {
+  list-style: none;
+  margin: var(--space-4) auto 0;
+  padding: 0;
+  max-width: 640px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.upcoming-item {
+  background: var(--lavender-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  padding: 14px 20px;
+  text-align: left;
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.5s var(--ease-standard), transform 0.5s var(--ease-standard);
+}
+
+.upcoming-list.is-visible .upcoming-item {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.upcoming-item:nth-child(1) { transition-delay: 0s; }
+.upcoming-item:nth-child(2) { transition-delay: 0.08s; }
+.upcoming-item:nth-child(3) { transition-delay: 0.16s; }
+.upcoming-item:nth-child(4) { transition-delay: 0.24s; }
+.upcoming-item:nth-child(5) { transition-delay: 0.32s; }
+
+.upcoming-label {
+  display: block;
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--purple-deep);
+  margin-bottom: 2px;
+}
+
+.upcoming-desc {
+  display: block;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
 /* ---------- Android waitlist ---------- */
 
 .waitlist {
@@ -744,7 +806,8 @@ a { color: inherit; }
   .showcase-visual,
   .showcase-headline,
   .showcase-body,
-  .reveal-child {
+  .reveal-child,
+  .upcoming-item {
     transition: none !important;
     opacity: 1 !important;
     transform: none !important;
