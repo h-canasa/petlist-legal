@@ -33,60 +33,65 @@ function markdownToHtml(mdPath) {
   }
 }
 
+// Restyled in PET-205 follow-up round 2 to match the marketing landing
+// page: same color tokens, same Fraunces/Inter pairing loaded the same way
+// (Google Fonts CDN link tags), same brand header. Only the wrapper changed
+// -- the rendered legal copy inside .card is untouched.
+//
+// Deliberately light-mode only, unlike the previous version's
+// prefers-color-scheme dark variant: css/styles.css (the landing page) is
+// single-mode, and a legal page that went dark while the site it belongs to
+// stayed light would reintroduce exactly the "different site" feeling this
+// change exists to remove.
 const STYLE = `
   :root {
-    color-scheme: light dark;
-    --bg: #ECECEE;
-    --card: #ffffff;
+    --purple-deep: #1B163F;
+    --purple-secondary: #2D1B69;
+    --coral: #E0637A;
+    --lavender: #F3EFFA;
+    --card: #FFFFFF;
+    --on-dark-secondary: #C9C3E0;
     --text: #1B163F;
-    --text-secondary: #55506e;
-    --border: #d8d6e0;
-    --accent: #2D1B69;
+    --text-secondary: #55506E;
+    --border: #E2DEEE;
     --banner-bg: #fff4e5;
     --banner-border: #e0a933;
     --banner-text: #6b4a00;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #151519;
-      --card: #201d29;
-      --text: #ECECEE;
-      --text-secondary: #b3aec4;
-      --border: #34303f;
-      --accent: #A79DDE;
-      --banner-bg: #3a2e0f;
-      --banner-border: #a97a1f;
-      --banner-text: #f0cf8a;
-    }
+
+    --font-display: "Fraunces", Georgia, serif;
+    --font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   }
   * { box-sizing: border-box; }
+  html { overflow-x: hidden; }
   body {
     margin: 0;
-    background: var(--bg);
+    background: var(--lavender);
     color: var(--text);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-family: var(--font-body);
     line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
   }
-  header.site-nav {
+  img { max-width: 100%; display: block; }
+
+  header.site-header {
+    background: var(--purple-deep);
+    padding: 20px 0;
+  }
+  header.site-header .inner {
     max-width: 720px;
     margin: 0 auto;
-    padding: 24px 20px 0;
-    display: flex;
-    gap: 20px;
-    font-size: 14px;
+    padding: 0 20px;
   }
-  header.site-nav a {
-    color: var(--text-secondary);
-    text-decoration: none;
+  header.site-header .brand-mark {
+    height: 48px;
+    width: auto;
   }
-  header.site-nav a[aria-current="page"] {
-    color: var(--accent);
-    font-weight: 600;
-  }
+
   main {
     max-width: 720px;
     margin: 0 auto;
-    padding: 24px 20px 80px;
+    padding: 40px 20px 80px;
   }
   .card {
     background: var(--card);
@@ -94,9 +99,21 @@ const STYLE = `
     border-radius: 12px;
     padding: 32px 36px;
   }
-  h1 { font-size: 1.7rem; margin-top: 0; }
-  h2 { font-size: 1.25rem; margin-top: 2em; border-top: 1px solid var(--border); padding-top: 1em; }
+  h1, h2, h3 {
+    font-family: var(--font-display);
+    color: var(--purple-deep);
+    line-height: 1.2;
+  }
+  h1 { font-size: 2rem; font-weight: 700; margin-top: 0; }
+  h2 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-top: 2em;
+    border-top: 1px solid var(--border);
+    padding-top: 1em;
+  }
   h2:first-of-type { border-top: none; padding-top: 0; }
+  h3 { font-size: 1.05rem; font-weight: 600; }
   blockquote {
     background: var(--banner-bg);
     border: 1px solid var(--banner-border);
@@ -108,31 +125,78 @@ const STYLE = `
   }
   blockquote p { margin: 0.4em 0; }
   code {
-    background: var(--bg);
+    background: var(--lavender);
     border: 1px solid var(--border);
     border-radius: 4px;
     padding: 0.1em 0.4em;
     font-size: 0.9em;
+    overflow-wrap: break-word;
   }
   hr {
     border: none;
     border-top: 1px solid var(--border);
     margin: 2.5em 0;
   }
-  a { color: var(--accent); }
+  a { color: var(--purple-secondary); }
   ul, ol { padding-left: 1.4em; }
+
   footer.site-footer {
+    background: var(--purple-deep);
+    color: var(--on-dark-secondary);
+    padding: 32px 0;
+    font-size: 0.85rem;
+  }
+  footer.site-footer .inner {
     max-width: 720px;
     margin: 0 auto;
-    padding: 0 20px 40px;
-    font-size: 13px;
-    color: var(--text-secondary);
+    padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-items: center;
+    text-align: center;
+  }
+  @media (min-width: 640px) {
+    footer.site-footer .inner {
+      flex-direction: row;
+      justify-content: space-between;
+      text-align: left;
+    }
+  }
+  footer.site-footer p { margin: 0; }
+  footer.site-footer nav {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  footer.site-footer a {
+    color: var(--on-dark-secondary);
+    text-decoration: none;
+  }
+  footer.site-footer a:hover,
+  footer.site-footer a:focus-visible {
+    color: #fff;
+    text-decoration: underline;
   }
 `;
 
 function page({ title, description, bodyHtml, currentPath, root }) {
-  const nav = (href, label, current) =>
-    `<a href="${href}"${current ? ' aria-current="page"' : ''}>${label}</a>`;
+  // The brand mark replaces the old live-text "PetList Legal" label and
+  // links back to the homepage, matching the landing page's header (which
+  // likewise carries no separate text wordmark -- the name is already baked
+  // into the image). The sibling-document links moved to the footer, where
+  // the landing page also keeps them.
+  const footerNav = [
+    currentPath === '/privacy-policy/'
+      ? null
+      : `<a href="${root}privacy-policy/">Privacy Policy</a>`,
+    currentPath === '/terms-of-service/'
+      ? null
+      : `<a href="${root}terms-of-service/">Terms of Service</a>`,
+    `<a href="mailto:support@mypetlist.app">Support</a>`,
+  ].filter(Boolean).join('\n      ');
+
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -141,13 +205,20 @@ function page({ title, description, bodyHtml, currentPath, root }) {
 <title>${title}</title>
 <meta name="description" content="${description}">
 <meta name="robots" content="noindex">
+<link rel="icon" href="${root}favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="${root}assets/marketing/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>${STYLE}</style>
 </head>
 <body>
-<header class="site-nav">
-  ${nav(`${root}`, 'PetList Legal', currentPath === '/')}
-  ${nav(`${root}privacy-policy/`, 'Privacy Policy', currentPath === '/privacy-policy/')}
-  ${nav(`${root}terms-of-service/`, 'Terms of Service', currentPath === '/terms-of-service/')}
+<header class="site-header">
+  <div class="inner">
+    <a href="${root}" aria-label="PetList home">
+      <img class="brand-mark" src="${root}assets/marketing/petlist_icon-banner-web.png" alt="PetList" width="114" height="48">
+    </a>
+  </div>
 </header>
 <main>
   <div class="card">
@@ -155,7 +226,12 @@ function page({ title, description, bodyHtml, currentPath, root }) {
   </div>
 </main>
 <footer class="site-footer">
-  PetList &mdash; hosted documents for App Store / Google Play submission.
+  <div class="inner">
+    <p>&copy; 2026 PetList. All rights reserved.</p>
+    <nav aria-label="Legal and support">
+      ${footerNav}
+    </nav>
+  </div>
 </footer>
 </body>
 </html>
