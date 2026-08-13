@@ -457,29 +457,43 @@ a { color: inherit; }
   object-fit: cover;
 }
 
-/* PET-205 round 5, item 2a: the vet-PDF item's screenshot is now a
-   full-device capture (kebab menu open over the pet detail screen) rather
-   than a pre-cropped shot like the other three -- its own aspect ratio
-   (1206x2622) is nearly identical to the phone frame's, so object-fit:cover
-   alone crops almost nothing and the menu renders too small to read at
-   thumbnail size. Scaled up and anchored top-center via transform (not
-   object-position -- cover has no crop margin to reposition within when
-   source and container aspect ratios already match, so there's nothing
-   for object-position to shift).
+/* PET-205 round 5, item 2a; corrected in round 6. The vet-PDF item's
+   screenshot is a full-device capture (kebab menu open over the pet detail
+   screen) rather than a pre-cropped shot like the other three -- its own
+   aspect ratio is nearly identical to the phone frame's, so
+   object-fit: cover alone crops almost nothing and the menu renders too
+   small to read at thumbnail size. Scaled up and anchored top-LEFT via
+   transform (not object-position -- cover has no crop margin to reposition
+   within when source and container aspect ratios already match, so there's
+   nothing for object-position to shift).
 
-   1.5x was chosen empirically, not by formula: a uniform transform:scale()
-   zooms both axes together, so it was tried at a few values and screenshot-
-   checked each time. 2.35x cropped the menu's own right edge ("Vet
-   summa[ry]", "Delete p[et]" truncated mid-word) because the menu sits
-   right-of-center in the source and a symmetric top-center zoom crops both
-   sides equally. 1.5x is the value that keeps "Edit pet" / "Vet summary" /
-   "Delete pet" fully legible with no truncation while still cropping away
-   the weight card, spending figures, and reminders below -- confirmed
-   against the actual rendered composite, not assumed from the transform
-   math. */
+   Round 5 shipped scale(1.5) with a top-CENTER origin (50% 0%), reasoning
+   that a symmetric zoom crops both sides equally. It doesn't: the source's
+   status bar and "Back" button sit near the LEFT edge while the kebab menu
+   sits right-of-center, so a center-anchored zoom cropped real content on
+   the left ("11:51" -> "51", "Back" -> "ack") while only eating into the
+   menu's own right-side whitespace margin -- round 5's own screenshot check
+   evidently looked at the menu staying legible and missed the left-edge
+   damage entirely.
+
+   Round 6 re-derived this by rendering the actual composite with a
+   percentage grid overlaid on the source image (not by reasoning about the
+   transform math): the rightmost content that must stay visible -- the
+   kebab menu and the status bar's battery icon -- sits at ~91% of the
+   source's width. With transform-origin pinned to the top-LEFT corner
+   (0% 0%), the visible window is [0, 1/scale] in source-fraction terms, so
+   scale must stay at or below ~1/0.91 (~1.10) to keep that 91% mark inside
+   frame -- confirmed empirically at 1.05x for a safety margin against the
+   measurement's own imprecision (the battery's rounded terminal was still
+   clipping a hair at 1.10x). This also means full width and a bigger zoom
+   are in real tension here, not just a prior tuning miss: any uniform
+   scale-up of an image already filling its container must crop SOME width
+   once clipped by .phone-screen's overflow:hidden, so 1.05x is a
+   deliberately modest zoom chosen to keep the left edge intact rather than
+   a value squeezed for maximum menu-text size. */
 .showcase-item.is-document .phone-screen img {
-  transform: scale(1.5);
-  transform-origin: 50% 0%;
+  transform: scale(1.05);
+  transform-origin: 0% 0%;
 }
 
 .phone-frame .phone-island {
@@ -632,30 +646,43 @@ a { color: inherit; }
   }
 }
 
-/* Vet PDF export — distinct treatment: a small static document preview
-   badge, tappable to open the full document in a lightbox. */
+/* Vet PDF export — distinct treatment: a static document preview badge,
+   tappable to open the full document in a lightbox. */
 
 /* ---------- Simplified static preview (PET-205 round 5, item 2) ---------- */
 /* Replaces the prior two rounds' horizontal-scroll/peek treatment entirely
    (round 2's re-anchored transform, round 4's .vet-pdf-scroll container).
    That interaction was removed outright rather than iterated on again: a
-   small, fully-visible static badge needs no scroll container to contain
-   overflow it no longer has, no rotate/translateX slide-in to coordinate
-   with one, and reads more clearly as "tap for more" than "here's a sliver,
-   pan to see the rest." Nested inside .phone-frame (which has no
-   overflow:hidden of its own, unlike .phone-screen) rather than as a
-   sibling in .showcase-visual, so it anchors precisely to the phone's own
-   corner regardless of the column's width -- no extra positioning wrapper
-   needed. It has no .scroll-fade of its own: sitting inside .phone-frame
-   inside .showcase-visual, it fades in as part of that whole block's
-   existing entrance rather than needing a second, separate one. */
+   fully-visible static badge needs no scroll container to contain overflow
+   it no longer has, no rotate/translateX slide-in to coordinate with one,
+   and reads more clearly as "tap for more" than "here's a sliver, pan to
+   see the rest." Nested inside .phone-frame (which has no overflow:hidden
+   of its own, unlike .phone-screen) rather than as a sibling in
+   .showcase-visual, so it anchors precisely to the phone's own corner
+   regardless of the column's width -- no extra positioning wrapper needed.
+   It has no .scroll-fade of its own: sitting inside .phone-frame inside
+   .showcase-visual, it fades in as part of that whole block's existing
+   entrance rather than needing a second, separate one.
+
+   Round 6: enlarged (30%/max 80px -> 44%/max 132px) and moved to hang off
+   the phone frame's bottom-right corner (bottom: 14% -> -8%, right: -14px
+   -> -30px) rather than float mid-frame. It used to read as a small
+   afterthought at the smaller size, and at bottom: 14% the larger badge
+   overlapped real content -- first the "This month / YTD" spend row (the
+   original bug report), then, at the larger size alone, the Upcoming
+   cards below it. Corner-anchored and mostly hanging outside the frame's
+   own bounds (matching the round-5 badge's existing off-edge convention,
+   just with more overhang) is what keeps it clear of on-screen text at
+   this bigger size: verified by screenshotting the actual render and
+   confirming no card or filter-chip text sits under it, not by reasoning
+   about the offsets alone. */
 .doc-peek-trigger {
   position: absolute;
-  right: -14px;
-  bottom: 14%;
-  width: 30%;
-  max-width: 80px;
-  min-width: 56px;
+  right: -30px;
+  bottom: -8%;
+  width: 44%;
+  max-width: 132px;
+  min-width: 92px;
   border: none;
   background: none;
   padding: 0;
