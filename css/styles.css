@@ -269,14 +269,136 @@ a { color: inherit; }
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18);
 }
 
-.site-header .brand-mark {
-  height: 56px;
+.site-header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+/* ---------- Brand lockup (PET-205 round 9, item 1) ---------- */
+/* Replaces the single petlist_icon-banner-web.png image with the mascot
+   icon plus LIVE text, so the wordmark is selectable, scales crisply, and
+   costs 7KB instead of 27KB. The banner PNG itself is deliberately NOT
+   deleted from the repo -- build.js:219 and both generated legal pages
+   still reference it (they carry their own inline <style> and don't load
+   this file at all, so nothing here affects them).
+
+   The chip sits behind the ICON AND THE TEXT TOGETHER, which is the whole
+   design problem this element poses: .site-header's background is dark in
+   every state it has -- transparent over --purple-deep at rest, and
+   rgba(27,22,63,0.82) once .is-scrolled -- so there is no state in which a
+   #1B163F "pet" is legible without a light surface underneath it. One chip
+   behind the whole lockup is also live-text parity with the shipped banner
+   image (and with the App Store icon), rather than a compromise.
+
+   CHIP MUST BE #FFFFFF, NOT --lavender. Measured: coral #E0637A on
+   --lavender #F3EFFA is 2.97:1, which fails the 3:1 floor; on #FFFFFF it
+   is 3.37:1, which passes AA-large. "pet" #1B163F on #FFFFFF is 17.03:1.
+   That 3.37:1 only counts as AA-large while "list" renders at >=18.66px
+   bold -- which is what pins the scrolled font-size below to 1.2rem
+   (19.2px) rather than following the old brand-mark's proportional 56->44
+   shrink down to ~18.4px.
+
+   Rejected, worth recording: a chip behind the mascot only with "pet" in
+   white (loses the purple/coral pairing entirely and diverges from the
+   App Store mark, leaving the chip reading as an unrelated badge beside
+   floating text); and no chip at all with a text-shadow halo behind the
+   purple (illegible purple-on-purple at 20px, and fails contrast anyway). */
+.site-header .brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  /* Asymmetric: the mascot PNG carries ~10% transparent padding of its own
+     (the app icon's safe area, deliberately left untrimmed so it doesn't
+     render larger here than everywhere else it appears), so a symmetric
+     chip would look right-heavy. */
+  padding: 6px 12px 6px 6px;
+  background: var(--lavender-card);
+  border-radius: 14px;
+  text-decoration: none;
+  /* Keeps the chip from looking pasted onto flat purple. Dropped once the
+     header has its own shadow. */
+  box-shadow: 0 2px 10px -4px rgba(0, 0, 0, 0.35);
+  transition: padding 0.3s var(--ease-standard), box-shadow 0.3s var(--ease-standard);
+}
+
+.site-header.is-scrolled .brand {
+  padding: 5px 10px 5px 5px;
+  box-shadow: none;
+}
+
+/* 6 + 40 + 6 = 52px chip + the header's own 20/20 padding = 92px, which is
+   exactly the constant .hero { padding-top } compensates with. Changing
+   either the icon height or the chip padding means re-checking that sum. */
+.site-header .brand-icon {
+  height: 40px;
   width: auto;
+  display: block;
   transition: height 0.3s var(--ease-standard);
 }
 
-.site-header.is-scrolled .brand-mark {
-  height: 44px;
+.site-header.is-scrolled .brand-icon {
+  height: 32px;
+}
+
+.site-header .brand-word {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.35rem;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  transition: font-size 0.3s var(--ease-standard);
+}
+
+/* Not 1.15rem: see the AA-large note above -- 1.2rem is 19.2px, the
+   smallest size at which coral-on-white's 3.37:1 still qualifies. */
+.site-header.is-scrolled .brand-word {
+  font-size: 1.2rem;
+}
+
+.brand-word-pet { color: var(--purple-deep); }
+.brand-word-list { color: var(--coral); }
+
+/* ---------- Trust badge (PET-205 round 9, item 2) ---------- */
+/* A <p>, not a button or link -- it states something, it doesn't do
+   anything. Deliberately quiet: this hero now carries four separate
+   "you only pay once" statements (this badge's privacy framing, the
+   subhead, the CTA annotation, and the trust bar's No Subscriptions item),
+   all ticket-mandated, so none of them should shout. --on-dark-secondary
+   on --purple-deep measures 10.03:1.
+
+   white-space:nowrap makes this the one element in the header that can
+   force horizontal overflow, which is why it gets its own step-down at
+   359px rather than being allowed to wrap to two lines. */
+.trust-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.10);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: var(--on-dark-secondary);
+  font-size: 0.78rem;
+  font-weight: 500;
+  line-height: 1.2;
+  white-space: nowrap;
+  opacity: 0;
+  animation: fade-in 0.5s var(--ease-standard) forwards;
+  animation-delay: 0.06s;
+}
+
+.trust-badge-glyph {
+  font-size: 0.85em;
+  line-height: 1;
+}
+
+@media (max-width: 359px) {
+  .site-header .brand-icon { height: 32px; }
+  .site-header .brand-word { font-size: 1.05rem; }
+  .trust-badge { font-size: 0.64rem; padding: 5px 10px; }
 }
 
 .hero-body {
@@ -1126,14 +1248,17 @@ a { color: inherit; }
   .hero-headline,
   .hero-pitch,
   .hero-cta,
-  .phone-stage {
+  .phone-stage,
+  .trust-badge {
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;
   }
 
   .site-header,
-  .site-header .brand-mark {
+  .site-header .brand,
+  .site-header .brand-icon,
+  .site-header .brand-word {
     transition: none !important;
   }
 
