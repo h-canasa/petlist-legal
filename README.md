@@ -37,6 +37,37 @@ folder here is a **copy**, not synced automatically.
 3. Commit and push. GitHub Pages redeploys automatically on push to the
    default branch.
 
+## Marketing image assets
+
+`assets/marketing/` follows a three-suffix convention:
+
+- **`foo.jpg` / `foo.png`** — the full-size source. Committed, but never
+  referenced by the page.
+- **`foo-web.jpg` / `foo-web.png`** — the compressed derivative the page
+  actually references. **Only `-web` variants belong in `index.html`.**
+- **`foo-preview.jpg`** — a much smaller thumbnail used *only* by the
+  desktop hover previews on the hero's feature row (PET-205 round 9).
+  Deliberately separate from `-web`: those are declared inside a
+  `@media (hover: hover)` block so touch devices never fetch them, which
+  only pays off if they're small.
+
+There is no build step for these — they're one-off derivations. `build.js`
+generates the legal pages only and never touches images. Regenerate with
+`sharp` from the main `petlist` repo (which has it as a devDependency;
+this repo has no `node_modules`), writing to absolute paths here:
+
+```
+cd <petlist-repo>
+node -e "require('sharp')('<in>').resize({width:264}).jpeg({quality:72,mozjpeg:true}).toFile('<out>')"
+```
+
+Sizes in use: `-web` screenshots 720x1565 q78; `-preview` width 264 q72;
+`petlist_mascot-icon-web.png` 128x128 palette PNG;
+`petlist_hero-cat-web.png` is `extract({left:380,top:560,width:920,height:1000})`
+then `resize({width:620})` — a head/upper-shoulder crop of the source, whose
+body deliberately bleeds off the **left** edge so the phone mockup can overlap
+it (see the `.hero-photos` comment in `css/styles.css`).
+
 ## Status
 
 Both documents are first-pass drafts pending legal review — see the
