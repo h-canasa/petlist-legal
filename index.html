@@ -119,7 +119,9 @@
                 <img src="assets/marketing/petlist_vet-pdf-export-web.jpg" alt="PetList's vet summary export screen, about to generate a PDF" width="720" height="1565" loading="lazy">
               </div>
             </div>
-            <img class="doc-peek" src="assets/marketing/petlist_vet-pdf-document-web.jpg" alt="A generated PetList vet visit summary PDF document" width="600" height="857" loading="lazy">
+            <button type="button" class="doc-peek-trigger" data-lightbox-trigger aria-label="View the full vet summary document">
+              <img src="assets/marketing/petlist_vet-pdf-letterhead-web.jpg" alt="Letterhead of a generated PetList vet visit summary PDF, showing the pet's health events table" width="560" height="801" loading="lazy">
+            </button>
           </div>
           <h3 class="showcase-headline">Ready for the vet, in one tap</h3>
           <p class="showcase-body">Generate a clean PDF summary of a pet's health history — vaccinations, medications, weight trend, and more — ready to share with your vet.</p>
@@ -155,6 +157,13 @@
   </div>
 </footer>
 
+<div class="lightbox" id="vet-pdf-lightbox" role="dialog" aria-modal="true" aria-label="Vet summary document">
+  <div class="lightbox-panel">
+    <button type="button" class="lightbox-close" data-lightbox-close aria-label="Close">&times;</button>
+    <img src="assets/marketing/petlist_vet-pdf-document-large.jpg" alt="Full PetList vet visit summary PDF document" width="900" height="1285" loading="lazy">
+  </div>
+</div>
+
 <script>
   (function () {
     var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -162,19 +171,46 @@
 
     if (reduceMotion || !('IntersectionObserver' in window)) {
       items.forEach(function (item) { item.classList.add('is-visible'); });
-      return;
+    } else {
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.2, rootMargin: '0px 0px -10% 0px' });
+
+      items.forEach(function (item) { observer.observe(item); });
     }
 
-    var observer = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('is-visible');
-          observer.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.2, rootMargin: '0px 0px -10% 0px' });
+    // ---- Vet PDF lightbox: tap the peeking document to see it full-size,
+    // dismiss via the close button, a backdrop tap, or Escape. ----
+    var lightbox = document.getElementById('vet-pdf-lightbox');
+    var trigger = document.querySelector('[data-lightbox-trigger]');
+    var closeBtn = document.querySelector('[data-lightbox-close]');
 
-    items.forEach(function (item) { observer.observe(item); });
+    if (lightbox && trigger && closeBtn) {
+      var openLightbox = function () {
+        lightbox.classList.add('is-open');
+        document.body.style.overflow = 'hidden';
+        closeBtn.focus();
+      };
+      var closeLightbox = function () {
+        lightbox.classList.remove('is-open');
+        document.body.style.overflow = '';
+        trigger.focus();
+      };
+
+      trigger.addEventListener('click', openLightbox);
+      closeBtn.addEventListener('click', closeLightbox);
+      lightbox.addEventListener('click', function (event) {
+        if (event.target === lightbox) closeLightbox();
+      });
+      document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape' && lightbox.classList.contains('is-open')) closeLightbox();
+      });
+    }
   })();
 </script>
 
