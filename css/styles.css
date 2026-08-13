@@ -82,38 +82,80 @@ a { color: inherit; }
   padding: 0 var(--space-3);
 }
 
-/* ---------- Generic scroll-reveal (PET-205 follow-up item 5) ---------- */
-/* Any element with [data-reveal] is observed by the page's IntersectionObserver
-   and gains .is-visible once scrolled into view (see the inline script).
-   Its .reveal-child descendants fade/slide in individually, staggered by
-   their --1/--2/--3 delay variant -- used for section headings (eyebrow,
-   then title) and the waitlist section (title, body, then form). The
-   showcase items and upcoming-list use their own analogous per-child rules
-   nearby, since they key off a class already used for other purposes
-   rather than the shared [data-reveal] attribute. */
-.reveal-child {
+/* ---------- Scroll-linked fade-up (PET-205 round 3, item 3) ---------- */
+/* The single, consistent entrance effect for everything from "What's
+   inside" onward (the showcase strip, upcoming features, waitlist, footer)
+   -- replacing the previous round's per-line text stagger and 92%->100%
+   scale-up, both cited as reading as "wonky." One treatment: fades in and
+   slides up from translateY(28px), continuously tied to scroll position
+   as the element enters the viewport rather than a one-shot threshold
+   trigger that plays once and disconnects.
+
+   Native CSS Scroll-Driven Animations (animation-timeline: view()) drive
+   this where supported -- zero JS, runs on the compositor thread, and is
+   what the ticket asked to prefer.
+
+   `animation-range: cover 0% cover 38%` -- deliberately `cover`, not
+   `entry`. `entry` was tried first and measured to be wrong: it's scoped
+   to the ELEMENT's own height, and for anything much shorter than the
+   viewport (a two-line heading, a single card) that phase only covers
+   ~50-90px of scroll -- technically still scroll-linked, but the reveal
+   happens in 1-2 scroll ticks and reads exactly like a threshold snap.
+   `cover` is scoped to the *viewport's* height instead (0% = element's
+   leading edge first touches the viewport's far edge; 100% = it's fully
+   exited the near edge), which gives real scroll distance to work with
+   regardless of the element's own size. The 38% endpoint was tuned by
+   recording real scroll traces (see the verification notes for this
+   round): it lands full opacity with the element's own top edge at
+   roughly 50-55% down the viewport -- matching the ticket's target -- and
+   climbs through several distinct intermediate opacity values across a
+   ~250-300px scroll distance on the way there, confirmed genuinely
+   continuous rather than a jump.
+
+   `both` fill mode holds the 0% frame before the range starts and the
+   100% frame after it ends -- so nothing animates back out as the element
+   continues scrolling up past this range (the no-exit-animation rule from
+   prior rounds), and scrolling back UP into the range *does* reverse it,
+   which is correct for something genuinely scroll-LINKED rather than a
+   reveal-once lock.
+
+   Where animation-timeline: view() isn't supported, the inline script
+   computes the identical progress from a scroll listener and drives the
+   same opacity/transform via inline styles -- see "Scroll-linked fade-up"
+   in the script. The @supports gate below is what keeps the two from
+   fighting: only one of them is ever actually setting opacity/transform
+   on a given element. */
+.scroll-fade {
   opacity: 0;
-  transform: translateY(16px);
-  transition: opacity 0.5s var(--ease-standard), transform 0.5s var(--ease-standard);
+  transform: translateY(28px);
+  will-change: opacity, transform;
 }
 
-[data-reveal].is-visible .reveal-child {
-  opacity: 1;
-  transform: translateY(0);
+@supports (animation-timeline: view()) {
+  .scroll-fade {
+    animation: scroll-fade-in linear both;
+    animation-timeline: view();
+    animation-range: cover 0% cover 38%;
+  }
 }
 
-.reveal-child--1 { transition-delay: 0s; }
-.reveal-child--2 { transition-delay: 0.12s; }
-.reveal-child--3 { transition-delay: 0.24s; }
+@keyframes scroll-fade-in {
+  from { opacity: 0; transform: translateY(28px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 
-/* ---------- Per-line text reveal (PET-205 round 2, item 4a) ---------- */
-/* Headlines and section titles reveal one rendered line at a time instead of
-   as one block. Lines can't be targeted in CSS, so the inline script wraps
-   each word in .line-word, measures which words share an offsetTop, and
-   stamps each with its line index as --line. Everything below is inert until
-   that runs: .has-split is added by the script, so a no-JS (or failed-JS)
-   visitor keeps the plain whole-element fade underneath and never sees
-   permanently hidden text. */
+/* ---------- Per-line text reveal (hero headline only) ---------- */
+/* Kept for the hero's own on-load headline reveal, which is explicitly
+   unchanged this round (the hero's load-sequence animation is separate
+   from scroll-triggered entrances, see the ticket). Removed everywhere
+   else it was used (the two section titles) in favor of .scroll-fade
+   above -- text-splitting was cited as the main source of jank and isn't
+   worth the complexity for anything but the hero's single showcase moment.
+   Lines can't be targeted in CSS, so the inline script wraps each word in
+   .line-word, measures which words share an offsetTop, and stamps each
+   with its line index as --line. .has-split is added by the script, so a
+   no-JS (or failed-JS) visitor keeps the plain whole-element fade
+   underneath and never sees permanently hidden text. */
 .has-split {
   animation: none !important;
   opacity: 1 !important;
@@ -129,8 +171,7 @@ a { color: inherit; }
   transition-delay: calc(var(--line, 0) * 90ms);
 }
 
-.has-split.is-revealed .line-word,
-[data-reveal].is-visible .has-split .line-word {
+.has-split.is-revealed .line-word {
   opacity: 1;
   transform: translateY(0);
 }
@@ -477,43 +518,12 @@ a { color: inherit; }
   text-align: center;
 }
 
-/* Staggered entrance (PET-205 follow-up item 5): each part fades/slides in
-   on its own delay once the card scrolls into view, in the ticket's
-   specified order -- heading, then copy, then the visual -- rather than
-   the whole card moving as one flat block. This is an animation-TIMING
-   order, not a DOM reorder: the visual stays positioned first in the card
-   (unchanged layout), it's simply the last of the three to finish fading in. */
-.showcase-headline,
-.showcase-body {
-  opacity: 0;
-  transform: translateY(16px);
-  transition: opacity 0.5s var(--ease-standard), transform 0.5s var(--ease-standard);
-}
-
-/* The visual scales up from 92% as it fades (PET-205 round 2, item 4b),
-   rather than the opacity-only/translate-only reveal the copy uses -- the
-   scale is what makes the image reveal read as deliberate. */
-.showcase-visual {
-  opacity: 0;
-  transform: translateY(16px) scale(0.92);
-  transition: opacity 0.6s var(--ease-standard), transform 0.6s var(--ease-standard);
-}
-
-.showcase-item.is-visible .showcase-visual {
-  transform: translateY(0) scale(1);
-}
-
-.showcase-item.is-visible .showcase-visual,
-.showcase-item.is-visible .showcase-headline,
-.showcase-item.is-visible .showcase-body {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.showcase-headline { transition-delay: 0s; }
-.showcase-body { transition-delay: 0.12s; }
-.showcase-visual { transition-delay: 0.24s; }
-
+/* Entrance (PET-205 round 3, item 3): copy and visual each get the shared
+   .scroll-fade treatment (see that class's own comment above) as two
+   units -- not the prior round's 3-way headline/body/visual stagger with
+   hand-tuned delays. Each naturally reveals at its own scroll position
+   (the visual is laid out first in the card and enters the viewport
+   first), so no manual delay is needed to get a cascade. */
 .showcase-visual {
   position: relative;
   margin-bottom: var(--space-4);
@@ -638,15 +648,28 @@ a { color: inherit; }
      slightly inset to flush with the container edge instead of past it.
      The 7deg rotation still widens the painted box ~15px either side, which
      fits inside the remaining gutter at every width tested (320px up). */
-  transform: rotate(7deg) translateX(-10%);
-  transition: transform 0.6s var(--ease-standard), opacity 0.6s var(--ease-standard);
-  transition-delay: 0.32s;
   opacity: 0;
+  transform: rotate(7deg) translateX(-10%);
 }
 
-.showcase-item.is-document.is-visible .doc-peek-trigger {
-  opacity: 1;
-  transform: rotate(7deg) translateX(0);
+/* Shares the .scroll-fade class's scroll-linked mechanism (native
+   animation-timeline: view(), JS fallback below) rather than the prior
+   round's JS-observer + manual transition-delay, but keeps its own
+   rotate/translateX values instead of .scroll-fade's plain translateY --
+   this is what preserves the "emerging from behind the phone" identity
+   established in round 1, layered onto the same simplified trigger
+   mechanism everything else now uses. */
+@supports (animation-timeline: view()) {
+  .doc-peek-trigger {
+    animation: doc-peek-fade-in linear both;
+    animation-timeline: view();
+    animation-range: cover 0% cover 38%;
+  }
+}
+
+@keyframes doc-peek-fade-in {
+  from { opacity: 0; transform: rotate(7deg) translateX(-10%); }
+  to { opacity: 1; transform: rotate(7deg) translateX(0); }
 }
 
 .doc-peek-trigger img {
@@ -786,21 +809,10 @@ a { color: inherit; }
   border-radius: var(--radius-card);
   padding: 14px 20px;
   text-align: left;
-  opacity: 0;
-  transform: translateY(14px);
-  transition: opacity 0.5s var(--ease-standard), transform 0.5s var(--ease-standard);
+  /* .scroll-fade (see its own comment) -- each item cascades naturally
+     since they're stacked at different scroll positions, no manual
+     nth-child delay needed. */
 }
-
-.upcoming-list.is-visible .upcoming-item {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.upcoming-item:nth-child(1) { transition-delay: 0s; }
-.upcoming-item:nth-child(2) { transition-delay: 0.08s; }
-.upcoming-item:nth-child(3) { transition-delay: 0.16s; }
-.upcoming-item:nth-child(4) { transition-delay: 0.24s; }
-.upcoming-item:nth-child(5) { transition-delay: 0.32s; }
 
 .upcoming-label {
   display: block;
@@ -923,6 +935,19 @@ a { color: inherit; }
   text-align: center;
 }
 
+/* The footer is the last element on the page, so .scroll-fade's shared
+   `cover 0% cover 38%` range is unreachable for it: `cover`'s endpoint
+   requires room to keep scrolling well past the element, and there's
+   nothing below the footer to scroll into -- max scroll is reached with
+   the footer barely past cover 0%, so it would sit stuck at partial
+   opacity forever once a reader hits the bottom of the page. Overridden
+   here (more specific selector wins over .scroll-fade) to `entry`, whose
+   endpoint is bounded to the footer's own modest height and therefore
+   always reachable regardless of what's below it. */
+.footer-inner.scroll-fade {
+  animation-range: entry 0% entry 90%;
+}
+
 @media (min-width: 640px) {
   .footer-inner {
     flex-direction: row;
@@ -978,13 +1003,9 @@ a { color: inherit; }
     transform: none;
   }
 
-  .showcase-item,
-  .showcase-visual,
-  .showcase-headline,
-  .showcase-body,
-  .reveal-child,
-  .upcoming-item,
+  .scroll-fade,
   .has-split .line-word {
+    animation: none !important;
     transition: none !important;
     opacity: 1 !important;
     transform: none !important;
@@ -1008,6 +1029,7 @@ a { color: inherit; }
   }
 
   .doc-peek-trigger {
+    animation: none !important;
     transition: none !important;
     opacity: 1 !important;
     transform: rotate(7deg) translateX(0) !important;
