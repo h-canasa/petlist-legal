@@ -32,7 +32,7 @@
      exist) would otherwise see this content permanently invisible --
      this unhides it unconditionally for exactly that no-JS case. */
   .scroll-fade { opacity: 1 !important; transform: none !important; }
-  .doc-peek-trigger { opacity: 1 !important; transform: rotate(7deg) translateX(0) !important; }
+  .doc-peek-trigger { opacity: 1 !important; transform: rotate(7deg) translateX(34%) !important; }
 </style>
 </noscript>
 </head>
@@ -127,15 +127,17 @@
 
         <article class="showcase-item is-document">
           <div class="showcase-visual scroll-fade">
-            <div class="phone-frame">
-              <div class="phone-island" aria-hidden="true"></div>
-              <div class="phone-screen">
-                <img src="assets/marketing/petlist_vet-pdf-export-web.jpg" alt="PetList's vet summary export screen, about to generate a PDF" width="720" height="1565" loading="lazy">
+            <div class="vet-pdf-scroll">
+              <div class="phone-frame">
+                <div class="phone-island" aria-hidden="true"></div>
+                <div class="phone-screen">
+                  <img src="assets/marketing/petlist_vet-pdf-export-web.jpg" alt="PetList's vet summary export screen, about to generate a PDF" width="720" height="1565" loading="lazy">
+                </div>
               </div>
+              <button type="button" class="doc-peek-trigger" data-lightbox-trigger aria-label="View the full vet summary document">
+                <img src="assets/marketing/petlist_vet-pdf-letterhead-web.jpg" alt="Letterhead of a generated PetList vet visit summary PDF, showing the pet's health events table" width="560" height="801" loading="lazy">
+              </button>
             </div>
-            <button type="button" class="doc-peek-trigger" data-lightbox-trigger aria-label="View the full vet summary document">
-              <img src="assets/marketing/petlist_vet-pdf-letterhead-web.jpg" alt="Letterhead of a generated PetList vet visit summary PDF, showing the pet's health events table" width="560" height="801" loading="lazy">
-            </button>
           </div>
           <div class="showcase-copy scroll-fade">
             <h3 class="showcase-headline">Ready for the vet, in one tap</h3>
@@ -332,7 +334,7 @@
           if (atMaxScroll) {
             el.style.opacity = 1;
             el.style.transform = el.classList.contains('doc-peek-trigger')
-              ? 'rotate(7deg) translateX(0%)'
+              ? 'rotate(7deg) translateX(34%)'
               : 'translateY(0px)';
             return;
           }
@@ -341,7 +343,7 @@
           progress = Math.max(0, Math.min(1, progress));
           el.style.opacity = progress;
           if (el.classList.contains('doc-peek-trigger')) {
-            var tx = -10 + progress * 10; // -10% -> 0%, matches doc-peek-fade-in
+            var tx = -10 + progress * 44; // -10% -> 34%, matches doc-peek-fade-in (round 4)
             el.style.transform = 'rotate(7deg) translateX(' + tx.toFixed(2) + '%)';
           } else {
             el.style.transform = 'translateY(' + ((1 - progress) * 28).toFixed(2) + 'px)';

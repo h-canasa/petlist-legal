@@ -587,13 +587,6 @@ a { color: inherit; }
     --frame-w: 260px;
   }
 
-  /* The document item's reserved right padding is trimmed here: at the
-     900px breakpoint the visual column is only ~335px wide, and the
-     mobile 76px would squeeze the 260px frame past its column. */
-  .showcase-item.is-document .showcase-visual {
-    padding-right: 40px;
-  }
-
   .showcase-copy {
     /* Centered in the row (rather than pushed down from the top with
        padding) so the leftover height splits above and below the copy and
@@ -612,18 +605,61 @@ a { color: inherit; }
 
 /* Vet PDF export — distinct treatment: a flat document emerging from
    beside/behind the phone, not another phone frame. */
-/* The extra right padding shifts the centered phone leftward, opening up
-   clear space for the document beside it. Widened in round 2 to buy back
-   the visual separation lost when the document's overhang was removed (see
-   .doc-peek-trigger below). */
-.showcase-item.is-document .showcase-visual {
-  padding-right: 76px;
+
+/* ---------- Contained horizontal overflow (PET-205 round 4) ---------- */
+/* The phone screenshot + peeking document together are wider than a single
+   phone-frame column -- round 2 handled that by re-anchoring the peek's
+   transform so it never quite crossed the container edge, which worked but
+   was fragile: any future change to the offset, rotation, or peek size
+   could silently reintroduce page-wide overflow, since nothing actually
+   CONTAINED it structurally. This wrapper is that structural fix: it's the
+   one element in the showcase strip allowed to scroll horizontally, sized
+   to match its sibling items' visual column (100% width, same as every
+   other .showcase-visual), with overflow-x: auto so any content wider than
+   that column scrolls *inside this box* instead of widening the page.
+   overscroll-behavior-x: contain stops that scroll from chaining to the
+   page once it hits its own edge -- relevant on mobile Safari, where an
+   uncontained horizontal scroll reaching the document edge can interfere
+   with the system's edge swipe-back gesture. */
+.vet-pdf-scroll {
+  position: relative;
+  width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+
+/* Right-edge fade: a quiet hint that there's more to scroll, matching the
+   width of the actual overhang below (px-based rotate(7deg) shifts the
+   painted edge ~2.4px per degree per 20px of element half-width; the
+   gradient doesn't need to be exact, just wide enough to read as an edge
+   cue rather than a hard clip line). Pointer-events:none so it never
+   blocks the drag/tap underneath it. */
+.vet-pdf-scroll::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 28px;
+  background: linear-gradient(to right, transparent, var(--lavender-card));
+  pointer-events: none;
 }
 
 /* PET-205 follow-up item 3: the peeking thumbnail is now a tap-to-expand
    trigger (a <button>, not a bare <img>) showing a tighter letterhead crop
    at a slightly larger size than before -- the original full-page crop
-   shrunk to ~150px was illegible. */
+   shrunk to ~150px was illegible.
+
+   PET-205 round 4: now that .vet-pdf-scroll (above) structurally contains
+   any overflow, the peek's resting position can go back to a genuine,
+   generous protrusion past the phone's own edge -- round 2's translateX(0)
+   was a compromise forced by having nothing to contain it. translateX(34%)
+   of its own ~175px width is ~60px of overhang, which is real overflow at
+   narrow widths (where it's actually needed -- confirmed 320-360px columns
+   are too narrow to fit phone + peek without it) while fitting naturally,
+   needing no scroll at all, from ~390px up. */
 .doc-peek-trigger {
   position: absolute;
   right: 0;
@@ -635,19 +671,6 @@ a { color: inherit; }
   padding: 0;
   cursor: pointer;
   z-index: 0;
-  /* PET-205 round 2, item 3 -- horizontal scroll fix. This element was the
-     ACTUAL cause of the mobile horizontal scroll (measured: hiding it drops
-     documentElement.scrollWidth from 429 to 390 at a 390px viewport; hiding
-     the hero's ambient blob changes nothing, because .hero already clips it
-     with overflow:hidden). It resolved to translateX(38%) of its own ~175px
-     width -- ~66px past `right: 0`, which is already the container's right
-     edge -- and nothing in .showcase clips it. On desktop that overhang hid
-     inside the container's own side margin; on mobile there are only 24px of
-     page gutter, so it pushed the document wider than the viewport.
-     The emerge motion is preserved, just re-anchored: it now travels from
-     slightly inset to flush with the container edge instead of past it.
-     The 7deg rotation still widens the painted box ~15px either side, which
-     fits inside the remaining gutter at every width tested (320px up). */
   opacity: 0;
   transform: rotate(7deg) translateX(-10%);
 }
@@ -669,7 +692,7 @@ a { color: inherit; }
 
 @keyframes doc-peek-fade-in {
   from { opacity: 0; transform: rotate(7deg) translateX(-10%); }
-  to { opacity: 1; transform: rotate(7deg) translateX(0); }
+  to { opacity: 1; transform: rotate(7deg) translateX(34%); }
 }
 
 .doc-peek-trigger img {
@@ -1032,7 +1055,7 @@ a { color: inherit; }
     animation: none !important;
     transition: none !important;
     opacity: 1 !important;
-    transform: rotate(7deg) translateX(0) !important;
+    transform: rotate(7deg) translateX(34%) !important;
   }
 
   .doc-peek-trigger img {
