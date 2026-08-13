@@ -133,7 +133,9 @@ a { color: inherit; }
 }
 
 .hero-header .brand-mark {
-  height: 40px;
+  /* PET-205 follow-up item 2: bumped from 40px to 56px -- the mark read too
+     small against the hero at its original size. */
+  height: 56px;
   width: auto;
 }
 
@@ -309,13 +311,17 @@ a { color: inherit; }
 }
 
 .phone-frame .phone-island {
+  /* PET-205 follow-up item 1: a real Dynamic Island is ~4.4% of screen
+     height (iPhone 14 Pro: 37.33pt of 852pt) and ~32% of width -- the
+     previous 6.5%/34% rendered as a wide bar tall enough to overlap
+     screenshot content underneath it. */
   position: absolute;
-  top: 9px;
+  top: 8px;
   left: 50%;
   transform: translateX(-50%);
-  width: 34%;
-  height: 6.5%;
-  min-height: 14px;
+  width: 30%;
+  height: 4.4%;
+  min-height: 10px;
   background: #0B0A14;
   border-radius: var(--radius-pill);
   z-index: 2;
