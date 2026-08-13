@@ -97,12 +97,13 @@
        phone to the middle of a very tall row. As a sibling the 860px
        two-column rule needs no change at all. -->
   <div class="container hero-extras">
-    <!-- Round 10: these four chips are no longer lightbox triggers or
-         image-preview hosts (see css/styles.css for what replaced the
-         hover-preview mechanism). petlist_{pet-timeline,calendar,expenses,
-         home-dashboard}-preview.jpg are consequently orphaned -- still on
-         disk, referenced nowhere -- rather than deleted, since a cleanup
-         pass wasn't in this round's scope. -->
+    <!-- Round 10 left these chips as non-triggers (see css/styles.css);
+         round 11 removes the fifth "All in One Place" item outright in
+         favor of a fourth, Vet-Ready Summary, folded in from the former
+         standalone .vet-card below -- see that class's own removal note in
+         css/styles.css. petlist_{pet-timeline,calendar,expenses,
+         home-dashboard}-preview.jpg remain orphaned -- still on disk,
+         referenced nowhere -- a cleanup pass still isn't in scope here. -->
     <ul class="feature-row">
       <li>
         <button type="button" class="feature-chip">
@@ -140,39 +141,15 @@
       <li>
         <button type="button" class="feature-chip">
           <svg class="feature-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-            <ellipse cx="8" cy="6.5" rx="2.15" ry="2.75"/>
-            <ellipse cx="16" cy="6.5" rx="2.15" ry="2.75"/>
-            <ellipse cx="4.25" cy="12.5" rx="1.9" ry="2.4"/>
-            <ellipse cx="19.75" cy="12.5" rx="1.9" ry="2.4"/>
-            <path d="M12 11.75c2.9 0 5 2.4 5 4.9 0 2-1.5 3.35-3.4 3.35-1 0-1.2-.45-1.6-.45s-.6.45-1.6.45C8.5 20 7 18.65 7 16.65c0-2.5 2.1-4.9 5-4.9z"/>
+            <path d="M5.5 2.75h8L18.5 7.75v13.5h-13z"/>
+            <path d="M13.5 2.75v5h5"/>
+            <path d="M8.5 12.5h7M8.5 15.75h7M8.5 19h4"/>
           </svg>
-          <span class="feature-label">All in One Place</span>
-          <span class="feature-desc">Everything you need, always with you.</span>
+          <span class="feature-label">Vet-Ready Summary</span>
+          <span class="feature-desc">Generate a vet-ready summary in one tap</span>
         </button>
       </li>
     </ul>
-
-    <button type="button" class="vet-card has-coral-pulse"
-            data-lightbox-trigger
-            data-lightbox-src="assets/marketing/petlist_vet-pdf-document-large.jpg"
-            data-lightbox-w="900" data-lightbox-h="1285"
-            data-lightbox-alt="Full PetList vet visit summary PDF document"
-            data-lightbox-label="Vet summary document">
-      <span class="vet-card-icon" aria-hidden="true">
-        <svg viewBox="0 0 24 24" focusable="false">
-          <path d="M5.5 2.75h8L18.5 7.75v13.5h-13z"/>
-          <path d="M13.5 2.75v5h5"/>
-          <path d="M8.5 12.5h7M8.5 15.75h7M8.5 19h4"/>
-        </svg>
-      </span>
-      <span class="vet-card-text">
-        <span class="vet-card-label">Vet-Ready PDF Export</span>
-        <span class="vet-card-sub">A clean health summary, ready to share in one tap.</span>
-      </span>
-      <span class="vet-card-chev" aria-hidden="true">
-        <svg viewBox="0 0 24 24" focusable="false"><path d="M9 4.5l7.5 7.5L9 19.5"/></svg>
-      </span>
-    </button>
 
     <ul class="trust-bar">
       <li class="trust-item">
@@ -557,39 +534,20 @@
       updateHeader();
     }
 
-    // ---- Feature-row description toggle (PET-205 round 10) ----
-    // The four chips lost their data-lightbox-trigger attributes this round
-    // (see css/styles.css for why) and are no longer image-preview hosts
-    // either, so their click is now entirely this: toggle .feature-desc's
-    // visibility. :hover / :focus-visible already reveal it for pointer and
-    // keyboard users via CSS alone -- this is only for touch, where a tap
-    // rarely enters either pseudo-class reliably. Opening one chip closes
-    // any other that was open, which is also what makes "tapping a
-    // different chip" dismiss the previous one -- one function covers both
-    // behaviors the ticket asked for.
-    var featureChips = document.querySelectorAll('.feature-chip');
-    Array.prototype.forEach.call(featureChips, function (chip) {
-      chip.addEventListener('click', function () {
-        var wasOpen = chip.classList.contains('is-open');
-        Array.prototype.forEach.call(featureChips, function (c) {
-          c.classList.remove('is-open');
-        });
-        if (!wasOpen) chip.classList.add('is-open');
-      });
-    });
-
     // ---- Shared media lightbox (generalized in PET-205 round 9) ----
     // Was hardcoded to the vet PDF: a singular querySelector for the one
     // trigger, and a fixed <img> in the markup. Round 9 added five more
     // entry points (the four feature chips and the vet-PDF highlight card);
-    // round 10 removed the four feature-chip triggers again (see above), so
-    // this is back down to two -- the vet-PDF highlight card and the
-    // showcase strip's own document-peek badge. Kept generalized rather
-    // than reverted to the original single-trigger version: two dynamic
-    // triggers sharing one dialog is exactly what this code already does,
-    // and a future round re-adding a third is a markup-only change again.
-    // The trigger is whatever was clicked, and the image is driven from
-    // that element's own data-lightbox-* attributes.
+    // round 10 removed the four feature-chip triggers again, and round 11
+    // removed the vet-PDF highlight card itself (folded into the feature
+    // row as a plain, non-triggering fourth chip -- see css/styles.css's
+    // .vet-card removal note), leaving exactly one trigger: the showcase
+    // strip's own document-peek badge. Kept generalized rather than
+    // reverted to a hardcoded single-trigger version: the querySelectorAll
+    // below still finds it correctly with one match, and a future round
+    // re-adding a second trigger is a markup-only change again rather than
+    // a JS rewrite. The trigger is whatever was clicked, and the image is
+    // driven from that element's own data-lightbox-* attributes.
     //
     // Dismiss via the close button, a backdrop tap, or Escape -- unchanged.
     // Still no focus trap: Tab can leave the dialog. That's pre-existing and

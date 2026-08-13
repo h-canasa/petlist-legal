@@ -822,7 +822,8 @@ a { color: inherit; }
   fill: var(--lavender);
 }
 
-/* ---------- Hero extras: feature row + vet card (round 9, items 4/4b) ---------- */
+/* ---------- Hero extras: feature row (round 9 item 4; round 11 folded the
+   former standalone vet-ready card into this row as its 4th item) ---------- */
 /* Deliberately a sibling of .hero-body rather than content inside
    .hero-copy -- see the comment at the markup. */
 .hero-extras {
@@ -836,8 +837,11 @@ a { color: inherit; }
   margin: 0;
   padding: 0;
   display: grid;
-  /* 2x2 on phones, 4-across from 700px. Two 124px columns fit at 320px, so
-     this needs no narrow-width special case of its own. */
+  /* 2x2 on phones, 4-across from 700px -- unchanged shape from round 10,
+     still exactly 4 items so no grid-column-count math changed, only what
+     fills the 4th slot. Two 124px columns fit at 320px; round 11's taller
+     square-ish card (see .feature-chip below) only grows vertically, so
+     that horizontal fit is undisturbed. */
   grid-template-columns: repeat(2, 1fr);
   gap: var(--space-2);
   opacity: 0;
@@ -850,17 +854,35 @@ a { color: inherit; }
   .feature-row { grid-template-columns: repeat(4, 1fr); }
 }
 
-/* A <button>, not a <div>: on touch it opens the shared lightbox, and
-   keyboard users reach the same image with Enter. See the hover block
-   below for why the click handler is bound regardless of hover support. */
+/* Round 11: square-ish proportions (was wider/shorter) now that
+   .feature-desc is always-visible static content rather than a hover
+   reveal -- the card needs real in-flow room for wrapped subtitle text,
+   not just an icon and a one-line label. Height is deliberately left to
+   `auto` rather than pinned via `aspect-ratio`: at the narrowest 2-column
+   width (320px) the longest subtitle ("Generate a vet-ready summary in one
+   tap") wraps to 3 lines, and a hard-locked ratio would either clip that
+   text or force it to overflow the card's painted background -- letting
+   the box grow with its content is what guarantees it never does either,
+   at the cost of "square" being an approximate proportion rather than a
+   literal 1:1 one. Generous padding is what gets it there in practice. */
 .feature-chip {
   position: relative;
   width: 100%;
+  /* Caps the card so it doesn't stretch edge-to-edge with its grid track at
+     wide viewports -- at 1120px (this page's container max-width) an
+     unconstrained 4-across track is ~256px wide against a card whose
+     content wants roughly 180-200px, which reads as wide/flat again
+     exactly the shape this round moved away from. Centered within its
+     track via margin:auto rather than shrinking the track itself, so the
+     2-column mobile layout (where this cap never binds) is untouched. */
+  max-width: 200px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 6px;
-  padding: var(--space-2) var(--space-1);
+  padding: 22px 14px;
   border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: var(--radius-card);
   background: rgba(255, 255, 255, 0.06);
@@ -875,6 +897,35 @@ a { color: inherit; }
 .feature-chip:focus-visible {
   background: rgba(255, 255, 255, 0.11);
   border-color: rgba(255, 255, 255, 0.26);
+}
+
+/* ---------- Hover/focus "pop" (round 11, item 3) ---------- */
+/* Purely a liveliness cue now -- there's no information left to reveal, so
+   nothing here needs to be additive/accessible the way round 10's
+   :hover/:focus-visible/.is-open trio was. Scoped inside
+   `(prefers-reduced-motion: no-preference)` rather than relying on a
+   transition-less snap: with the scale rule unconditional, a
+   reduced-motion user would still get an instant, un-eased jump to 1.08x
+   on focus, which is exactly the kind of motion this preference exists to
+   suppress even though "instant" has no animation to strip. Gating the
+   whole rule out is what makes "scale/pop disabled" literally true rather
+   than merely un-animated. The background/border tint above stays active
+   for both preferences -- a colour change isn't motion, and reduced-motion
+   users still get *some* hover/focus feedback. */
+@media (prefers-reduced-motion: no-preference) {
+  .feature-chip {
+    transition: background-color 0.18s var(--ease-standard), border-color 0.18s var(--ease-standard),
+                transform 0.15s var(--ease-standard), box-shadow 0.15s var(--ease-standard);
+  }
+
+  .feature-chip:hover,
+  .feature-chip:focus-visible {
+    transform: scale(1.08);
+    box-shadow: 0 14px 28px -10px rgba(0, 0, 0, 0.5);
+    /* Lifts the popped chip above its neighbours so the 1.08x scale-up
+       paints over the next card's edge instead of under it. */
+    z-index: 3;
+  }
 }
 
 .feature-icon {
@@ -893,154 +944,20 @@ a { color: inherit; }
   line-height: 1.25;
 }
 
-/* ---------- Feature description reveal (PET-205 round 10) ---------- */
-/* Replaces round 9's hover-preview screenshots with a short text
-   description per chip, reusing the same non-flow-affecting positioning
-   (absolutely positioned, floats above the chip, no layout shift on
-   reveal) so this costs nothing in CLS and can't reflow sibling chips --
-   see the CLS note on .hero-ambient elsewhere in this file for why that
-   matters on this page specifically.
-
-   Round 9's version needed (hover: hover) and (pointer: fine) gating for
-   one specific reason: touch devices must not fetch image bytes for a
-   panel they could never see via hover. That reason is gone -- there is no
-   image here, no network request either way -- so this reveal applies
-   UNCONDITIONALLY across every input type, and touch reaches it through
-   the .is-open class below rather than being excluded from a media query.
-
-   Three ways to reveal, additive rather than exclusive:
-   - :hover / :focus-visible -- native, zero JS, the same mechanism round
-     9's image preview used, so keyboard users keep exactly the access
-     level they already had ("the accessibility bar the previous system
-     already met").
-   - .is-open -- toggled by the click handler in index.html. Real touch
-     taps don't reliably enter :hover or :focus-visible (most notably on
-     iOS Safari), so touch needs an explicit switch rather than relying on
-     either pseudo-class.
-
-   The description text is never aria-hidden and never removed from the
-   DOM at any reveal state -- a screen reader announces it as ordinary
-   button content regardless of whether it's visually shown. That's a
-   stronger guarantee than round 9's image preview offered (purely
-   decorative, aria-hidden, with the only accessible equivalent being
-   whatever the lightbox's alt text said if opened) -- and it sidesteps
-   ever needing to announce an expand/collapse state change, since nothing
-   actually enters or leaves the accessible content on toggle. */
+/* ---------- Feature subtitle (round 11) ---------- */
+/* Round 10's version of this class was an absolutely-positioned popover,
+   hidden until hover/focus/tap. That entire mechanism -- the .is-open
+   toggle, the position:absolute/opacity transition, the click handler in
+   index.html -- is gone: the subtitle is now plain static content, always
+   in the card's normal flow, always visible, no interaction required to
+   read it. It was already never aria-hidden and never removed from the
+   DOM, so screen reader behaviour is unchanged by this simplification. */
 .feature-desc {
-  position: absolute;
-  bottom: calc(100% + 12px);
-  left: 50%;
-  width: max-content;
-  max-width: 180px;
-  transform: translate(-50%, 6px);
-  opacity: 0;
-  pointer-events: none;
-  background: var(--lavender-card);
-  color: var(--text);
   font-size: 0.78rem;
   font-weight: 500;
   line-height: 1.35;
-  text-align: center;
-  padding: 10px 14px;
-  border-radius: 10px;
-  box-shadow: 0 18px 34px -12px rgba(0, 0, 0, 0.55);
-  transition: opacity 0.18s var(--ease-standard), transform 0.18s var(--ease-standard);
-}
-
-/* Lifts the revealed chip above its neighbours so the panel is never
-   clipped by the next chip's own background -- unchanged from round 9,
-   just extended to the new .is-open state alongside :hover/:focus-visible. */
-.feature-chip:hover,
-.feature-chip:focus-visible,
-.feature-chip.is-open {
-  z-index: 3;
-}
-
-.feature-chip:hover .feature-desc,
-.feature-chip:focus-visible .feature-desc,
-.feature-chip.is-open .feature-desc {
-  opacity: 1;
-  transform: translate(-50%, 0);
-}
-
-/* ---------- Vet-ready PDF highlight card (item 4b) ---------- */
-/* Wider and flatter than the square feature chips on purpose: it has to
-   read as "one more thing, called out separately," not as a fifth item
-   that lost its place in the grid. */
-.vet-card {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  width: 100%;
-  max-width: 560px;
-  margin: var(--space-3) auto 0;
-  padding: 14px 18px;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  border-radius: var(--radius-card);
-  background: rgba(255, 255, 255, 0.07);
-  color: var(--on-dark);
-  font-family: inherit;
-  text-align: left;
-  cursor: pointer;
-}
-
-.vet-card:hover,
-.vet-card:focus-visible {
-  background: rgba(255, 255, 255, 0.12);
-  border-color: rgba(255, 255, 255, 0.28);
-}
-
-.vet-card-icon svg {
-  display: block;
-  width: 26px;
-  height: 26px;
-  stroke: var(--coral);
-  fill: none;
-  stroke-width: 1.5;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.vet-card-text {
-  flex: 1;
-  min-width: 0;
-}
-
-.vet-card-label {
-  display: block;
-  font-size: 0.95rem;
-  font-weight: 600;
-  line-height: 1.3;
-}
-
-.vet-card-sub {
-  display: block;
-  font-size: 0.82rem;
   color: var(--on-dark-secondary);
-  line-height: 1.4;
-}
-
-.vet-card-chev svg {
-  display: block;
-  width: 18px;
-  height: 18px;
-  stroke: var(--on-dark-secondary);
-  fill: none;
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-/* The card needs BOTH its load-in and the shared pulse, and `animation` is
-   a shorthand -- a second declaration would replace the first rather than
-   add to it. So the two are listed together in one rule, at a specificity
-   above .has-coral-pulse's, instead of letting the utility and the
-   entrance fight over the same property. */
-.vet-card.has-coral-pulse {
-  opacity: 0;
-  transform: translateY(14px);
-  animation: fade-up 0.55s var(--ease-standard) 0.58s forwards,
-             coral-pulse 3.2s ease-in-out infinite;
+  text-align: center;
 }
 
 /* ---------- Phone mockup (signature element) ---------- */
@@ -1772,9 +1689,7 @@ a { color: inherit; }
   .hero-photo,
   .hero-photo--cat,
   .trust-bar,
-  .cta-note,
-  .vet-card,
-  .vet-card.has-coral-pulse {
+  .cta-note {
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;
@@ -1782,16 +1697,6 @@ a { color: inherit; }
 
   .feature-chip {
     transition: none !important;
-  }
-
-  /* The description still APPEARS on hover/focus/tap -- it's information,
-     not decoration, and removing it would take a capability away rather
-     than calm it down. Only the slide-and-fade is dropped, so it cuts
-     straight to its resting position (round 10: renamed from
-     .feature-preview, same rule). */
-  .feature-desc {
-    transition: none !important;
-    transform: translate(-50%, 0) !important;
   }
 
   .site-header,
