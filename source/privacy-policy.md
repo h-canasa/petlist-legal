@@ -170,7 +170,7 @@ updated to describe how.
 
 ## Contact
 
-Questions about this policy: `petlist.app.support@gmail.com`
+Questions about this policy: `support@mypetlist.app`
 
 This policy is issued by Harley Canasa, operating as a sole
 proprietorship (there is no separate registered company). No physical
@@ -238,3 +238,12 @@ commentary on what's meant to be a finished-looking public document) —
 it remains here in the source markdown, which is the actual audit trail
 for future engineers. See the petlist-legal repo's own commit history for
 the public-site build change.
+
+**2026-08-13 (PET-205 follow-up round 3):** contact address changed from
+`petlist.app.support@gmail.com` to `support@mypetlist.app`, now that the
+domain-based address is confirmed working. **This reopens the exact
+sync gap the 2026-08-11 entry above describes and fixed**: the app's own
+About screen (`profile.tsx`'s `SUPPORT_EMAIL` constant, in the main
+`petlist` repo) still reads `petlist.app.support@gmail.com` as of this
+pass — that repo is out of scope for this change, so the two are
+mismatched again until a follow-up updates it there too.
