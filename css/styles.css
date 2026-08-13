@@ -106,6 +106,35 @@ a { color: inherit; }
 .reveal-child--2 { transition-delay: 0.12s; }
 .reveal-child--3 { transition-delay: 0.24s; }
 
+/* ---------- Per-line text reveal (PET-205 round 2, item 4a) ---------- */
+/* Headlines and section titles reveal one rendered line at a time instead of
+   as one block. Lines can't be targeted in CSS, so the inline script wraps
+   each word in .line-word, measures which words share an offsetTop, and
+   stamps each with its line index as --line. Everything below is inert until
+   that runs: .has-split is added by the script, so a no-JS (or failed-JS)
+   visitor keeps the plain whole-element fade underneath and never sees
+   permanently hidden text. */
+.has-split {
+  animation: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.has-split .line-word {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(0.5em);
+  transition: opacity 0.5s var(--ease-standard), transform 0.5s var(--ease-standard);
+  transition-delay: calc(var(--line, 0) * 90ms);
+}
+
+.has-split.is-revealed .line-word,
+[data-reveal].is-visible .has-split .line-word {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 /* ---------- Hero ---------- */
 
 .hero {
@@ -246,13 +275,38 @@ a { color: inherit; }
   font-size: clamp(1.05rem, 2vw, 1.25rem);
   color: var(--on-dark-secondary);
   margin: 0 0 var(--space-4);
-  max-width: 46ch;
+  /* .pitch-break below is what guarantees the two sentences sit on
+     separate lines, so this cap only needs to be wide enough that neither
+     sentence wraps *within* itself -- 34ch was narrower than the longer
+     36-character sentence and was forcing a third line. */
+  max-width: 40ch;
   margin-left: auto;
   margin-right: auto;
   opacity: 0;
   transform: translateY(14px);
   animation: fade-up 0.55s var(--ease-standard) forwards;
   animation-delay: 0.22s;
+}
+
+/* Forces the tagline's two sentences onto their own lines at every width,
+   instead of letting them reflow into a ragged mid-sentence break. Uses a
+   real space in the markup so the sentences stay separated for screen
+   readers and for text selection/copy. */
+.pitch-break {
+  display: block;
+  height: 0;
+  overflow: hidden;
+}
+
+/* On the narrowest phones the longer sentence overruns its line by a few
+   pixels and orphans "ever." onto a third line. Nudging the type down
+   there keeps the tagline to a clean two lines. Measured: the break is at
+   ~355px, so this only affects 320-359px devices; 360px and up already
+   break cleanly at the sentence boundary and are left untouched. */
+@media (max-width: 359px) {
+  .hero-pitch {
+    font-size: 0.92rem;
+  }
 }
 
 @media (min-width: 860px) {
@@ -309,13 +363,15 @@ a { color: inherit; }
   justify-content: center;
   perspective: 1400px;
   opacity: 0;
-  transform: translateY(24px);
-  animation: phone-in 0.65s var(--ease-standard) forwards;
+  /* Scales up from 92% as it fades in (PET-205 round 2, item 4b), matching
+     the showcase visuals' reveal. */
+  transform: translateY(24px) scale(0.92);
+  animation: phone-in 0.75s var(--ease-standard) forwards;
   animation-delay: 0.38s;
 }
 
 @keyframes phone-in {
-  to { opacity: 1; transform: translateY(0); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .phone-frame {
@@ -427,12 +483,24 @@ a { color: inherit; }
    the whole card moving as one flat block. This is an animation-TIMING
    order, not a DOM reorder: the visual stays positioned first in the card
    (unchanged layout), it's simply the last of the three to finish fading in. */
-.showcase-visual,
 .showcase-headline,
 .showcase-body {
   opacity: 0;
   transform: translateY(16px);
   transition: opacity 0.5s var(--ease-standard), transform 0.5s var(--ease-standard);
+}
+
+/* The visual scales up from 92% as it fades (PET-205 round 2, item 4b),
+   rather than the opacity-only/translate-only reveal the copy uses -- the
+   scale is what makes the image reveal read as deliberate. */
+.showcase-visual {
+  opacity: 0;
+  transform: translateY(16px) scale(0.92);
+  transition: opacity 0.6s var(--ease-standard), transform 0.6s var(--ease-standard);
+}
+
+.showcase-item.is-visible .showcase-visual {
+  transform: translateY(0) scale(1);
 }
 
 .showcase-item.is-visible .showcase-visual,
@@ -457,6 +525,79 @@ a { color: inherit; }
 .showcase-visual .phone-frame {
   --frame-w: 210px;
   box-shadow: 0 22px 36px -14px rgba(27, 22, 63, 0.35);
+}
+
+/* ---------- Pinned showcase (PET-205 round 2, item 4c) ---------- */
+/* The signature scroll moment: each feature's phone mockup pins in the
+   viewport while that feature's copy scrolls past beside it, then releases
+   and hands off to the next feature's mockup.
+
+   Built with per-item `position: sticky` and no JavaScript at all. Because
+   each visual is sticky within its OWN item, the handoff the ticket
+   describes ("swapping to the next item's mockup once its copy section has
+   fully scrolled through") falls out of the layout for free: item 1's
+   visual unpins exactly when item 1's row ends, which is the same moment
+   item 2's begins pinning. A JS-driven version would need scroll listeners,
+   an active-index state machine and a duplicated stack of all four visuals
+   in the DOM; this needs none of that and cannot desync.
+
+   Desktop only, deliberately. This repo's own brief calls the page
+   mobile-first ("assume most visitors arrive from a phone"), and a pinned
+   two-column layout has nowhere to put the pinned column on a narrow
+   screen -- the honest mobile treatment is the existing stacked card, which
+   is what stays below 900px. So this is an enhancement for the wide
+   viewports that can carry it, not a layout the small ones have to
+   awkwardly emulate. */
+@media (min-width: 900px) {
+  .showcase-grid {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .showcase-item {
+    display: grid;
+    grid-template-columns: 0.85fr 1.15fr;
+    gap: var(--space-6);
+    /* start-aligned so each visual's grid area spans the whole row -- that
+       area is the sticky containing block, so it's what gives the pin its
+       travel. Centering here instead would collapse the area to the
+       visual's own height and the pin would never move. */
+    align-items: start;
+    min-height: 104vh;
+    text-align: left;
+  }
+
+  .showcase-visual {
+    position: sticky;
+    top: 9vh;
+    margin-bottom: 0;
+  }
+
+  .showcase-visual .phone-frame {
+    --frame-w: 260px;
+  }
+
+  /* The document item's reserved right padding is trimmed here: at the
+     900px breakpoint the visual column is only ~335px wide, and the
+     mobile 76px would squeeze the 260px frame past its column. */
+  .showcase-item.is-document .showcase-visual {
+    padding-right: 40px;
+  }
+
+  .showcase-copy {
+    /* Centered in the row (rather than pushed down from the top with
+       padding) so the leftover height splits above and below the copy and
+       reads as deliberate whitespace instead of a gap under it. */
+    align-self: center;
+  }
+
+  .showcase-body {
+    max-width: 40ch;
+  }
+
+  .showcase-headline {
+    font-size: 1.6rem;
+  }
 }
 
 /* Vet PDF export — distinct treatment: a flat document emerging from
@@ -842,10 +983,28 @@ a { color: inherit; }
   .showcase-headline,
   .showcase-body,
   .reveal-child,
-  .upcoming-item {
+  .upcoming-item,
+  .has-split .line-word {
     transition: none !important;
     opacity: 1 !important;
     transform: none !important;
+  }
+
+  /* Releases the pinned showcase (item 4c). Sticky is layout rather than a
+     transition, so nothing above would have disabled it -- but a viewport-
+     pinned element moving against the scroll is exactly the kind of motion
+     this preference is asking us not to produce. The row also drops back to
+     its natural height so the released layout doesn't leave tall gaps. */
+  .showcase-visual {
+    position: static !important;
+  }
+
+  .showcase-item {
+    min-height: 0 !important;
+  }
+
+  .showcase-copy {
+    align-self: start !important;
   }
 
   .doc-peek-trigger {

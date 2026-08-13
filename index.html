@@ -39,8 +39,8 @@
 
   <div class="container hero-body">
     <div class="hero-copy">
-      <h1 class="hero-headline">Every pet's health, care, and spending — all in one place.</h1>
-      <p class="hero-pitch">Pay once, own it. No subscriptions, no cloud, no ads.</p>
+      <h1 class="hero-headline" data-split-lines>Every pet's health, care, and spending — all in one place.</h1>
+      <p class="hero-pitch">Every pet, organized for life.<span class="pitch-break"> </span>One payment, no subscriptions, ever.</p>
       <div class="hero-cta">
         <a class="appstore-badge" href="APP_STORE_URL_PLACEHOLDER" aria-label="Download PetList on the App Store">
           <img src="assets/marketing/app-store-badge.svg" alt="Download on the App Store" width="180" height="60">
@@ -64,7 +64,7 @@
     <div class="container">
       <div class="section-heading" data-reveal>
         <p class="section-eyebrow reveal-child reveal-child--1">What's inside</p>
-        <h2 class="section-title reveal-child reveal-child--2" id="showcase-heading">Everything your pets' care needs, organized</h2>
+        <h2 class="section-title reveal-child reveal-child--2" id="showcase-heading" data-split-lines>Everything your pets' care needs, organized</h2>
       </div>
 
       <div class="showcase-grid">
@@ -77,8 +77,10 @@
               </div>
             </div>
           </div>
-          <h3 class="showcase-headline">Every pet, organized</h3>
-          <p class="showcase-body">See every pet's status, upcoming care, and spending at a glance — all your pets, one household, one dashboard.</p>
+          <div class="showcase-copy">
+            <h3 class="showcase-headline">Every pet, organized</h3>
+            <p class="showcase-body">See every pet's status, upcoming care, and spending at a glance — all your pets, one household, one dashboard.</p>
+          </div>
         </article>
 
         <article class="showcase-item">
@@ -90,8 +92,10 @@
               </div>
             </div>
           </div>
-          <h3 class="showcase-headline">Know what they cost</h3>
-          <p class="showcase-body">Log per-pet and household expenses, see monthly and year-to-date totals, spending trends, and a breakdown by pet.</p>
+          <div class="showcase-copy">
+            <h3 class="showcase-headline">Know what they cost</h3>
+            <p class="showcase-body">Log per-pet and household expenses, see monthly and year-to-date totals, spending trends, and a breakdown by pet.</p>
+          </div>
         </article>
 
         <article class="showcase-item">
@@ -103,8 +107,10 @@
               </div>
             </div>
           </div>
-          <h3 class="showcase-headline">Never miss what's due</h3>
-          <p class="showcase-body">See every logged health event and upcoming reminder laid out on a monthly calendar.</p>
+          <div class="showcase-copy">
+            <h3 class="showcase-headline">Never miss what's due</h3>
+            <p class="showcase-body">See every logged health event and upcoming reminder laid out on a monthly calendar.</p>
+          </div>
         </article>
 
         <article class="showcase-item is-document">
@@ -119,8 +125,10 @@
               <img src="assets/marketing/petlist_vet-pdf-letterhead-web.jpg" alt="Letterhead of a generated PetList vet visit summary PDF, showing the pet's health events table" width="560" height="801" loading="lazy">
             </button>
           </div>
-          <h3 class="showcase-headline">Ready for the vet, in one tap</h3>
-          <p class="showcase-body">Generate a clean PDF summary of a pet's health history — vaccinations, medications, weight trend, and more — ready to share with your vet.</p>
+          <div class="showcase-copy">
+            <h3 class="showcase-headline">Ready for the vet, in one tap</h3>
+            <p class="showcase-body">Generate a clean PDF summary of a pet's health history — vaccinations, medications, weight trend, and more — ready to share with your vet.</p>
+          </div>
         </article>
       </div>
     </div>
@@ -130,7 +138,7 @@
     <div class="container">
       <div class="section-heading" data-reveal>
         <p class="section-eyebrow reveal-child reveal-child--1">On the roadmap</p>
-        <h2 class="section-title reveal-child reveal-child--2" id="upcoming-heading">More on the way</h2>
+        <h2 class="section-title reveal-child reveal-child--2" id="upcoming-heading" data-split-lines>More on the way</h2>
       </div>
 
       <ul class="upcoming-list" data-reveal>
@@ -195,6 +203,80 @@
 <script>
   (function () {
     var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // ---- Per-line text reveal (item 4a) ----
+    // CSS can't address a rendered line, so wrap each word, measure which
+    // words share an offsetTop, and stamp that group index onto them as
+    // --line for the stagger. Runs only when motion is allowed; without it
+    // the elements keep their plain whole-block fade, which is also the
+    // no-JS fallback (nothing here is required for text to be visible).
+    var splitTargets = document.querySelectorAll('[data-split-lines]');
+
+    function splitIntoLines(el) {
+      if (!el.dataset.splitSource) el.dataset.splitSource = el.textContent;
+      var words = el.dataset.splitSource.split(/(\s+)/);
+
+      el.textContent = '';
+      var wordEls = [];
+      words.forEach(function (token) {
+        if (token === '') return;
+        if (/^\s+$/.test(token)) {
+          // Real text node, so words stay separated for selection/copy and
+          // for screen readers.
+          el.appendChild(document.createTextNode(token));
+          return;
+        }
+        var span = document.createElement('span');
+        span.className = 'line-word';
+        span.textContent = token;
+        el.appendChild(span);
+        wordEls.push(span);
+      });
+
+      var lineIndex = -1;
+      var lastTop = null;
+      wordEls.forEach(function (span) {
+        var top = span.offsetTop;
+        if (lastTop === null || Math.abs(top - lastTop) > 2) {
+          lineIndex += 1;
+          lastTop = top;
+        }
+        span.style.setProperty('--line', lineIndex);
+      });
+
+      el.classList.add('has-split');
+    }
+
+    if (!reduceMotion) {
+      splitTargets.forEach(splitIntoLines);
+
+      // The hero headline isn't inside a [data-reveal] container -- it's part
+      // of the on-load sequence, so it reveals on its own short delay. The
+      // section titles below are handled by the IntersectionObserver via
+      // `[data-reveal].is-visible .has-split .line-word`.
+      var heroHeadline = document.querySelector('.hero-headline.has-split');
+      if (heroHeadline) {
+        requestAnimationFrame(function () {
+          setTimeout(function () { heroHeadline.classList.add('is-revealed'); }, 100);
+        });
+      }
+
+      // Re-measure on resize: the line grouping is width-dependent, so a
+      // rotated phone or resized window would otherwise keep stale indices.
+      // Already-revealed elements are re-revealed immediately rather than
+      // replaying, so resizing never hides text that was on screen.
+      var resizeTimer;
+      window.addEventListener('resize', function () {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(function () {
+          splitTargets.forEach(function (el) {
+            var wasRevealed = el.classList.contains('is-revealed');
+            splitIntoLines(el);
+            if (wasRevealed) el.classList.add('is-revealed');
+          });
+        }, 150);
+      });
+    }
 
     // ---- Scroll-triggered reveals: .showcase-item (its own children
     // stagger via CSS) and any [data-reveal] container (section headings,
