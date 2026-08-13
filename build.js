@@ -190,23 +190,13 @@ fs.writeFileSync(
   })
 );
 
-fs.writeFileSync(
-  path.join(__dirname, 'index.html'),
-  page({
-    title: 'PetList — Legal Documents',
-    description: 'PetList app Privacy Policy and Terms of Service',
-    bodyHtml: `
-      <h1>PetList — Legal Documents</h1>
-      <p>These documents are hosted here for App Store Connect and Google Play
-      Console submission purposes.</p>
-      <ul>
-        <li><a href="privacy-policy/">Privacy Policy</a></li>
-        <li><a href="terms-of-service/">Terms of Service</a></li>
-      </ul>
-    `,
-    currentPath: '/',
-    root: './',
-  })
-);
+// Root index.html is NOT generated here (PET-205): it's the hand-authored
+// marketing landing page now, not the legal-documents hub. That hub page
+// used to be built by this script on every run, which would have silently
+// clobbered the marketing page the next time someone followed this repo's
+// README and ran `node build.js` after a privacy-policy/terms-of-service
+// content update. The landing page's own footer links to privacy-policy/
+// and terms-of-service/ directly, so nothing lost that index.html's old
+// body provided.
 
-console.log('Built privacy-policy/index.html, terms-of-service/index.html, index.html');
+console.log('Built privacy-policy/index.html, terms-of-service/index.html');

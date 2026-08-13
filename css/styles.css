@@ -1,0 +1,613 @@
+/* PetList marketing landing page (PET-205) */
+
+:root {
+  --purple-deep: #1B163F;
+  --purple-secondary: #2D1B69;
+  --coral: #E0637A;
+  --lavender: #F3EFFA;
+  --lavender-card: #FFFFFF;
+  --on-dark: #FFFFFF;
+  --on-dark-secondary: #C9C3E0;
+  --text: #1B163F;
+  --text-secondary: #55506E;
+  --border: #E2DEEE;
+
+  --font-display: "Fraunces", Georgia, serif;
+  --font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  --space-1: 8px;
+  --space-2: 16px;
+  --space-3: 24px;
+  --space-4: 32px;
+  --space-5: 48px;
+  --space-6: 64px;
+  --space-7: 96px;
+
+  --radius-card: 12px;
+  --radius-pill: 999px;
+
+  --ease-standard: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+* { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--lavender);
+  color: var(--text);
+  font-family: var(--font-body);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+img { max-width: 100%; display: block; }
+
+a { color: inherit; }
+
+.visually-hidden {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.container {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 var(--space-3);
+}
+
+/* ---------- Hero ---------- */
+
+.hero {
+  position: relative;
+  background: var(--purple-deep);
+  overflow: hidden;
+  padding-bottom: var(--space-7);
+}
+
+.hero-ambient {
+  position: absolute;
+  inset: -20% -10% auto -10%;
+  height: 140%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.hero-ambient::before,
+.hero-ambient::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.28;
+  animation: drift-a 26s ease-in-out infinite alternate;
+}
+
+.hero-ambient::before {
+  width: 46vw;
+  height: 46vw;
+  max-width: 620px;
+  max-height: 620px;
+  background: var(--coral);
+  top: 4%;
+  left: 58%;
+}
+
+.hero-ambient::after {
+  width: 38vw;
+  height: 38vw;
+  max-width: 520px;
+  max-height: 520px;
+  background: var(--purple-secondary);
+  top: 40%;
+  left: 4%;
+  animation-name: drift-b;
+  animation-duration: 32s;
+}
+
+@keyframes drift-a {
+  from { transform: translate(0, 0) scale(1); }
+  to   { transform: translate(-4%, 5%) scale(1.06); }
+}
+
+@keyframes drift-b {
+  from { transform: translate(0, 0) scale(1); }
+  to   { transform: translate(5%, -4%) scale(1.08); }
+}
+
+.hero-header {
+  position: relative;
+  z-index: 1;
+  padding-top: var(--space-3);
+  padding-bottom: var(--space-4);
+  opacity: 0;
+  animation: fade-in 0.5s var(--ease-standard) forwards;
+}
+
+.hero-header .brand-mark {
+  height: 40px;
+  width: auto;
+}
+
+.hero-body {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: var(--space-6);
+  align-items: center;
+}
+
+@media (min-width: 860px) {
+  .hero-body {
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: var(--space-5);
+  }
+}
+
+.hero-copy {
+  text-align: center;
+}
+
+@media (min-width: 860px) {
+  .hero-copy { text-align: left; }
+}
+
+.hero-headline {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(2.25rem, 5.6vw, 3.75rem);
+  line-height: 1.08;
+  letter-spacing: -0.01em;
+  color: var(--on-dark);
+  margin: 0 0 var(--space-3);
+  opacity: 0;
+  transform: translateY(14px);
+  animation: fade-up 0.55s var(--ease-standard) forwards;
+  animation-delay: 0.12s;
+}
+
+.hero-pitch {
+  font-size: clamp(1.05rem, 2vw, 1.25rem);
+  color: var(--on-dark-secondary);
+  margin: 0 0 var(--space-4);
+  max-width: 46ch;
+  margin-left: auto;
+  margin-right: auto;
+  opacity: 0;
+  transform: translateY(14px);
+  animation: fade-up 0.55s var(--ease-standard) forwards;
+  animation-delay: 0.22s;
+}
+
+@media (min-width: 860px) {
+  .hero-pitch { margin-left: 0; margin-right: 0; }
+}
+
+.hero-cta {
+  opacity: 0;
+  transform: translateY(14px);
+  animation: fade-up 0.55s var(--ease-standard) forwards;
+  animation-delay: 0.3s;
+}
+
+@keyframes fade-in {
+  to { opacity: 1; }
+}
+
+@keyframes fade-up {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* App Store badge — coral is the CTA-only accent per the design direction */
+.appstore-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--coral);
+  /* White-on-coral measures ~3.1-3.4:1 here (matches the app's own documented
+     ceiling for white-on-#E0637A) -- clears the 3:1 non-text floor but not
+     4.5:1 text AA, and this badge's two spans are real text, not glyphs.
+     purple-deep on coral measures ~4.96:1, comfortably clearing AA, and
+     reuses an existing token rather than introducing a new one. */
+  color: var(--purple-deep);
+  text-decoration: none;
+  padding: 12px 22px;
+  border-radius: var(--radius-pill);
+  font-weight: 600;
+  font-size: 1rem;
+  box-shadow: 0 10px 24px -8px rgba(224, 99, 122, 0.55);
+  transition: transform 0.18s var(--ease-standard), box-shadow 0.18s var(--ease-standard);
+}
+
+.appstore-badge:hover,
+.appstore-badge:focus-visible {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 28px -8px rgba(224, 99, 122, 0.65);
+}
+
+.appstore-badge svg { flex-shrink: 0; }
+
+.appstore-badge .badge-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.15;
+}
+
+.appstore-badge .badge-eyebrow {
+  font-size: 0.68rem;
+  font-weight: 600;
+  /* No opacity here -- it dilutes purple-deep's ~4.96:1 contrast against
+     coral back under the 4.5:1 AA text floor (measured 4.16:1 at 0.85). */
+}
+
+.appstore-badge .badge-name {
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+/* ---------- Phone mockup (signature element) ---------- */
+
+.phone-stage {
+  display: flex;
+  justify-content: center;
+  perspective: 1400px;
+  opacity: 0;
+  transform: translateY(24px);
+  animation: phone-in 0.65s var(--ease-standard) forwards;
+  animation-delay: 0.38s;
+}
+
+@keyframes phone-in {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.phone-frame {
+  --frame-w: 240px;
+  position: relative;
+  width: var(--frame-w);
+  aspect-ratio: 720 / 1565;
+  background: #0B0A14;
+  border-radius: 34px;
+  padding: 9px;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.06) inset;
+}
+
+@media (min-width: 500px) {
+  .phone-frame { --frame-w: 270px; }
+}
+
+@media (min-width: 860px) {
+  .phone-frame { --frame-w: 300px; }
+}
+
+.hero .phone-frame {
+  transform: rotateY(-9deg) rotateX(3deg);
+  filter: drop-shadow(0 34px 46px rgba(0, 0, 0, 0.45)) drop-shadow(0 10px 18px rgba(0, 0, 0, 0.3));
+}
+
+.phone-frame .phone-screen {
+  width: 100%;
+  height: 100%;
+  border-radius: 25px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.phone-frame .phone-screen img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.phone-frame .phone-island {
+  position: absolute;
+  top: 9px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 34%;
+  height: 6.5%;
+  min-height: 14px;
+  background: #0B0A14;
+  border-radius: var(--radius-pill);
+  z-index: 2;
+}
+
+/* ---------- Showcase ---------- */
+
+.showcase {
+  background: var(--lavender);
+  padding: var(--space-7) 0;
+}
+
+.section-heading {
+  text-align: center;
+  max-width: 640px;
+  margin: 0 auto var(--space-6);
+}
+
+.section-eyebrow {
+  font-weight: 600;
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--coral);
+  margin: 0 0 var(--space-1);
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.75rem, 3.2vw, 2.5rem);
+  color: var(--purple-deep);
+  margin: 0;
+  line-height: 1.15;
+}
+
+.showcase-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-6) var(--space-4);
+}
+
+@media (min-width: 700px) {
+  .showcase-grid { grid-template-columns: 1fr 1fr; }
+}
+
+.showcase-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.6s var(--ease-standard), transform 0.6s var(--ease-standard);
+}
+
+.showcase-item.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.showcase-visual {
+  position: relative;
+  margin-bottom: var(--space-4);
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.showcase-visual .phone-frame {
+  --frame-w: 210px;
+  box-shadow: 0 22px 36px -14px rgba(27, 22, 63, 0.35);
+}
+
+/* Vet PDF export — distinct treatment: a flat document emerging from
+   beside/behind the phone, not another phone frame. */
+.showcase-item.is-document .showcase-visual {
+  padding-right: 46px;
+}
+
+.doc-peek {
+  position: absolute;
+  right: 0;
+  bottom: 6%;
+  width: 46%;
+  max-width: 150px;
+  height: auto;
+  border-radius: 6px;
+  overflow: hidden;
+  transform: rotate(7deg) translateX(28%);
+  box-shadow: 0 16px 26px -10px rgba(45, 27, 105, 0.4), 0 3px 8px rgba(45, 27, 105, 0.18);
+  z-index: 0;
+  transition: transform 0.6s var(--ease-standard), opacity 0.6s var(--ease-standard);
+  opacity: 0;
+}
+
+.showcase-item.is-document.is-visible .doc-peek {
+  opacity: 1;
+  transform: rotate(7deg) translateX(38%);
+}
+
+.showcase-item.is-document .phone-frame {
+  position: relative;
+  z-index: 1;
+}
+
+.showcase-headline {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.3rem;
+  color: var(--purple-deep);
+  margin: 0 0 var(--space-1);
+}
+
+.showcase-body {
+  font-size: 0.98rem;
+  color: var(--text-secondary);
+  margin: 0;
+  max-width: 34ch;
+}
+
+/* ---------- Android waitlist ---------- */
+
+.waitlist {
+  background: var(--purple-secondary);
+  padding: var(--space-6) 0;
+}
+
+.waitlist-inner {
+  max-width: 560px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.waitlist-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.5rem, 2.6vw, 2rem);
+  color: var(--on-dark);
+  margin: 0 0 var(--space-1);
+}
+
+.waitlist-body {
+  color: var(--on-dark-secondary);
+  margin: 0 0 var(--space-4);
+}
+
+.waitlist-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  align-items: stretch;
+}
+
+@media (min-width: 520px) {
+  .waitlist-form {
+    flex-direction: row;
+    justify-content: center;
+  }
+}
+
+.waitlist-form label {
+  text-align: left;
+}
+
+.waitlist-email {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  padding: 12px 16px;
+  border-radius: var(--radius-pill);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--on-dark);
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.waitlist-email::placeholder { color: rgba(255, 255, 255, 0.55); }
+
+.waitlist-email:focus-visible {
+  outline: 2px solid var(--coral);
+  outline-offset: 2px;
+}
+
+.waitlist-submit {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 1rem;
+  background: var(--coral);
+  /* Same reasoning as .appstore-badge above: white-on-coral fails 4.5:1
+     text AA (~3.4:1 measured), purple-deep clears it (~4.96:1). */
+  color: var(--purple-deep);
+  border: none;
+  padding: 12px 26px;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: transform 0.18s var(--ease-standard), box-shadow 0.18s var(--ease-standard);
+}
+
+.waitlist-submit:hover,
+.waitlist-submit:focus-visible {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 20px -8px rgba(224, 99, 122, 0.6);
+}
+
+.waitlist-note {
+  margin-top: var(--space-2);
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+/* ---------- Footer ---------- */
+
+.site-footer {
+  background: var(--purple-deep);
+  color: var(--on-dark-secondary);
+  padding: var(--space-4) 0;
+  font-size: 0.85rem;
+}
+
+.footer-inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  align-items: center;
+  text-align: center;
+}
+
+@media (min-width: 640px) {
+  .footer-inner {
+    flex-direction: row;
+    justify-content: space-between;
+    text-align: left;
+  }
+}
+
+.footer-links {
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.footer-links a {
+  color: var(--on-dark-secondary);
+  text-decoration: none;
+}
+
+.footer-links a:hover,
+.footer-links a:focus-visible {
+  color: var(--on-dark);
+  text-decoration: underline;
+}
+
+/* ---------- Reduced motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+
+  .hero-header,
+  .hero-headline,
+  .hero-pitch,
+  .hero-cta,
+  .phone-stage {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .hero-ambient::before,
+  .hero-ambient::after {
+    animation: none !important;
+  }
+
+  .hero .phone-frame {
+    transform: none;
+  }
+
+  .showcase-item {
+    transition: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .doc-peek {
+    transition: none !important;
+    opacity: 1 !important;
+    transform: rotate(7deg) translateX(38%) !important;
+  }
+
+  .appstore-badge,
+  .waitlist-submit {
+    transition: none;
+  }
+}
