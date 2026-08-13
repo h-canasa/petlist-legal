@@ -162,7 +162,7 @@ behalf, because none is ever created.
 ## Changes to this policy
 
 The current version of this policy is always published at
-<https://h-canasa.github.io/petlist-legal/privacy-policy/>. When it
+<https://mypetlist.app/privacy-policy/>. When it
 changes, the "Last updated" date at the top of this document will be
 updated to match. This app does not currently link to this policy or
 notify you in-app of changes to it; if that changes, this section will be
@@ -247,3 +247,12 @@ About screen (`profile.tsx`'s `SUPPORT_EMAIL` constant, in the main
 `petlist` repo) still reads `petlist.app.support@gmail.com` as of this
 pass — that repo is out of scope for this change, so the two are
 mismatched again until a follow-up updates it there too.
+
+**2026-08-13 (PET-205 follow-up round 5):** the "Changes to this policy"
+section's self-referential URL changed from the GitHub Pages address
+(`https://h-canasa.github.io/petlist-legal/privacy-policy/`) to the
+custom domain (`https://mypetlist.app/privacy-policy/`), now that the
+custom domain is the canonical public one. A repo-wide grep for
+`github.io` found this as the only remaining hardcoded GitHub Pages
+reference outside the site's own internal nav links (which already use
+relative paths, unaffected by which domain serves them).

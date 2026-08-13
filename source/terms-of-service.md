@@ -129,7 +129,7 @@ new installs, not a copy already on your device.
 The app may be updated from time to time (see the Privacy Policy's "App
 updates" section for how updates are delivered). The current version of
 these terms is always published at
-<https://h-canasa.github.io/petlist-legal/terms-of-service/>. When they
+<https://mypetlist.app/terms-of-service/>. When they
 change, the "Last updated" date at the top of this document will be
 updated to match. This app does not currently link to these terms or
 notify you in-app of changes to them; if that changes, this section will
@@ -208,3 +208,12 @@ About screen (`profile.tsx`'s `SUPPORT_EMAIL` constant, in the main
 `petlist` repo) still reads `petlist.app.support@gmail.com` as of this
 pass — that repo is out of scope for this change, so the two are
 mismatched again until a follow-up updates it there too.
+
+**2026-08-13 (PET-205 follow-up round 5):** the "Changes to the app or
+these terms" section's self-referential URL changed from the GitHub
+Pages address (`https://h-canasa.github.io/petlist-legal/terms-of-service/`)
+to the custom domain (`https://mypetlist.app/terms-of-service/`), now
+that the custom domain is the canonical public one. A repo-wide grep for
+`github.io` found this as the only remaining hardcoded GitHub Pages
+reference outside the site's own internal nav links (which already use
+relative paths, unaffected by which domain serves them).
