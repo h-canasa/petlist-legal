@@ -45,8 +45,12 @@ body {
 }
 
 /* Horizontal-overflow backstop (PET-205 round 2, item 3). The actual
-   offending element is fixed at its source -- see .doc-peek-trigger -- this
-   only stops a future regression from becoming a scrollable page.
+   offending element was fixed at its source (`.doc-peek-trigger`'s
+   transform, then round 4's containing wrapper); round 5 removed that
+   whole horizontal-scroll interaction outright in favor of a small static
+   preview badge, so there's nothing left in the showcase strip that comes
+   anywhere near a column edge any more -- this backstop is now purely
+   defensive, with no known element depending on it.
    `clip` is preferred over `hidden` because `hidden` makes the element a
    scroll container, which would break the sticky showcase visual added in
    item 4c. `hidden` is kept as the fallback for browsers without `clip`
@@ -453,6 +457,31 @@ a { color: inherit; }
   object-fit: cover;
 }
 
+/* PET-205 round 5, item 2a: the vet-PDF item's screenshot is now a
+   full-device capture (kebab menu open over the pet detail screen) rather
+   than a pre-cropped shot like the other three -- its own aspect ratio
+   (1206x2622) is nearly identical to the phone frame's, so object-fit:cover
+   alone crops almost nothing and the menu renders too small to read at
+   thumbnail size. Scaled up and anchored top-center via transform (not
+   object-position -- cover has no crop margin to reposition within when
+   source and container aspect ratios already match, so there's nothing
+   for object-position to shift).
+
+   1.5x was chosen empirically, not by formula: a uniform transform:scale()
+   zooms both axes together, so it was tried at a few values and screenshot-
+   checked each time. 2.35x cropped the menu's own right edge ("Vet
+   summa[ry]", "Delete p[et]" truncated mid-word) because the menu sits
+   right-of-center in the source and a symmetric top-center zoom crops both
+   sides equally. 1.5x is the value that keeps "Edit pet" / "Vet summary" /
+   "Delete pet" fully legible with no truncation while still cropping away
+   the weight card, spending figures, and reminders below -- confirmed
+   against the actual rendered composite, not assumed from the transform
+   math. */
+.showcase-item.is-document .phone-screen img {
+  transform: scale(1.5);
+  transform-origin: 50% 0%;
+}
+
 .phone-frame .phone-island {
   /* PET-205 follow-up item 1: a real Dynamic Island is ~4.4% of screen
      height (iPhone 14 Pro: 37.33pt of 852pt) and ~32% of width -- the
@@ -603,96 +632,47 @@ a { color: inherit; }
   }
 }
 
-/* Vet PDF export — distinct treatment: a flat document emerging from
-   beside/behind the phone, not another phone frame. */
+/* Vet PDF export — distinct treatment: a small static document preview
+   badge, tappable to open the full document in a lightbox. */
 
-/* ---------- Contained horizontal overflow (PET-205 round 4) ---------- */
-/* The phone screenshot + peeking document together are wider than a single
-   phone-frame column -- round 2 handled that by re-anchoring the peek's
-   transform so it never quite crossed the container edge, which worked but
-   was fragile: any future change to the offset, rotation, or peek size
-   could silently reintroduce page-wide overflow, since nothing actually
-   CONTAINED it structurally. This wrapper is that structural fix: it's the
-   one element in the showcase strip allowed to scroll horizontally, sized
-   to match its sibling items' visual column (100% width, same as every
-   other .showcase-visual), with overflow-x: auto so any content wider than
-   that column scrolls *inside this box* instead of widening the page.
-   overscroll-behavior-x: contain stops that scroll from chaining to the
-   page once it hits its own edge -- relevant on mobile Safari, where an
-   uncontained horizontal scroll reaching the document edge can interfere
-   with the system's edge swipe-back gesture. */
-.vet-pdf-scroll {
-  position: relative;
-  width: 100%;
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: thin;
-}
-
-/* Right-edge fade: a quiet hint that there's more to scroll, matching the
-   width of the actual overhang below (px-based rotate(7deg) shifts the
-   painted edge ~2.4px per degree per 20px of element half-width; the
-   gradient doesn't need to be exact, just wide enough to read as an edge
-   cue rather than a hard clip line). Pointer-events:none so it never
-   blocks the drag/tap underneath it. */
-.vet-pdf-scroll::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  width: 28px;
-  background: linear-gradient(to right, transparent, var(--lavender-card));
-  pointer-events: none;
-}
-
-/* PET-205 follow-up item 3: the peeking thumbnail is now a tap-to-expand
-   trigger (a <button>, not a bare <img>) showing a tighter letterhead crop
-   at a slightly larger size than before -- the original full-page crop
-   shrunk to ~150px was illegible.
-
-   PET-205 round 4: now that .vet-pdf-scroll (above) structurally contains
-   any overflow, the peek's resting position can go back to a genuine,
-   generous protrusion past the phone's own edge -- round 2's translateX(0)
-   was a compromise forced by having nothing to contain it. translateX(34%)
-   of its own ~175px width is ~60px of overhang, which is real overflow at
-   narrow widths (where it's actually needed -- confirmed 320-360px columns
-   are too narrow to fit phone + peek without it) while fitting naturally,
-   needing no scroll at all, from ~390px up. */
+/* ---------- Simplified static preview (PET-205 round 5, item 2) ---------- */
+/* Replaces the prior two rounds' horizontal-scroll/peek treatment entirely
+   (round 2's re-anchored transform, round 4's .vet-pdf-scroll container).
+   That interaction was removed outright rather than iterated on again: a
+   small, fully-visible static badge needs no scroll container to contain
+   overflow it no longer has, no rotate/translateX slide-in to coordinate
+   with one, and reads more clearly as "tap for more" than "here's a sliver,
+   pan to see the rest." Nested inside .phone-frame (which has no
+   overflow:hidden of its own, unlike .phone-screen) rather than as a
+   sibling in .showcase-visual, so it anchors precisely to the phone's own
+   corner regardless of the column's width -- no extra positioning wrapper
+   needed. It has no .scroll-fade of its own: sitting inside .phone-frame
+   inside .showcase-visual, it fades in as part of that whole block's
+   existing entrance rather than needing a second, separate one. */
 .doc-peek-trigger {
   position: absolute;
-  right: 0;
-  bottom: 6%;
-  width: 52%;
-  max-width: 175px;
+  right: -14px;
+  bottom: 14%;
+  width: 30%;
+  max-width: 80px;
+  min-width: 56px;
   border: none;
   background: none;
   padding: 0;
   cursor: pointer;
-  z-index: 0;
-  opacity: 0;
-  transform: rotate(7deg) translateX(-10%);
+  border-radius: 6px;
+  z-index: 2;
+  /* Slow, low-key ambient pulse (item 2d) -- ~40% peak coral opacity, 3.2s
+     breathing cadence, running continuously rather than scroll-triggered
+     per the ticket. Calibrated against this page's other coral moments
+     (the CTA buttons' own hover shadow, the ambient hero blobs) to read as
+     "quietly alive," not a notification badge or an alert. */
+  animation: doc-peek-pulse 3.2s ease-in-out infinite;
 }
 
-/* Shares the .scroll-fade class's scroll-linked mechanism (native
-   animation-timeline: view(), JS fallback below) rather than the prior
-   round's JS-observer + manual transition-delay, but keeps its own
-   rotate/translateX values instead of .scroll-fade's plain translateY --
-   this is what preserves the "emerging from behind the phone" identity
-   established in round 1, layered onto the same simplified trigger
-   mechanism everything else now uses. */
-@supports (animation-timeline: view()) {
-  .doc-peek-trigger {
-    animation: doc-peek-fade-in linear both;
-    animation-timeline: view();
-    animation-range: cover 0% cover 38%;
-  }
-}
-
-@keyframes doc-peek-fade-in {
-  from { opacity: 0; transform: rotate(7deg) translateX(-10%); }
-  to { opacity: 1; transform: rotate(7deg) translateX(34%); }
+@keyframes doc-peek-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(224, 99, 122, 0.36), 0 8px 16px -6px rgba(45, 27, 105, 0.35); }
+  50%      { box-shadow: 0 0 0 7px rgba(224, 99, 122, 0), 0 8px 16px -6px rgba(45, 27, 105, 0.35); }
 }
 
 .doc-peek-trigger img {
@@ -700,14 +680,7 @@ a { color: inherit; }
   height: auto;
   display: block;
   border-radius: 6px;
-  overflow: hidden;
-  box-shadow: 0 16px 26px -10px rgba(45, 27, 105, 0.4), 0 3px 8px rgba(45, 27, 105, 0.18);
-  transition: box-shadow 0.18s var(--ease-standard);
-}
-
-.doc-peek-trigger:hover img,
-.doc-peek-trigger:focus-visible img {
-  box-shadow: 0 20px 32px -10px rgba(45, 27, 105, 0.48), 0 4px 10px rgba(45, 27, 105, 0.22);
+  border: 2px solid var(--lavender-card);
 }
 
 .showcase-item.is-document .phone-frame {
@@ -1051,15 +1024,17 @@ a { color: inherit; }
     align-self: start !important;
   }
 
+  /* Stops the ambient pulse (item 2f) rather than removing the glow
+     outright: it still signals "this is tappable" at a glance, which a
+     reduced-motion user benefits from just as much as anyone else -- only
+     the breathing motion itself is what this preference asks to remove.
+     Not frozen at the pulse's own 0%/100% keyframe -- that's a 0-spread
+     ring, i.e. invisible, which would silently remove the affordance
+     rather than hold it still. Uses a fixed mid-way spread/opacity instead
+     so a real (static) ring is always visible. */
   .doc-peek-trigger {
     animation: none !important;
-    transition: none !important;
-    opacity: 1 !important;
-    transform: rotate(7deg) translateX(34%) !important;
-  }
-
-  .doc-peek-trigger img {
-    transition: none;
+    box-shadow: 0 0 0 3px rgba(224, 99, 122, 0.2), 0 8px 16px -6px rgba(45, 27, 105, 0.35) !important;
   }
 
   .lightbox,
