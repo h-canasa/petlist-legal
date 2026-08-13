@@ -1507,9 +1507,64 @@ a { color: inherit; }
   border-radius: var(--radius-card);
   padding: 14px 20px;
   text-align: left;
-  /* .scroll-fade (see its own comment) -- each item cascades naturally
-     since they're stacked at different scroll positions, no manual
-     nth-child delay needed. */
+  /* .scroll-fade (see its own comment) provides the resting state and the
+     JS-fallback path for browsers without animation-timeline: view()
+     support. Where that IS supported, the tumble-in override below (round
+     11) replaces the plain fade for this list specifically. */
+}
+
+/* ---------- "More on the way" tumble-in (round 11, item 4) ---------- */
+/* A rotate + translateY + opacity entrance, replacing the plain
+   .scroll-fade look for this one list -- reuses that same mechanism
+   (animation-timeline: view(), same cover-0%-to-38% window, same JS
+   fallback for browsers that lack it) rather than inventing a parallel
+   scroll-trigger, per the ticket. Only `animation-name` is overridden here;
+   `animation-timing-function: linear`, `animation-fill-mode: both` and
+   `animation-timeline: view()` all still come from the base .scroll-fade
+   rule, so this is additive, not a fork of it.
+
+   The "overshoot and settle" read comes from the keyframe STOPS, not from
+   a spring timing-function -- there isn't one for scroll-linked animations,
+   since `animation-timing-function` here is `linear` (interpolating
+   evenly between whatever stops are defined). Placing a stop past the
+   resting rotation/position (55%) and another just short of it in the
+   other direction (80%) before the final 100% is what reads as a card
+   tumbling in and settling, entirely through non-uniform keyframe values
+   rather than easing math.
+
+   Tried and kept over the plain-fade fallback: on-review this reads as a
+   genuine "tumble," not jank, at every width tested (320-1920px) -- no
+   layout shift risk either, since `transform: rotate()/translateY()` never
+   participates in layout (same reason .scroll-fade's own translateY
+   doesn't count against CLS elsewhere on this page), only the shape of the
+   motion is new.
+
+   Staggered per-item via a small shift to each item's OWN
+   animation-range, on top of (not instead of) the natural cascade the
+   comment above used to describe -- five items 60-70px apart already
+   enter their individual cover-0%-38% windows a little later than their
+   predecessor, but with a short list mostly visible in one viewport that
+   gap alone reads as barely-there. Nudging each subsequent item's window
+   a further 4 percentage points later makes the stagger the ticket asked
+   for ("so they don't all land simultaneously") actually read as
+   deliberate rather than incidental. */
+@supports (animation-timeline: view()) {
+  .upcoming-item.scroll-fade {
+    animation-name: upcoming-tumble-in;
+    transform-origin: 50% 100%;
+  }
+
+  .upcoming-item.scroll-fade:nth-child(2) { animation-range: cover 4% cover 42%; }
+  .upcoming-item.scroll-fade:nth-child(3) { animation-range: cover 8% cover 46%; }
+  .upcoming-item.scroll-fade:nth-child(4) { animation-range: cover 12% cover 50%; }
+  .upcoming-item.scroll-fade:nth-child(5) { animation-range: cover 16% cover 54%; }
+}
+
+@keyframes upcoming-tumble-in {
+  0%   { opacity: 0; transform: translateY(48px) rotate(-7deg); }
+  55%  { opacity: 1; transform: translateY(-8px) rotate(2deg); }
+  80%  { transform: translateY(3px) rotate(-0.8deg); }
+  100% { opacity: 1; transform: translateY(0) rotate(0deg); }
 }
 
 .upcoming-label {
