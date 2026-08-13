@@ -1213,14 +1213,27 @@ a { color: inherit; }
 
    Scoped to .is-document because it is the only item with an overhanging
    child, and to the single-column layout because >=900px already places
-   the copy beside the visual. */
+   the copy beside the visual.
+
+   Round 10 shrank the badge's own overhang from ~167px (bottom: -32% of
+   the frame) down to a flat 10px (bottom: -10px, see .doc-peek-trigger),
+   as part of docking it into the corner instead of hanging it off below
+   the frame -- so the +150px this rule used to reserve is now roughly
+   15x more than the 10px it actually needs to clear, which would leave a
+   large dead gap between the visual and the copy. Measured directly
+   (Chromium, 375px, .doc-peek-trigger's own rendered bottom edge minus
+   .showcase-visual's): exactly 10px at every width in this range, since
+   --frame-w is the same flat 210px throughout <900px and the overhang is
+   set in px, not %. Reserved value is that 10px plus a small buffer,
+   not the bare minimum, so sub-pixel rounding across browsers can't
+   reopen the overlap this block exists to prevent. */
 .showcase-item.is-document .showcase-visual {
   z-index: 1;
 }
 
 @media (max-width: 899px) {
   .showcase-item.is-document .showcase-visual {
-    margin-bottom: calc(var(--space-4) + 150px);
+    margin-bottom: calc(var(--space-4) + 12px);
   }
 }
 
@@ -1298,64 +1311,68 @@ a { color: inherit; }
 /* Vet PDF export — distinct treatment: a static document preview badge,
    tappable to open the full document in a lightbox. */
 
-/* ---------- Simplified static preview (PET-205 round 5, item 2) ---------- */
-/* Replaces the prior two rounds' horizontal-scroll/peek treatment entirely
-   (round 2's re-anchored transform, round 4's .vet-pdf-scroll container).
-   That interaction was removed outright rather than iterated on again: a
-   fully-visible static badge needs no scroll container to contain overflow
-   it no longer has, no rotate/translateX slide-in to coordinate with one,
-   and reads more clearly as "tap for more" than "here's a sliver, pan to
-   see the rest." Nested inside .phone-frame (which has no overflow:hidden
-   of its own, unlike .phone-screen) rather than as a sibling in
-   .showcase-visual, so it anchors precisely to the phone's own corner
-   regardless of the column's width -- no extra positioning wrapper needed.
-   It has no .scroll-fade of its own: sitting inside .phone-frame inside
-   .showcase-visual, it fades in as part of that whole block's existing
-   entrance rather than needing a second, separate one.
+/* ---------- Corner-overlap badge (PET-205 round 10) ---------- */
+/* Rounds 5-7 built this as a small badge hanging mostly OUTSIDE the phone
+   frame's own bottom-right corner -- round 5 introduced it as a static
+   preview (30%/max 80px), round 6 enlarged and corner-anchored it
+   (44%/max 132px, bottom: -8%), round 7 enlarged it again and pushed it
+   further off-corner still (58%/max 174px, bottom: -32%, right: -46px) --
+   each pass specifically choosing to keep it clear of the real screenshot
+   content underneath, and connecting it back to the kebab menu with a
+   drawn line (removed this round) because the badge itself no longer
+   touched the screen it was illustrating.
 
-   Round 6: enlarged (30%/max 80px -> 44%/max 132px) and moved to hang off
-   the phone frame's bottom-right corner (bottom: 14% -> -8%, right: -14px
-   -> -30px) rather than float mid-frame. It used to read as a small
-   afterthought at the smaller size, and at bottom: 14% the larger badge
-   overlapped real content -- first the "This month / YTD" spend row (the
-   original bug report), then, at the larger size alone, the Upcoming
-   cards below it. Corner-anchored and mostly hanging outside the frame's
-   own bounds (matching the round-5 badge's existing off-edge convention,
-   just with more overhang) is what keeps it clear of on-screen text at
-   this bigger size: verified by screenshotting the actual render and
-   confirming no card or filter-chip text sits under it, not by reasoning
-   about the offsets alone.
+   Round 10 reverses that whole direction on purpose: this screenshot is
+   now the ONLY place on the page that shows the real Vet Summary menu
+   action inside a real screen (the hero's own feature row dropped its
+   equivalent screenshot references this same round), so the badge needs
+   to read as a deliberate, substantial corner overlap rather than a
+   small peeking afterthought -- "docked at the corner," per the ticket,
+   not "hanging beside it." Overlapping real on-screen content below it is
+   now the INTENDED read, not a bug to route around, which is also why the
+   connector line (whose entire job was bridging a badge that didn't touch
+   the screen back to the menu action) was removed outright rather than
+   re-routed.
 
-   Round 7: enlarged again (44%/max 132px -> 58%/max 174px) and pushed
-   further off-corner (bottom: -8% -> -32%, right: -30px -> -46px) for the
-   same reason as round 6, one size class up -- the first attempt at this
-   round's bigger size (bottom: -13%) immediately regressed into the exact
-   overlap pattern round 6's own comment warned about: it cleared the
-   spend row but clipped into the DHPP Vaccine card's last line and the
-   filter-chip row below it. -32% is what was actually needed to clear
-   the filter chips too at this size, re-confirmed by rendering the real
-   composite (not derived from the round-6 numbers by proportion). The
-   badge now hangs mostly below the frame's own bottom edge rather than
-   beside it -- expected at this size, and still reads as "peeking from
-   behind the phone" rather than "floating," per the on-render check.
-   The connector line below (added this same round) was routed and tuned
-   AFTER this position was finalized, targeting this badge's actual
-   top-left corner -- if this position ever moves again, the connector's
-   endpoint needs re-checking too, not just this element's own overlap. */
+   Switched from aspect-ratio-locked (width set, height:auto following the
+   letterhead image's own 560:801 ratio) to independently-set width AND
+   height percentages, with the image cropped to fill via object-fit:cover
+   below. That decouples the badge's on-screen footprint from the source
+   image's incidental proportions -- necessary because the ticket specifies
+   size as a fraction of the phone's SCREEN HEIGHT ("roughly the bottom
+   third to bottom 40%"), which an aspect-locked width can only hit by
+   coincidence.
+
+   height: 38% sits in the middle of that third-to-40% range. Sized against
+   .phone-frame's own definite height (aspect-ratio + a definite width
+   computes to a definite height, which is why percentage sizing already
+   works for .phone-island elsewhere in this file) rather than any element
+   the connector line used to need to target.
+
+   right/bottom: -10px, not the deeply negative offsets rounds 6-7 used --
+   this is what makes it read as DOCKED INTO the corner rather than hung
+   off it: a small overhang past the frame's own bezel edge for the "still
+   peeking, not fully inset" read the earlier rounds valued, while the
+   overwhelming majority of the badge's area sits on top of the phone
+   screen itself. */
 .doc-peek-trigger {
   position: absolute;
-  right: -46px;
-  bottom: -32%;
-  width: 58%;
-  max-width: 174px;
-  min-width: 122px;
+  right: -10px;
+  bottom: -10px;
+  width: 62%;
+  max-width: 200px;
+  min-width: 150px;
+  height: 38%;
+  max-height: 220px;
+  min-height: 160px;
+  overflow: hidden;
   border: none;
   background: none;
   padding: 0;
   cursor: pointer;
-  border-radius: 6px;
+  border-radius: 12px;
   z-index: 2;
-  /* The pulse itself moved to the shared .has-coral-pulse utility below
+  /* The pulse itself lives in the shared .has-coral-pulse utility below
      (PET-205 round 9) so the hero's vet-PDF card carries the identical
      affordance. This rule keeps only its positioning. */
 }
@@ -1382,115 +1399,22 @@ a { color: inherit; }
   animation: coral-pulse 3.2s ease-in-out infinite;
 }
 
+/* object-fit: cover (round 10) fills the badge's independently-sized box
+   exactly rather than letterboxing or overflowing it -- see the box's own
+   comment for why width/height are no longer aspect-locked to this image.
+   object-position: top biases the crop toward the top of the source
+   letterhead (the pet's name and the health-events table header, the most
+   identifying content) rather than the default center crop, which would
+   cut into that header to keep an equal margin of blank table rows at the
+   bottom instead. */
 .doc-peek-trigger img {
   width: 100%;
-  height: auto;
-  display: block;
-  border-radius: 6px;
-  border: 2px solid var(--lavender-card);
-}
-
-/* ---------- Connector line (PET-205 round 7) ---------- */
-/* A curved, dashed "this produces that" line from the open kebab menu's
-   "Vet summary" row to the peeking document -- reinforcing the headline
-   ("Ready for the vet, in one tap") visually rather than leaving the two
-   screenshots to imply the connection on their own.
-
-   viewBox is 0 0 720 1565 -- the same 720x1565 pixel space the source
-   screenshot itself uses. .phone-frame's own aspect-ratio CSS property
-   locks it to exactly that ratio at every breakpoint, so this SVG (sized
-   100%/100% of the frame, default preserveAspectRatio) maps 1:1 with zero
-   letterboxing regardless of the frame's actual rendered pixel size --
-   one set of path coordinates, tuned once, holds correctly from the
-   mobile stacked layout through the desktop sticky-pinned one.
-
-   The path's endpoints are approximate, not derived from exact DOM
-   geometry (the menu and the pet-detail card are baked into a static JPG,
-   not real elements this stylesheet can query) -- placed by the same
-   method as the phone-crop math above: estimate from the source image's
-   own proportions, then confirm and adjust against the actual rendered
-   composite. It deliberately bulges out to x=760-780 -- past the
-   screenshot's own right edge (~696 at this viewBox scale) into the
-   phone's black bezel margin -- for most of its vertical travel, rather
-   than cutting straight down through the card column at x<700 where the
-   pet photo, name, weight and spend figures all live. Only the last
-   stretch curves back in toward the document preview's upper-left corner.
-   Kept off the "This month / YTD" row and the Upcoming cards specifically,
-   since enlarging the preview badge in this same round is what put those
-   at risk of a new overlap (see .doc-peek-trigger's own comment) -- this
-   path was re-checked against the final badge position, not the other
-   way around.
-
-   Not a tap target: pointer-events: none on the whole svg, so the
-   lightbox's existing tap zone (the button element itself) is completely
-   unaffected regardless of how the line's bounding box happens to
-   overlap it visually. */
-.doc-connector {
-  position: absolute;
-  inset: 0;
-  width: 100%;
   height: 100%;
-  pointer-events: none;
-  z-index: 1;
-  overflow: visible;
-}
-
-.doc-connector-line {
-  /* Muted deep purple, not coral -- coral on this page means "tap here"
-     (the App Store badge, the waitlist submit button), and this line is
-     explanatory, not a call to action. Opacity does the "muted" work
-     rather than a lighter purple literal, so it reads as a toned-down
-     version of the same brand purple used everywhere else rather than an
-     unrelated new color. */
-  stroke: var(--purple-secondary);
-  stroke-opacity: 0.4;
-  stroke-width: 3;
-  stroke-linecap: round;
-  stroke-dasharray: 10 9;
-}
-
-/* The reveal mechanism: a second copy of the identical path, drawn white
-   inside a <mask>, that itself "draws in" via the classic
-   dasharray-equals-length / dashoffset-to-zero technique. Masking a
-   solid-draw reveal over the real (already-dashed) line is what makes the
-   dashes themselves progressively appear along the path, rather than a
-   fixed dash pattern merely sliding in place -- stroke-dasharray on the
-   *visible* line alone can't do that; dashoffset only shifts a repeating
-   pattern's phase, it doesn't grow how much of the path is covered.
-   1200 is a round number safely above the path's actual measured length
-   (~1189 units, computed once for this exact `d`) -- if the path is ever
-   redrawn, re-measure with path.getTotalLength() rather than assuming
-   this constant still covers it. stroke-width is well over the visible
-   line's own (16 vs 3) purely so the reveal's rounded cap doesn't itself
-   clip the dash pattern's edges as it sweeps through. */
-.doc-connector-reveal {
-  stroke-dasharray: 1200;
-  /* Default/fallback resting state: fully drawn. This is what browsers
-     without animation-timeline: view() support see (no bespoke JS
-     fallback was written for this one decorative element -- it simply
-     renders complete, revealed by the parent .scroll-fade's own opacity
-     fade, which every browser without native support already gets via
-     the existing JS fallback documented in the script. Also doubles as
-     the reduced-motion
-     resting state before that media query below forces it explicitly. */
-  stroke-dashoffset: 0;
-}
-
-@supports (animation-timeline: view()) {
-  .doc-connector-reveal {
-    stroke-dashoffset: 1200;
-    /* Same view-timeline and the same 0%-38% range as .scroll-fade above
-       -- "part of this item's existing scroll-entrance sequence," not an
-       independent trigger. Both animations are driven by literally the
-       same scroll-linked clock, just animating different properties. */
-    animation: doc-connector-draw linear both;
-    animation-timeline: view();
-    animation-range: cover 0% cover 38%;
-  }
-}
-
-@keyframes doc-connector-draw {
-  to { stroke-dashoffset: 0; }
+  object-fit: cover;
+  object-position: top;
+  display: block;
+  border-radius: 10px;
+  border: 2px solid var(--lavender-card);
 }
 
 .showcase-item.is-document .phone-frame {
@@ -1861,18 +1785,6 @@ a { color: inherit; }
     transition: none !important;
     opacity: 1 !important;
     transform: none !important;
-  }
-
-  /* Same convention as .scroll-fade above: static/fully-drawn immediately
-     rather than mid-draw or not drawn at all. Needed explicitly (not just
-     covered by .doc-connector-reveal's own non-@supports default of
-     stroke-dashoffset: 0) because a reduced-motion user can still be on a
-     browser that supports animation-timeline: view(), where the
-     @supports block's animation would otherwise apply and start the
-     reveal hidden. */
-  .doc-connector-reveal {
-    animation: none !important;
-    stroke-dashoffset: 0 !important;
   }
 
   /* Releases the pinned showcase (item 4c). Sticky is layout rather than a
