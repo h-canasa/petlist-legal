@@ -675,14 +675,31 @@ a { color: inherit; }
    just with more overhang) is what keeps it clear of on-screen text at
    this bigger size: verified by screenshotting the actual render and
    confirming no card or filter-chip text sits under it, not by reasoning
-   about the offsets alone. */
+   about the offsets alone.
+
+   Round 7: enlarged again (44%/max 132px -> 58%/max 174px) and pushed
+   further off-corner (bottom: -8% -> -32%, right: -30px -> -46px) for the
+   same reason as round 6, one size class up -- the first attempt at this
+   round's bigger size (bottom: -13%) immediately regressed into the exact
+   overlap pattern round 6's own comment warned about: it cleared the
+   spend row but clipped into the DHPP Vaccine card's last line and the
+   filter-chip row below it. -32% is what was actually needed to clear
+   the filter chips too at this size, re-confirmed by rendering the real
+   composite (not derived from the round-6 numbers by proportion). The
+   badge now hangs mostly below the frame's own bottom edge rather than
+   beside it -- expected at this size, and still reads as "peeking from
+   behind the phone" rather than "floating," per the on-render check.
+   The connector line below (added this same round) was routed and tuned
+   AFTER this position was finalized, targeting this badge's actual
+   top-left corner -- if this position ever moves again, the connector's
+   endpoint needs re-checking too, not just this element's own overlap. */
 .doc-peek-trigger {
   position: absolute;
-  right: -30px;
-  bottom: -8%;
-  width: 44%;
-  max-width: 132px;
-  min-width: 92px;
+  right: -46px;
+  bottom: -32%;
+  width: 58%;
+  max-width: 174px;
+  min-width: 122px;
   border: none;
   background: none;
   padding: 0;
@@ -708,6 +725,109 @@ a { color: inherit; }
   display: block;
   border-radius: 6px;
   border: 2px solid var(--lavender-card);
+}
+
+/* ---------- Connector line (PET-205 round 7) ---------- */
+/* A curved, dashed "this produces that" line from the open kebab menu's
+   "Vet summary" row to the peeking document -- reinforcing the headline
+   ("Ready for the vet, in one tap") visually rather than leaving the two
+   screenshots to imply the connection on their own.
+
+   viewBox is 0 0 720 1565 -- the same 720x1565 pixel space the source
+   screenshot itself uses. .phone-frame's own aspect-ratio CSS property
+   locks it to exactly that ratio at every breakpoint, so this SVG (sized
+   100%/100% of the frame, default preserveAspectRatio) maps 1:1 with zero
+   letterboxing regardless of the frame's actual rendered pixel size --
+   one set of path coordinates, tuned once, holds correctly from the
+   mobile stacked layout through the desktop sticky-pinned one.
+
+   The path's endpoints are approximate, not derived from exact DOM
+   geometry (the menu and the pet-detail card are baked into a static JPG,
+   not real elements this stylesheet can query) -- placed by the same
+   method as the phone-crop math above: estimate from the source image's
+   own proportions, then confirm and adjust against the actual rendered
+   composite. It deliberately bulges out to x=760-780 -- past the
+   screenshot's own right edge (~696 at this viewBox scale) into the
+   phone's black bezel margin -- for most of its vertical travel, rather
+   than cutting straight down through the card column at x<700 where the
+   pet photo, name, weight and spend figures all live. Only the last
+   stretch curves back in toward the document preview's upper-left corner.
+   Kept off the "This month / YTD" row and the Upcoming cards specifically,
+   since enlarging the preview badge in this same round is what put those
+   at risk of a new overlap (see .doc-peek-trigger's own comment) -- this
+   path was re-checked against the final badge position, not the other
+   way around.
+
+   Not a tap target: pointer-events: none on the whole svg, so the
+   lightbox's existing tap zone (the button element itself) is completely
+   unaffected regardless of how the line's bounding box happens to
+   overlap it visually. */
+.doc-connector {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  overflow: visible;
+}
+
+.doc-connector-line {
+  /* Muted deep purple, not coral -- coral on this page means "tap here"
+     (the App Store badge, the waitlist submit button), and this line is
+     explanatory, not a call to action. Opacity does the "muted" work
+     rather than a lighter purple literal, so it reads as a toned-down
+     version of the same brand purple used everywhere else rather than an
+     unrelated new color. */
+  stroke: var(--purple-secondary);
+  stroke-opacity: 0.4;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-dasharray: 10 9;
+}
+
+/* The reveal mechanism: a second copy of the identical path, drawn white
+   inside a <mask>, that itself "draws in" via the classic
+   dasharray-equals-length / dashoffset-to-zero technique. Masking a
+   solid-draw reveal over the real (already-dashed) line is what makes the
+   dashes themselves progressively appear along the path, rather than a
+   fixed dash pattern merely sliding in place -- stroke-dasharray on the
+   *visible* line alone can't do that; dashoffset only shifts a repeating
+   pattern's phase, it doesn't grow how much of the path is covered.
+   1200 is a round number safely above the path's actual measured length
+   (~1189 units, computed once for this exact `d`) -- if the path is ever
+   redrawn, re-measure with path.getTotalLength() rather than assuming
+   this constant still covers it. stroke-width is well over the visible
+   line's own (16 vs 3) purely so the reveal's rounded cap doesn't itself
+   clip the dash pattern's edges as it sweeps through. */
+.doc-connector-reveal {
+  stroke-dasharray: 1200;
+  /* Default/fallback resting state: fully drawn. This is what browsers
+     without animation-timeline: view() support see (no bespoke JS
+     fallback was written for this one decorative element -- it simply
+     renders complete, revealed by the parent .scroll-fade's own opacity
+     fade, which every browser without native support already gets via
+     the existing JS fallback documented in the script. Also doubles as
+     the reduced-motion
+     resting state before that media query below forces it explicitly. */
+  stroke-dashoffset: 0;
+}
+
+@supports (animation-timeline: view()) {
+  .doc-connector-reveal {
+    stroke-dashoffset: 1200;
+    /* Same view-timeline and the same 0%-38% range as .scroll-fade above
+       -- "part of this item's existing scroll-entrance sequence," not an
+       independent trigger. Both animations are driven by literally the
+       same scroll-linked clock, just animating different properties. */
+    animation: doc-connector-draw linear both;
+    animation-timeline: view();
+    animation-range: cover 0% cover 38%;
+  }
+}
+
+@keyframes doc-connector-draw {
+  to { stroke-dashoffset: 0; }
 }
 
 .showcase-item.is-document .phone-frame {
@@ -1032,6 +1152,18 @@ a { color: inherit; }
     transition: none !important;
     opacity: 1 !important;
     transform: none !important;
+  }
+
+  /* Same convention as .scroll-fade above: static/fully-drawn immediately
+     rather than mid-draw or not drawn at all. Needed explicitly (not just
+     covered by .doc-connector-reveal's own non-@supports default of
+     stroke-dashoffset: 0) because a reduced-motion user can still be on a
+     browser that supports animation-timeline: view(), where the
+     @supports block's animation would otherwise apply and start the
+     reveal hidden. */
+  .doc-connector-reveal {
+    animation: none !important;
+    stroke-dashoffset: 0 !important;
   }
 
   /* Releases the pinned showcase (item 4c). Sticky is layout rather than a
