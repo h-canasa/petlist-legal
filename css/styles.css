@@ -14,6 +14,10 @@
 
   --font-display: "Fraunces", Georgia, serif;
   --font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  /* Single-use accent (round 9, item 5): the hand-drawn note beside the App
+     Store badge, and nothing else. Not mirrored into build.js's STYLE --
+     the legal pages don't use it. */
+  --font-script: "Caveat", "Segoe Script", cursive;
 
   --space-1: 8px;
   --space-2: 16px;
@@ -519,6 +523,125 @@ a { color: inherit; }
   transform: translateY(14px);
   animation: fade-up 0.55s var(--ease-standard) forwards;
   animation-delay: 0.3s;
+}
+
+/* ---------- Hand-drawn CTA annotation (round 9, item 5) ---------- */
+/* One occurrence on the page, deliberately. Caveat is loaded at a single
+   weight for this one element -- a small playful accent, not a new body
+   font.
+
+   Both the explicit line-height here and the min-height on the wrapper
+   exist to stop the webfont swap reflowing the App Store badge: Caveat's
+   fallback metrics differ enough that a late swap would otherwise resize
+   this box and nudge the badge. Reserving the space up front means the
+   swap repaints without moving anything, which is what keeps CLS at 0. */
+.cta-note {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: 44px;
+  color: var(--on-dark-secondary);
+}
+
+.cta-note-arrow {
+  width: 52px;
+  height: 32px;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.85;
+}
+
+.cta-note-text {
+  font-family: var(--font-script);
+  font-size: 1.15rem;
+  font-weight: 600;
+  line-height: 1.25;
+  white-space: nowrap;
+}
+
+/* Below the two-column breakpoint the CTA block is centred, so the note
+   stacks under the badge and the arrow rotates to point back up at it.
+   From 860px the two sit side by side and the arrow points left, as drawn. */
+.hero-cta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.hero-cta .cta-note-arrow {
+  transform: rotate(-118deg);
+}
+
+@media (min-width: 860px) {
+  .hero-cta {
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .hero-cta .cta-note-arrow {
+    transform: none;
+  }
+}
+
+/* ---------- Bottom trust bar (round 9, item 7) ---------- */
+/* auto-fit + minmax reflows 1 -> 2 -> 4 columns continuously across
+   320-1440 with no breakpoints of its own, which is why it's used here
+   rather than another media query.
+
+   Separated from the vet card above by a hairline rather than being carded
+   itself: this hero already states "you only pay once" in the subhead, the
+   annotation and this bar's own second item, so the treatment stays quiet
+   on purpose. */
+.trust-bar {
+  list-style: none;
+  margin: var(--space-4) 0 0;
+  padding: var(--space-4) 0 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--space-2) var(--space-3);
+  opacity: 0;
+  transform: translateY(14px);
+  animation: fade-up 0.55s var(--ease-standard) forwards;
+  animation-delay: 0.64s;
+}
+
+.trust-item {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
+  column-gap: 10px;
+  align-items: center;
+}
+
+.trust-icon {
+  grid-row: span 2;
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: var(--coral);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.trust-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--on-dark);
+  line-height: 1.3;
+}
+
+.trust-desc {
+  font-size: 0.76rem;
+  color: var(--on-dark-secondary);
+  line-height: 1.35;
 }
 
 @keyframes fade-in {
@@ -1685,6 +1808,8 @@ a { color: inherit; }
   .hero-photos,
   .hero-photo,
   .hero-photo--cat,
+  .trust-bar,
+  .cta-note,
   .vet-card,
   .vet-card.has-coral-pulse {
     animation: none !important;

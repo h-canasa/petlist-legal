@@ -20,7 +20,9 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!-- Caveat (PET-205 round 9, item 5) is a single small playful accent next
+     to the App Store badge, not a new body font -- one weight, one use. -->
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700;900&family=Inter:wght@400;500;600;700&family=Caveat:wght@600&display=swap" rel="stylesheet">
 
 <link rel="stylesheet" href="css/styles.css">
 <noscript>
@@ -58,6 +60,14 @@
         <a class="appstore-badge" href="APP_STORE_URL_PLACEHOLDER" aria-label="Download PetList on the App Store">
           <img src="assets/marketing/app-store-badge.svg" alt="Download on the App Store" width="180" height="60">
         </a>
+        <span class="cta-note">
+          <svg class="cta-note-arrow" viewBox="0 0 64 40" aria-hidden="true" focusable="false">
+            <path d="M60,9 C44,5 22,8 9,20"/>
+            <path d="M9,20 L20,15"/>
+            <path d="M9,20 L17,27"/>
+          </svg>
+          <span class="cta-note-text">One-time payment.<br>Yours forever.</span>
+        </span>
       </div>
     </div>
 
@@ -186,6 +196,40 @@
         <svg viewBox="0 0 24 24" focusable="false"><path d="M9 4.5l7.5 7.5L9 19.5"/></svg>
       </span>
     </button>
+
+    <ul class="trust-bar">
+      <li class="trust-item">
+        <svg class="trust-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <rect x="4.5" y="10.5" width="15" height="10.5" rx="2"/>
+          <path d="M8 10.5V7.25a4 4 0 018 0v3.25"/>
+        </svg>
+        <span class="trust-label">Secure &amp; Private</span>
+        <span class="trust-desc">Your data stays on your device</span>
+      </li>
+      <li class="trust-item">
+        <svg class="trust-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <circle cx="12" cy="12" r="8.75"/>
+          <path d="M14.75 9.25c-.6-.85-1.6-1.35-2.75-1.35-1.7 0-2.9.9-2.9 2.1 0 2.85 5.8 1.35 5.8 4.2 0 1.2-1.2 2.1-2.9 2.1-1.15 0-2.15-.5-2.75-1.35"/>
+          <path d="M12 6.1v11.8"/>
+        </svg>
+        <span class="trust-label">No Subscriptions</span>
+        <span class="trust-desc">One payment, no hidden fees</span>
+      </li>
+      <li class="trust-item">
+        <svg class="trust-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M7 18.5a4.5 4.5 0 01-.35-8.99 6 6 0 0111.6-1.4A4.25 4.25 0 0117.5 18.5z"/>
+        </svg>
+        <span class="trust-label">Works Offline</span>
+        <span class="trust-desc">Access your pet's info anywhere</span>
+      </li>
+      <li class="trust-item">
+        <svg class="trust-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M12 20.5l-1.3-1.2C6.1 15.2 3.25 12.6 3.25 9.4A4.4 4.4 0 017.7 5c1.5 0 2.95.7 3.9 1.82A5.2 5.2 0 0115.5 5a4.4 4.4 0 014.45 4.4c0 3.2-2.85 5.8-7.45 9.9z"/>
+        </svg>
+        <span class="trust-label">Made for Pet Parents</span>
+        <span class="trust-desc">Simple, beautiful, easy to use</span>
+      </li>
+    </ul>
   </div>
 
   <!-- Wave transition into the lavender section below, replacing the flat
