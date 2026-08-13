@@ -44,6 +44,24 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Horizontal-overflow backstop (PET-205 round 2, item 3). The actual
+   offending element is fixed at its source -- see .doc-peek-trigger -- this
+   only stops a future regression from becoming a scrollable page.
+   `clip` is preferred over `hidden` because `hidden` makes the element a
+   scroll container, which would break the sticky showcase visual added in
+   item 4c. `hidden` is kept as the fallback for browsers without `clip`
+   (pre-16 Safari), where sticky-vs-hidden is the lesser tradeoff against a
+   horizontally scrollable page. */
+html, body {
+  overflow-x: hidden;
+}
+
+@supports (overflow-x: clip) {
+  html, body {
+    overflow-x: clip;
+  }
+}
+
 img { max-width: 100%; display: block; }
 
 a { color: inherit; }
@@ -443,8 +461,12 @@ a { color: inherit; }
 
 /* Vet PDF export — distinct treatment: a flat document emerging from
    beside/behind the phone, not another phone frame. */
+/* The extra right padding shifts the centered phone leftward, opening up
+   clear space for the document beside it. Widened in round 2 to buy back
+   the visual separation lost when the document's overhang was removed (see
+   .doc-peek-trigger below). */
 .showcase-item.is-document .showcase-visual {
-  padding-right: 52px;
+  padding-right: 76px;
 }
 
 /* PET-205 follow-up item 3: the peeking thumbnail is now a tap-to-expand
@@ -462,7 +484,20 @@ a { color: inherit; }
   padding: 0;
   cursor: pointer;
   z-index: 0;
-  transform: rotate(7deg) translateX(28%);
+  /* PET-205 round 2, item 3 -- horizontal scroll fix. This element was the
+     ACTUAL cause of the mobile horizontal scroll (measured: hiding it drops
+     documentElement.scrollWidth from 429 to 390 at a 390px viewport; hiding
+     the hero's ambient blob changes nothing, because .hero already clips it
+     with overflow:hidden). It resolved to translateX(38%) of its own ~175px
+     width -- ~66px past `right: 0`, which is already the container's right
+     edge -- and nothing in .showcase clips it. On desktop that overhang hid
+     inside the container's own side margin; on mobile there are only 24px of
+     page gutter, so it pushed the document wider than the viewport.
+     The emerge motion is preserved, just re-anchored: it now travels from
+     slightly inset to flush with the container edge instead of past it.
+     The 7deg rotation still widens the painted box ~15px either side, which
+     fits inside the remaining gutter at every width tested (320px up). */
+  transform: rotate(7deg) translateX(-10%);
   transition: transform 0.6s var(--ease-standard), opacity 0.6s var(--ease-standard);
   transition-delay: 0.32s;
   opacity: 0;
@@ -470,7 +505,7 @@ a { color: inherit; }
 
 .showcase-item.is-document.is-visible .doc-peek-trigger {
   opacity: 1;
-  transform: rotate(7deg) translateX(38%);
+  transform: rotate(7deg) translateX(0);
 }
 
 .doc-peek-trigger img {
@@ -816,7 +851,7 @@ a { color: inherit; }
   .doc-peek-trigger {
     transition: none !important;
     opacity: 1 !important;
-    transform: rotate(7deg) translateX(38%) !important;
+    transform: rotate(7deg) translateX(0) !important;
   }
 
   .doc-peek-trigger img {
