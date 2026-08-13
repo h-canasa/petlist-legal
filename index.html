@@ -61,11 +61,21 @@
       </div>
     </div>
 
-    <div class="phone-stage">
-      <div class="phone-frame">
-        <div class="phone-island" aria-hidden="true"></div>
-        <div class="phone-screen">
-          <img src="assets/marketing/petlist_home-dashboard-web.jpg" alt="PetList Home dashboard showing multiple pets, upcoming care, and household spending at a glance" width="720" height="1565">
+    <div class="hero-visual">
+      <!-- Photography zone. Structured as a LIST of .hero-photo slots, not
+           a single hard-coded one, so a second animal (a dog, bleeding off
+           an outer edge rather than peeking) can be added later by adding
+           one span and one CSS block, without rebuilding this section. -->
+      <div class="hero-photos" aria-hidden="true">
+        <span class="hero-photo hero-photo--cat"></span>
+      </div>
+
+      <div class="phone-stage">
+        <div class="phone-frame">
+          <div class="phone-island" aria-hidden="true"></div>
+          <div class="phone-screen">
+            <img src="assets/marketing/petlist_home-dashboard-web.jpg" alt="PetList Home dashboard showing multiple pets, upcoming care, and household spending at a glance" width="720" height="1565">
+          </div>
         </div>
       </div>
     </div>
@@ -177,6 +187,15 @@
       </span>
     </button>
   </div>
+
+  <!-- Wave transition into the lavender section below, replacing the flat
+       edge the two background colours used to butt against. Absolutely
+       positioned, so it adds no height and contributes nothing to CLS;
+       preserveAspectRatio="none" plus width:100% means it stretches to any
+       viewport rather than overflowing one. -->
+  <svg class="hero-wave" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+    <path d="M0,54 C240,10 480,84 720,58 C960,32 1200,4 1440,36 L1440,90 L0,90 Z"/>
+  </svg>
 </header>
 
 <main>

@@ -189,7 +189,10 @@ a { color: inherit; }
   /* Compensates for .site-header now being position:fixed (out of flow) --
      92px = the header's own resting-state height (20px + 56px logo + 20px). */
   padding-top: 92px;
-  padding-bottom: var(--space-7);
+  /* The +40 clears the wave divider (round 9, item 8), which is absolutely
+     positioned at the bottom edge and up to 80px tall -- without it the
+     trust bar would sit partly inside the wave. */
+  padding-bottom: calc(var(--space-7) + 40px);
 }
 
 .hero-ambient {
@@ -552,6 +555,97 @@ a { color: inherit; }
   height: 54px;
   width: auto;
   display: block;
+}
+
+/* ---------- Hero photography zone (round 9, item 9) ---------- */
+/* .hero-visual wraps the photography zone and the phone together and
+   becomes the hero grid's second child, so the two-column rule at 860px is
+   untouched -- it still sees exactly two children.
+
+   The zone is a container of .hero-photo slots rather than one hard-coded
+   image, so a second animal can be added later (a dog bleeding off an
+   outer edge instead of peeking) by adding one span plus one CSS block.
+   Each slot is an absolutely-positioned box carrying its photo as a
+   background, aria-hidden, and painted UNDER .phone-stage. */
+.hero-visual {
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+
+.hero-photos {
+  /* Hidden below 700px -- see the media query at the end of this block.
+     Declared display:none here so narrow viewports never fetch the file. */
+  display: none;
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.hero-photo {
+  position: absolute;
+  display: block;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+/* .phone-stage must sit ABOVE the photos -- that stacking order is the
+   whole effect. The cat's body deliberately bleeds off the LEFT edge of
+   its own crop (see README), so placing it to the right of the phone with
+   the phone overlapping that edge is what makes it read as peeking around
+   the phone rather than standing beside it. */
+.hero-visual .phone-stage {
+  position: relative;
+  z-index: 1;
+}
+
+@media (min-width: 700px) {
+  .hero-photos { display: block; }
+
+  .hero-photo--cat {
+    /* Roughly phone-lower-half height, anchored to the phone's lower
+       right. The negative right offset is what pushes the head clear of
+       the phone's edge; .hero { overflow: hidden } clips whatever runs
+       past the section, which is intended rather than tolerated. */
+    right: -6%;
+    bottom: 6%;
+    width: 62%;
+    max-width: 310px;
+    aspect-ratio: 620 / 674;
+    background-image: url('../assets/marketing/petlist_hero-cat-web.png');
+    background-position: right bottom;
+    opacity: 0;
+    animation: fade-up 0.6s var(--ease-standard) 0.46s forwards;
+    transform: translateY(14px);
+  }
+}
+
+@media (min-width: 860px) {
+  .hero-photo--cat {
+    right: -14%;
+    width: 68%;
+  }
+}
+
+/* ---------- Wave divider (round 9, item 8) ---------- */
+/* bottom:-1px rather than 0 kills the sub-pixel hairline seam that shows
+   between the SVG's own bottom edge and .showcase's background at
+   fractional device pixel ratios. Fill comes from the token rather than a
+   literal in the markup so the two can't drift apart. */
+.hero-wave {
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  width: 100%;
+  height: clamp(36px, 5vw, 80px);
+  display: block;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.hero-wave path {
+  fill: var(--lavender);
 }
 
 /* ---------- Hero extras: feature row + vet card (round 9, items 4/4b) ---------- */
@@ -1588,6 +1682,9 @@ a { color: inherit; }
   .trust-badge,
   .hero-extras,
   .feature-row,
+  .hero-photos,
+  .hero-photo,
+  .hero-photo--cat,
   .vet-card,
   .vet-card.has-coral-pulse {
     animation: none !important;
