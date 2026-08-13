@@ -97,71 +97,48 @@
        phone to the middle of a very tall row. As a sibling the 860px
        two-column rule needs no change at all. -->
   <div class="container hero-extras">
+    <!-- Round 10: these four chips are no longer lightbox triggers or
+         image-preview hosts (see css/styles.css for what replaced the
+         hover-preview mechanism). petlist_{pet-timeline,calendar,expenses,
+         home-dashboard}-preview.jpg are consequently orphaned -- still on
+         disk, referenced nowhere -- rather than deleted, since a cleanup
+         pass wasn't in this round's scope. -->
     <ul class="feature-row">
       <li>
-        <button type="button" class="feature-chip"
-                data-preview="pet-timeline"
-                data-lightbox-trigger
-                data-lightbox-src="assets/marketing/petlist_pet-timeline-web.jpg"
-                data-lightbox-w="720" data-lightbox-h="1565"
-                data-lightbox-alt="A pet's health timeline in PetList, listing vaccinations, vet visits and medications by date"
-                data-lightbox-label="Health records">
+        <button type="button" class="feature-chip">
           <svg class="feature-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
             <path d="M6 2.75h8.5L19 7.25v14H6z"/>
             <path d="M14 2.75v4.5h4.5"/>
             <path d="M12 10.5v5M9.5 13h5"/>
           </svg>
           <span class="feature-label">Health Records</span>
-          <span class="feature-preview" aria-hidden="true"></span>
+          <span class="feature-desc">Vaccines, vet visits, meds &amp; more.</span>
         </button>
       </li>
       <li>
-        <button type="button" class="feature-chip"
-                data-preview="calendar"
-                data-lightbox-trigger
-                data-lightbox-src="assets/marketing/petlist_calendar-web.jpg"
-                data-lightbox-w="720" data-lightbox-h="1565"
-                data-lightbox-alt="PetList's Calendar tab with health events and reminders marked on the month grid"
-                data-lightbox-label="Care reminders">
+        <button type="button" class="feature-chip">
           <svg class="feature-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
             <rect x="3.25" y="5" width="17.5" height="16" rx="2.5"/>
             <path d="M3.25 9.75h17.5M8 2.75v4M16 2.75v4"/>
             <path d="M8 14h3M8 17.5h7"/>
           </svg>
           <span class="feature-label">Care Reminders</span>
-          <span class="feature-preview" aria-hidden="true"></span>
+          <span class="feature-desc">Never miss important dates again.</span>
         </button>
       </li>
       <li>
-        <button type="button" class="feature-chip"
-                data-preview="expenses"
-                data-lightbox-trigger
-                data-lightbox-src="assets/marketing/petlist_expenses-web.jpg"
-                data-lightbox-w="720" data-lightbox-h="1565"
-                data-lightbox-alt="PetList's Expenses tab showing monthly totals, a spending trend chart and a breakdown by pet"
-                data-lightbox-label="Spending tracker">
+        <button type="button" class="feature-chip">
           <svg class="feature-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
             <path d="M3.5 20.25V3.75M3.5 20.25h17"/>
             <path d="M7.5 16.5l4-4.5 3 2.5 5-6.5"/>
             <path d="M20.5 8v3.5M20.5 8H17"/>
           </svg>
           <span class="feature-label">Spending Tracker</span>
-          <span class="feature-preview" aria-hidden="true"></span>
+          <span class="feature-desc">See where your money goes.</span>
         </button>
       </li>
-      <!-- Yes, this one points at the same screenshot the hero phone is
-           already displaying a few hundred pixels away. That's deliberate,
-           per the ticket's own image mapping: the chip reads as a legend
-           for the phone rather than as a fifth, unseen screen. Noted here
-           so a later round doesn't "discover" it as a copy-paste bug. -->
       <li>
-        <button type="button" class="feature-chip"
-                data-preview="home-dashboard"
-                data-lightbox-trigger
-                data-lightbox-src="assets/marketing/petlist_home-dashboard-web.jpg"
-                data-lightbox-w="720" data-lightbox-h="1565"
-                data-lightbox-alt="PetList's Home dashboard with every pet, upcoming care and household spending together"
-                data-lightbox-label="All in one place">
+        <button type="button" class="feature-chip">
           <svg class="feature-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
             <ellipse cx="8" cy="6.5" rx="2.15" ry="2.75"/>
             <ellipse cx="16" cy="6.5" rx="2.15" ry="2.75"/>
@@ -170,7 +147,7 @@
             <path d="M12 11.75c2.9 0 5 2.4 5 4.9 0 2-1.5 3.35-3.4 3.35-1 0-1.2-.45-1.6-.45s-.6.45-1.6.45C8.5 20 7 18.65 7 16.65c0-2.5 2.1-4.9 5-4.9z"/>
           </svg>
           <span class="feature-label">All in One Place</span>
-          <span class="feature-preview" aria-hidden="true"></span>
+          <span class="feature-desc">Everything you need, always with you.</span>
         </button>
       </li>
     </ul>
@@ -588,12 +565,39 @@
       updateHeader();
     }
 
+    // ---- Feature-row description toggle (PET-205 round 10) ----
+    // The four chips lost their data-lightbox-trigger attributes this round
+    // (see css/styles.css for why) and are no longer image-preview hosts
+    // either, so their click is now entirely this: toggle .feature-desc's
+    // visibility. :hover / :focus-visible already reveal it for pointer and
+    // keyboard users via CSS alone -- this is only for touch, where a tap
+    // rarely enters either pseudo-class reliably. Opening one chip closes
+    // any other that was open, which is also what makes "tapping a
+    // different chip" dismiss the previous one -- one function covers both
+    // behaviors the ticket asked for.
+    var featureChips = document.querySelectorAll('.feature-chip');
+    Array.prototype.forEach.call(featureChips, function (chip) {
+      chip.addEventListener('click', function () {
+        var wasOpen = chip.classList.contains('is-open');
+        Array.prototype.forEach.call(featureChips, function (c) {
+          c.classList.remove('is-open');
+        });
+        if (!wasOpen) chip.classList.add('is-open');
+      });
+    });
+
     // ---- Shared media lightbox (generalized in PET-205 round 9) ----
     // Was hardcoded to the vet PDF: a singular querySelector for the one
-    // trigger, and a fixed <img> in the markup. Round 9 adds five more
-    // entry points (the four feature chips and the vet-PDF highlight card),
-    // so the trigger is now whatever was clicked and the image is driven
-    // from that element's own data-lightbox-* attributes.
+    // trigger, and a fixed <img> in the markup. Round 9 added five more
+    // entry points (the four feature chips and the vet-PDF highlight card);
+    // round 10 removed the four feature-chip triggers again (see above), so
+    // this is back down to two -- the vet-PDF highlight card and the
+    // showcase strip's own document-peek badge. Kept generalized rather
+    // than reverted to the original single-trigger version: two dynamic
+    // triggers sharing one dialog is exactly what this code already does,
+    // and a future round re-adding a third is a markup-only change again.
+    // The trigger is whatever was clicked, and the image is driven from
+    // that element's own data-lightbox-* attributes.
     //
     // Dismiss via the close button, a backdrop tap, or Escape -- unchanged.
     // Still no focus trap: Tab can leave the dialog. That's pre-existing and
@@ -610,9 +614,10 @@
 
     if (lightbox && lightImg && closeBtn && triggers.length) {
       var openLightbox = function (trigger) {
-        // Six entry points, one dialog. Without this guard a click landing
-        // on a second trigger while the first is open would swap the image
-        // underneath the user and lose the focus-return target.
+        // Two entry points, one dialog (round 10 -- was six while the four
+        // feature chips were also triggers). Without this guard a click
+        // landing on a second trigger while the first is open would swap
+        // the image underneath the user and lose the focus-return target.
         if (lightbox.classList.contains('is-open')) return;
         lastTrigger = trigger;
 

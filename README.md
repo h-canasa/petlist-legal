@@ -45,11 +45,15 @@ folder here is a **copy**, not synced automatically.
   referenced by the page.
 - **`foo-web.jpg` / `foo-web.png`** — the compressed derivative the page
   actually references. **Only `-web` variants belong in `index.html`.**
-- **`foo-preview.jpg`** — a much smaller thumbnail used *only* by the
+- **`foo-preview.jpg`** — a much smaller thumbnail, originally used by the
   desktop hover previews on the hero's feature row (PET-205 round 9).
-  Deliberately separate from `-web`: those are declared inside a
-  `@media (hover: hover)` block so touch devices never fetch them, which
-  only pays off if they're small.
+  **Orphaned as of round 10**: those previews were replaced with plain text
+  descriptions (see `.feature-desc` in `css/styles.css`), so
+  `petlist_pet-timeline-preview.jpg`, `petlist_calendar-preview.jpg`,
+  `petlist_expenses-preview.jpg` and `petlist_home-dashboard-preview.jpg`
+  are no longer referenced anywhere in `index.html` or the CSS. Left on
+  disk rather than deleted — a cleanup pass wasn't in that round's scope —
+  so don't wonder why they're here; they're just not wired up to anything.
 
 There is no build step for these — they're one-off derivations. `build.js`
 generates the legal pages only and never touches images. Regenerate with

@@ -862,86 +862,74 @@ a { color: inherit; }
   line-height: 1.25;
 }
 
-/* ---------- Desktop hover preview ---------- */
-/* Capability-gated on (hover: hover) and (pointer: fine), NOT on width --
-   a touch laptop at 1440px must not get a hover-only affordance, and a
-   large phone must not be treated as a pointer device.
+/* ---------- Feature description reveal (PET-205 round 10) ---------- */
+/* Replaces round 9's hover-preview screenshots with a short text
+   description per chip, reusing the same non-flow-affecting positioning
+   (absolutely positioned, floats above the chip, no layout shift on
+   reveal) so this costs nothing in CLS and can't reflow sibling chips --
+   see the CLS note on .hero-ambient elsewhere in this file for why that
+   matters on this page specifically.
 
-   The preview's background-image is declared ONLY inside this block, which
-   is the point: a declaration inside a non-matching @media never resolves
-   its url(), so touch devices download zero preview bytes. An <img> at
-   opacity:0 would have been downloaded by every visitor instead.
+   Round 9's version needed (hover: hover) and (pointer: fine) gating for
+   one specific reason: touch devices must not fetch image bytes for a
+   panel they could never see via hover. That reason is gone -- there is no
+   image here, no network request either way -- so this reveal applies
+   UNCONDITIONALLY across every input type, and touch reaches it through
+   the .is-open class below rather than being excluded from a media query.
 
-   The four image paths live HERE rather than in the markup, and that is a
-   correctness requirement, not a preference. This was first written as an
-   inline `style="--preview: url('assets/marketing/...')"` on each chip, to
-   keep the preview mapping beside the data-lightbox-src mapping -- and it
-   404'd on all four. A relative url() inside a custom property is resolved
-   against the stylesheet where the var() is CONSUMED, not the document
-   where the property was declared, so every one of them resolved to
-   `css/assets/marketing/...` and silently failed. The chips keep a short
-   data-preview key so the mapping is still legible from the HTML; the
-   paths are ../-relative because that is what this file's own base
-   resolves correctly.
+   Three ways to reveal, additive rather than exclusive:
+   - :hover / :focus-visible -- native, zero JS, the same mechanism round
+     9's image preview used, so keyboard users keep exactly the access
+     level they already had ("the accessibility bar the previous system
+     already met").
+   - .is-open -- toggled by the click handler in index.html. Real touch
+     taps don't reliably enter :hover or :focus-visible (most notably on
+     iOS Safari), so touch needs an explicit switch rather than relying on
+     either pseudo-class.
 
-   Worth knowing how it hid: the computed backgroundImage was a perfectly
-   plausible url(), and the requests did fire -- they just came back
-   ERR_FILE_NOT_FOUND. Checking that a background is "set" proves nothing;
-   check that it loaded, or look at it. */
-@media (hover: hover) and (pointer: fine) {
-  .feature-chip[data-preview="pet-timeline"] .feature-preview {
-    background-image: url('../assets/marketing/petlist_pet-timeline-preview.jpg');
-  }
-  .feature-chip[data-preview="calendar"] .feature-preview {
-    background-image: url('../assets/marketing/petlist_calendar-preview.jpg');
-  }
-  .feature-chip[data-preview="expenses"] .feature-preview {
-    background-image: url('../assets/marketing/petlist_expenses-preview.jpg');
-  }
-  .feature-chip[data-preview="home-dashboard"] .feature-preview {
-    background-image: url('../assets/marketing/petlist_home-dashboard-preview.jpg');
-  }
+   The description text is never aria-hidden and never removed from the
+   DOM at any reveal state -- a screen reader announces it as ordinary
+   button content regardless of whether it's visually shown. That's a
+   stronger guarantee than round 9's image preview offered (purely
+   decorative, aria-hidden, with the only accessible equivalent being
+   whatever the lightbox's alt text said if opened) -- and it sidesteps
+   ever needing to announce an expand/collapse state change, since nothing
+   actually enters or leaves the accessible content on toggle. */
+.feature-desc {
+  position: absolute;
+  bottom: calc(100% + 12px);
+  left: 50%;
+  width: max-content;
+  max-width: 180px;
+  transform: translate(-50%, 6px);
+  opacity: 0;
+  pointer-events: none;
+  background: var(--lavender-card);
+  color: var(--text);
+  font-size: 0.78rem;
+  font-weight: 500;
+  line-height: 1.35;
+  text-align: center;
+  padding: 10px 14px;
+  border-radius: 10px;
+  box-shadow: 0 18px 34px -12px rgba(0, 0, 0, 0.55);
+  transition: opacity 0.18s var(--ease-standard), transform 0.18s var(--ease-standard);
 }
 
-/* (continued)
+/* Lifts the revealed chip above its neighbours so the panel is never
+   clipped by the next chip's own background -- unchanged from round 9,
+   just extended to the new .is-open state alongside :hover/:focus-visible. */
+.feature-chip:hover,
+.feature-chip:focus-visible,
+.feature-chip.is-open {
+  z-index: 3;
+}
 
-   The click -> lightbox handler is bound to ALL triggers unconditionally,
-   hover-capable or not, and that is intentional rather than an oversight:
-   hybrid devices (touch laptops, iPad with a trackpad) match hover:hover
-   AND get tapped, so a hover-exclusive design would leave them with an
-   inert button. Hover is a quick peek; click/Enter always opens the full
-   image. Additive, not mutually exclusive. */
-@media (hover: hover) and (pointer: fine) {
-  .feature-preview {
-    position: absolute;
-    bottom: calc(100% + 12px);
-    left: 50%;
-    width: 132px;
-    aspect-ratio: 720 / 1565;
-    transform: translate(-50%, 6px) scale(0.96);
-    transform-origin: 50% 100%;
-    opacity: 0;
-    pointer-events: none;
-    background-size: cover;
-    background-position: center top;
-    border-radius: 10px;
-    border: 2px solid var(--lavender-card);
-    box-shadow: 0 18px 34px -12px rgba(0, 0, 0, 0.55);
-    transition: opacity 0.18s var(--ease-standard), transform 0.18s var(--ease-standard);
-  }
-
-  /* Lifts the hovered chip above its neighbours so the panel is never
-     clipped by the next chip's own background. */
-  .feature-chip:hover,
-  .feature-chip:focus-visible {
-    z-index: 3;
-  }
-
-  .feature-chip:hover .feature-preview,
-  .feature-chip:focus-visible .feature-preview {
-    opacity: 1;
-    transform: translate(-50%, 0) scale(1);
-  }
+.feature-chip:hover .feature-desc,
+.feature-chip:focus-visible .feature-desc,
+.feature-chip.is-open .feature-desc {
+  opacity: 1;
+  transform: translate(-50%, 0);
 }
 
 /* ---------- Vet-ready PDF highlight card (item 4b) ---------- */
@@ -1841,11 +1829,12 @@ a { color: inherit; }
     transition: none !important;
   }
 
-  /* The preview still APPEARS on hover -- it's information, not
-     decoration, and removing it would take a capability away rather than
-     calm it down. Only the slide-and-scale is dropped, so it cuts
-     straight to its resting position. */
-  .feature-preview {
+  /* The description still APPEARS on hover/focus/tap -- it's information,
+     not decoration, and removing it would take a capability away rather
+     than calm it down. Only the slide-and-fade is dropped, so it cuts
+     straight to its resting position (round 10: renamed from
+     .feature-preview, same rule). */
+  .feature-desc {
     transition: none !important;
     transform: translate(-50%, 0) !important;
   }
