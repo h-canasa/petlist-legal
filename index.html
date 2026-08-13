@@ -26,14 +26,16 @@
 </head>
 <body>
 
-<header class="hero">
-  <div class="hero-ambient" aria-hidden="true"></div>
-
-  <div class="container hero-header">
+<header class="site-header" id="site-header">
+  <div class="container">
     <a href="./" aria-label="PetList home">
       <img class="brand-mark" src="assets/marketing/petlist_icon-banner-web.png" alt="PetList" width="133" height="56">
     </a>
   </div>
+</header>
+
+<header class="hero">
+  <div class="hero-ambient" aria-hidden="true"></div>
 
   <div class="container hero-body">
     <div class="hero-copy">
@@ -60,9 +62,9 @@
 <main>
   <section class="showcase" aria-labelledby="showcase-heading">
     <div class="container">
-      <div class="section-heading">
-        <p class="section-eyebrow">What's inside</p>
-        <h2 class="section-title" id="showcase-heading">Everything your pets' care needs, organized</h2>
+      <div class="section-heading" data-reveal>
+        <p class="section-eyebrow reveal-child reveal-child--1">What's inside</p>
+        <h2 class="section-title reveal-child reveal-child--2" id="showcase-heading">Everything your pets' care needs, organized</h2>
       </div>
 
       <div class="showcase-grid">
@@ -125,11 +127,11 @@
   </section>
 
   <section class="waitlist" aria-labelledby="waitlist-heading">
-    <div class="container waitlist-inner">
-      <h2 class="waitlist-title" id="waitlist-heading">PetList is on iOS first</h2>
-      <p class="waitlist-body">Building for Android next. Leave your email and we'll let you know the moment it's ready.</p>
+    <div class="container waitlist-inner" data-reveal>
+      <h2 class="waitlist-title reveal-child reveal-child--1" id="waitlist-heading">PetList is on iOS first</h2>
+      <p class="waitlist-body reveal-child reveal-child--2">Building for Android next. Leave your email and we'll let you know the moment it's ready.</p>
 
-      <form class="waitlist-form" action="https://formspree.io/f/FORMSPREE_FORM_ID_PLACEHOLDER" method="POST">
+      <form class="waitlist-form reveal-child reveal-child--3" action="https://formspree.io/f/FORMSPREE_FORM_ID_PLACEHOLDER" method="POST">
         <label class="visually-hidden" for="waitlist-email">Email address</label>
         <input class="waitlist-email" id="waitlist-email" type="email" name="email" placeholder="you@example.com" required>
         <input type="hidden" name="_subject" value="PetList Android waitlist signup">
@@ -161,10 +163,14 @@
 <script>
   (function () {
     var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    var items = document.querySelectorAll('.showcase-item');
+
+    // ---- Scroll-triggered reveals: .showcase-item (its own children
+    // stagger via CSS) and any [data-reveal] container (section headings,
+    // the waitlist block, the upcoming-features list). ----
+    var revealTargets = document.querySelectorAll('.showcase-item, [data-reveal]');
 
     if (reduceMotion || !('IntersectionObserver' in window)) {
-      items.forEach(function (item) { item.classList.add('is-visible'); });
+      revealTargets.forEach(function (el) { el.classList.add('is-visible'); });
     } else {
       var observer = new IntersectionObserver(function (entries) {
         entries.forEach(function (entry) {
@@ -175,7 +181,29 @@
         });
       }, { threshold: 0.2, rootMargin: '0px 0px -10% 0px' });
 
-      items.forEach(function (item) { observer.observe(item); });
+      revealTargets.forEach(function (el) { observer.observe(el); });
+    }
+
+    // ---- Persistent header: shrinks + gains a blurred background once
+    // scrolled past the hero, reverts when scrolled back to top. Fixed
+    // positioning keeps it out of document flow, so this never shifts any
+    // other content (no CLS contribution). ----
+    var header = document.getElementById('site-header');
+    var hero = document.querySelector('.hero');
+    if (header && hero) {
+      var ticking = false;
+      var updateHeader = function () {
+        var threshold = Math.max(120, hero.offsetHeight * 0.55);
+        header.classList.toggle('is-scrolled', window.scrollY > threshold);
+        ticking = false;
+      };
+      window.addEventListener('scroll', function () {
+        if (!ticking) {
+          window.requestAnimationFrame(updateHeader);
+          ticking = true;
+        }
+      }, { passive: true });
+      updateHeader();
     }
 
     // ---- Vet PDF lightbox: tap the peeking document to see it full-size,

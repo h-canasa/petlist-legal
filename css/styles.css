@@ -64,12 +64,39 @@ a { color: inherit; }
   padding: 0 var(--space-3);
 }
 
+/* ---------- Generic scroll-reveal (PET-205 follow-up item 5) ---------- */
+/* Any element with [data-reveal] is observed by the page's IntersectionObserver
+   and gains .is-visible once scrolled into view (see the inline script).
+   Its .reveal-child descendants fade/slide in individually, staggered by
+   their --1/--2/--3 delay variant -- used for section headings (eyebrow,
+   then title) and the waitlist section (title, body, then form). The
+   showcase items and upcoming-list use their own analogous per-child rules
+   nearby, since they key off a class already used for other purposes
+   rather than the shared [data-reveal] attribute. */
+.reveal-child {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.5s var(--ease-standard), transform 0.5s var(--ease-standard);
+}
+
+[data-reveal].is-visible .reveal-child {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reveal-child--1 { transition-delay: 0s; }
+.reveal-child--2 { transition-delay: 0.12s; }
+.reveal-child--3 { transition-delay: 0.24s; }
+
 /* ---------- Hero ---------- */
 
 .hero {
   position: relative;
   background: var(--purple-deep);
   overflow: hidden;
+  /* Compensates for .site-header now being position:fixed (out of flow) --
+     92px = the header's own resting-state height (20px + 56px logo + 20px). */
+  padding-top: 92px;
   padding-bottom: var(--space-7);
 }
 
@@ -123,20 +150,41 @@ a { color: inherit; }
   to   { transform: translate(5%, -4%) scale(1.08); }
 }
 
-.hero-header {
-  position: relative;
-  z-index: 1;
-  padding-top: var(--space-3);
-  padding-bottom: var(--space-4);
+/* ---------- Persistent site header (PET-205 follow-up item 5) ---------- */
+/* Fixed so it survives past the hero; transparent/large at rest, shrinks
+   and gains a blurred backdrop once scrolled past the hero, so it stays
+   legible over both the lavender showcase and purple waitlist sections
+   below. position:fixed keeps it out of document flow, so its own size
+   change on scroll can never shift any other content -- CLS stays 0. */
+.site-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  padding: 20px 0;
+  background: transparent;
   opacity: 0;
   animation: fade-in 0.5s var(--ease-standard) forwards;
+  transition: padding 0.3s var(--ease-standard), background-color 0.3s var(--ease-standard), box-shadow 0.3s var(--ease-standard);
 }
 
-.hero-header .brand-mark {
-  /* PET-205 follow-up item 2: bumped from 40px to 56px -- the mark read too
-     small against the hero at its original size. */
+.site-header.is-scrolled {
+  padding: 10px 0;
+  background: rgba(27, 22, 63, 0.82);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18);
+}
+
+.site-header .brand-mark {
   height: 56px;
   width: auto;
+  transition: height 0.3s var(--ease-standard);
+}
+
+.site-header.is-scrolled .brand-mark {
+  height: 44px;
 }
 
 .hero-body {
@@ -353,15 +401,32 @@ a { color: inherit; }
   flex-direction: column;
   align-items: center;
   text-align: center;
-  opacity: 0;
-  transform: translateY(22px);
-  transition: opacity 0.6s var(--ease-standard), transform 0.6s var(--ease-standard);
 }
 
-.showcase-item.is-visible {
+/* Staggered entrance (PET-205 follow-up item 5): each part fades/slides in
+   on its own delay once the card scrolls into view, in the ticket's
+   specified order -- heading, then copy, then the visual -- rather than
+   the whole card moving as one flat block. This is an animation-TIMING
+   order, not a DOM reorder: the visual stays positioned first in the card
+   (unchanged layout), it's simply the last of the three to finish fading in. */
+.showcase-visual,
+.showcase-headline,
+.showcase-body {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.5s var(--ease-standard), transform 0.5s var(--ease-standard);
+}
+
+.showcase-item.is-visible .showcase-visual,
+.showcase-item.is-visible .showcase-headline,
+.showcase-item.is-visible .showcase-body {
   opacity: 1;
   transform: translateY(0);
 }
+
+.showcase-headline { transition-delay: 0s; }
+.showcase-body { transition-delay: 0.12s; }
+.showcase-visual { transition-delay: 0.24s; }
 
 .showcase-visual {
   position: relative;
@@ -399,6 +464,7 @@ a { color: inherit; }
   z-index: 0;
   transform: rotate(7deg) translateX(28%);
   transition: transform 0.6s var(--ease-standard), opacity 0.6s var(--ease-standard);
+  transition-delay: 0.32s;
   opacity: 0;
 }
 
@@ -650,7 +716,7 @@ a { color: inherit; }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
 
-  .hero-header,
+  .site-header,
   .hero-headline,
   .hero-pitch,
   .hero-cta,
@@ -658,6 +724,11 @@ a { color: inherit; }
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;
+  }
+
+  .site-header,
+  .site-header .brand-mark {
+    transition: none !important;
   }
 
   .hero-ambient::before,
@@ -669,7 +740,11 @@ a { color: inherit; }
     transform: none;
   }
 
-  .showcase-item {
+  .showcase-item,
+  .showcase-visual,
+  .showcase-headline,
+  .showcase-body,
+  .reveal-child {
     transition: none !important;
     opacity: 1 !important;
     transform: none !important;
