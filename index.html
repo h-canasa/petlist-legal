@@ -70,6 +70,113 @@
       </div>
     </div>
   </div>
+
+  <!-- Sibling of .hero-body, NOT a child of it: dropping this into
+       .hero-copy would make the left column roughly twice the height of the
+       right one, breaking the grid's align-items:center and dragging the
+       phone to the middle of a very tall row. As a sibling the 860px
+       two-column rule needs no change at all. -->
+  <div class="container hero-extras">
+    <ul class="feature-row">
+      <li>
+        <button type="button" class="feature-chip"
+                data-preview="pet-timeline"
+                data-lightbox-trigger
+                data-lightbox-src="assets/marketing/petlist_pet-timeline-web.jpg"
+                data-lightbox-w="720" data-lightbox-h="1565"
+                data-lightbox-alt="A pet's health timeline in PetList, listing vaccinations, vet visits and medications by date"
+                data-lightbox-label="Health records">
+          <svg class="feature-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M6 2.75h8.5L19 7.25v14H6z"/>
+            <path d="M14 2.75v4.5h4.5"/>
+            <path d="M12 10.5v5M9.5 13h5"/>
+          </svg>
+          <span class="feature-label">Health Records</span>
+          <span class="feature-preview" aria-hidden="true"></span>
+        </button>
+      </li>
+      <li>
+        <button type="button" class="feature-chip"
+                data-preview="calendar"
+                data-lightbox-trigger
+                data-lightbox-src="assets/marketing/petlist_calendar-web.jpg"
+                data-lightbox-w="720" data-lightbox-h="1565"
+                data-lightbox-alt="PetList's Calendar tab with health events and reminders marked on the month grid"
+                data-lightbox-label="Care reminders">
+          <svg class="feature-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <rect x="3.25" y="5" width="17.5" height="16" rx="2.5"/>
+            <path d="M3.25 9.75h17.5M8 2.75v4M16 2.75v4"/>
+            <path d="M8 14h3M8 17.5h7"/>
+          </svg>
+          <span class="feature-label">Care Reminders</span>
+          <span class="feature-preview" aria-hidden="true"></span>
+        </button>
+      </li>
+      <li>
+        <button type="button" class="feature-chip"
+                data-preview="expenses"
+                data-lightbox-trigger
+                data-lightbox-src="assets/marketing/petlist_expenses-web.jpg"
+                data-lightbox-w="720" data-lightbox-h="1565"
+                data-lightbox-alt="PetList's Expenses tab showing monthly totals, a spending trend chart and a breakdown by pet"
+                data-lightbox-label="Spending tracker">
+          <svg class="feature-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M3.5 20.25V3.75M3.5 20.25h17"/>
+            <path d="M7.5 16.5l4-4.5 3 2.5 5-6.5"/>
+            <path d="M20.5 8v3.5M20.5 8H17"/>
+          </svg>
+          <span class="feature-label">Spending Tracker</span>
+          <span class="feature-preview" aria-hidden="true"></span>
+        </button>
+      </li>
+      <!-- Yes, this one points at the same screenshot the hero phone is
+           already displaying a few hundred pixels away. That's deliberate,
+           per the ticket's own image mapping: the chip reads as a legend
+           for the phone rather than as a fifth, unseen screen. Noted here
+           so a later round doesn't "discover" it as a copy-paste bug. -->
+      <li>
+        <button type="button" class="feature-chip"
+                data-preview="home-dashboard"
+                data-lightbox-trigger
+                data-lightbox-src="assets/marketing/petlist_home-dashboard-web.jpg"
+                data-lightbox-w="720" data-lightbox-h="1565"
+                data-lightbox-alt="PetList's Home dashboard with every pet, upcoming care and household spending together"
+                data-lightbox-label="All in one place">
+          <svg class="feature-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <ellipse cx="8" cy="6.5" rx="2.15" ry="2.75"/>
+            <ellipse cx="16" cy="6.5" rx="2.15" ry="2.75"/>
+            <ellipse cx="4.25" cy="12.5" rx="1.9" ry="2.4"/>
+            <ellipse cx="19.75" cy="12.5" rx="1.9" ry="2.4"/>
+            <path d="M12 11.75c2.9 0 5 2.4 5 4.9 0 2-1.5 3.35-3.4 3.35-1 0-1.2-.45-1.6-.45s-.6.45-1.6.45C8.5 20 7 18.65 7 16.65c0-2.5 2.1-4.9 5-4.9z"/>
+          </svg>
+          <span class="feature-label">All in One Place</span>
+          <span class="feature-preview" aria-hidden="true"></span>
+        </button>
+      </li>
+    </ul>
+
+    <button type="button" class="vet-card has-coral-pulse"
+            data-lightbox-trigger
+            data-lightbox-src="assets/marketing/petlist_vet-pdf-document-large.jpg"
+            data-lightbox-w="900" data-lightbox-h="1285"
+            data-lightbox-alt="Full PetList vet visit summary PDF document"
+            data-lightbox-label="Vet summary document">
+      <span class="vet-card-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" focusable="false">
+          <path d="M5.5 2.75h8L18.5 7.75v13.5h-13z"/>
+          <path d="M13.5 2.75v5h5"/>
+          <path d="M8.5 12.5h7M8.5 15.75h7M8.5 19h4"/>
+        </svg>
+      </span>
+      <span class="vet-card-text">
+        <span class="vet-card-label">Vet-Ready PDF Export</span>
+        <span class="vet-card-sub">A clean health summary, ready to share in one tap.</span>
+      </span>
+      <span class="vet-card-chev" aria-hidden="true">
+        <svg viewBox="0 0 24 24" focusable="false"><path d="M9 4.5l7.5 7.5L9 19.5"/></svg>
+      </span>
+    </button>
+  </div>
 </header>
 
 <main>
@@ -141,7 +248,7 @@
                 </defs>
                 <path class="doc-connector-line" d="M680,338 C760,500 780,1000 460,1465" fill="none" mask="url(#docConnectorReveal)"/>
               </svg>
-              <button type="button" class="doc-peek-trigger" aria-label="View the full vet summary document"
+              <button type="button" class="doc-peek-trigger has-coral-pulse" aria-label="View the full vet summary document"
                       data-lightbox-trigger
                       data-lightbox-src="assets/marketing/petlist_vet-pdf-document-large.jpg"
                       data-lightbox-w="900" data-lightbox-h="1285"
