@@ -313,13 +313,20 @@
       <h2 class="waitlist-title" id="waitlist-heading">PetList is on iOS first</h2>
       <p class="waitlist-body">Building for Android next. Leave your email and we'll let you know the moment it's ready.</p>
 
-      <form class="waitlist-form" action="https://formspree.io/f/mrpzlykv" method="POST">
-        <label class="visually-hidden" for="waitlist-email">Email address</label>
-        <input class="waitlist-email" id="waitlist-email" type="email" name="email" placeholder="you@example.com" required>
-        <input type="hidden" name="_subject" value="PetList Android waitlist signup">
-        <button class="waitlist-submit" type="submit">Notify me</button>
-      </form>
-      <p class="waitlist-note">No spam — just one email when PetList for Android launches.</p>
+      <div id="waitlist-form-wrap">
+        <form class="waitlist-form" id="waitlist-form" action="https://formspree.io/f/mrpzlykv" method="POST">
+          <label class="visually-hidden" for="waitlist-email">Email address</label>
+          <input class="waitlist-email" id="waitlist-email" type="email" name="email" placeholder="you@example.com" required>
+          <input type="hidden" name="_subject" value="PetList Android waitlist signup">
+          <button class="waitlist-submit" type="submit">Notify me</button>
+        </form>
+        <p class="waitlist-error" id="waitlist-error" role="alert" hidden></p>
+        <p class="waitlist-note">No spam — just one email when PetList for Android launches.</p>
+      </div>
+      <div class="waitlist-success" id="waitlist-success" role="status" tabindex="-1" hidden>
+        <p class="waitlist-success-title">You're on the list!</p>
+        <p class="waitlist-success-body">We'll email you the moment Android launches.</p>
+      </div>
     </div>
   </section>
 </main>
@@ -601,6 +608,71 @@
       });
       document.addEventListener('keydown', function (event) {
         if (event.key === 'Escape' && lightbox.classList.contains('is-open')) closeLightbox();
+      });
+    }
+
+    // ---- Android waitlist form: AJAX submit (PET-205 follow-up) ----
+    // Formspree's plain-HTML POST redirects to its own generic success
+    // page on submit, which breaks the page's identity at the exact
+    // moment of highest user intent. Intercepting the submit and posting
+    // via fetch() with Accept: application/json (Formspree's documented
+    // AJAX signal -- without it Formspree tries to send an HTML redirect
+    // back instead of JSON) keeps the user on this page for both outcomes.
+    var waitlistForm = document.getElementById('waitlist-form');
+    var waitlistWrap = document.getElementById('waitlist-form-wrap');
+    var waitlistSuccess = document.getElementById('waitlist-success');
+    var waitlistError = document.getElementById('waitlist-error');
+    var waitlistSubmit = waitlistForm ? waitlistForm.querySelector('.waitlist-submit') : null;
+
+    if (waitlistForm && waitlistWrap && waitlistSuccess && waitlistError && waitlistSubmit) {
+      var submitLabel = waitlistSubmit.textContent;
+
+      var showError = function (message) {
+        waitlistError.textContent = message;
+        waitlistError.hidden = false;
+      };
+
+      var clearError = function () {
+        waitlistError.hidden = true;
+        waitlistError.textContent = '';
+      };
+
+      waitlistForm.addEventListener('submit', function (event) {
+        event.preventDefault();
+        clearError();
+        waitlistSubmit.disabled = true;
+        waitlistSubmit.textContent = 'Sending…';
+
+        fetch(waitlistForm.action, {
+          method: 'POST',
+          body: new FormData(waitlistForm),
+          headers: { 'Accept': 'application/json' }
+        }).then(function (response) {
+          if (response.ok) {
+            waitlistWrap.hidden = true;
+            waitlistSuccess.hidden = false;
+            waitlistSuccess.focus();
+            return;
+          }
+          // Formspree returns { errors: [{ message, ... }, ...] } on a
+          // rejected submission (e.g. a bad field) -- surface its own
+          // message when present rather than a generic one.
+          response.json().then(function (data) {
+            var message = data && data.errors && data.errors.length
+              ? data.errors.map(function (e) { return e.message; }).join(', ')
+              : 'Something went wrong. Please try again.';
+            showError(message);
+          }).catch(function () {
+            showError('Something went wrong. Please try again.');
+          });
+        }).catch(function () {
+          showError('Network error -- please check your connection and try again.');
+        }).finally(function () {
+          if (waitlistSuccess.hidden) {
+            waitlistSubmit.disabled = false;
+            waitlistSubmit.textContent = submitLabel;
+          }
+        });
       });
     }
   })();

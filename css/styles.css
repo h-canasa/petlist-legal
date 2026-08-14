@@ -1714,10 +1714,44 @@ a { color: inherit; }
   box-shadow: 0 10px 20px -8px rgba(224, 99, 122, 0.6);
 }
 
+.waitlist-submit:disabled {
+  cursor: default;
+  opacity: 0.7;
+  transform: none;
+  box-shadow: none;
+}
+
 .waitlist-note {
   margin-top: var(--space-2);
   font-size: 0.82rem;
   color: rgba(255, 255, 255, 0.55);
+}
+
+/* Warm coral-orange rather than --coral itself: needs to read as a
+   distinct "something's wrong" signal, not the same hue as the CTA button
+   sitting right above it. #FFAB91 on --purple-secondary measures ~7.6:1,
+   well past the 4.5:1 text AA floor. */
+.waitlist-error {
+  margin: var(--space-2) 0 0;
+  font-size: 0.9rem;
+  color: #FFAB91;
+}
+
+.waitlist-success {
+  outline: none;
+}
+
+.waitlist-success-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.25rem, 2.2vw, 1.6rem);
+  color: var(--on-dark);
+  margin: 0 0 var(--space-1);
+}
+
+.waitlist-success-body {
+  color: var(--on-dark-secondary);
+  margin: 0;
 }
 
 /* ---------- Footer ---------- */
