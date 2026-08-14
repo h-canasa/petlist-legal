@@ -734,8 +734,14 @@ a { color: inherit; }
 }
 
 .hero-photos {
-  /* Hidden below 700px -- see the media query at the end of this block.
-     Declared display:none here so narrow viewports never fetch the file. */
+  /* Round 13: hidden unless the visitor is on a hover-capable, fine-pointer
+     device AND the viewport is wide enough for .hero-body's two-column
+     layout (1024px -- see the media query below for why that value, not
+     700px). Declared display:none here, not just opacity:0, so neither the
+     background-image request nor any layout box exists for anyone this
+     doesn't apply to -- which by definition already excluded the
+     majority-mobile audience even in earlier rounds, and now also excludes
+     desktop/laptop touchscreens and anyone who can't hover. */
   display: none;
   position: absolute;
   inset: 0;
@@ -760,71 +766,88 @@ a { color: inherit; }
   z-index: 1;
 }
 
-@media (min-width: 700px) {
+/* ---------- Hero cat: hover-reveal, not permanent (round 13) ---------- */
+/* Rounds 11-12 kept fighting the same tension: big enough to read clearly
+   vs. small enough not to compete with the phone in a composition that's
+   ALWAYS on screen. Round 13 removes the "always on" half of that tension
+   instead of continuing to tune around it -- the cat is hidden at rest and
+   only reveals while the phone itself is hovered, so it no longer has to
+   coexist with the phone as permanent visual weight, and can be sized
+   generously (round 9/10 territory) without a permanent-margin budget to
+   fit inside.
+
+   Gated on THREE conditions, all required:
+   - `(hover: hover) and (pointer: fine)` -- the same capability-gating
+     convention round 9 established for the feature-row hover previews.
+     Without it, a touchscreen laptop would ship the image and hover
+     listener for an interaction it can never trigger.
+   - `(min-width: 1024px)` -- not the 700px earlier rounds gated on. Round
+     12's own investigation found the real constraint here is where
+     .hero-body switches from single- to two-column (860px, see that rule
+     elsewhere in this file), and that the margin between the phone and the
+     viewport edge doesn't recover to something generous until 1024px --
+     860-1023px is a real but cramped window. Since this is no longer a
+     permanent element with a permanent-margin budget to defend at every
+     width, there's no reason to also support that cramped middle ground:
+     it's simpler and just as correct to start the whole mechanism where
+     the room is already generous.
+
+   Triggered by `.hero-visual:hover` rather than `.phone-stage:hover` --
+   the two are equivalent hit-test regions (.hero-visual is width:
+   fit-content around exactly the phone, see that rule above), but a plain
+   descendant selector needs no DOM-order assumptions the way a sibling
+   combinator would (.hero-photos precedes .phone-stage in the markup).
+   One known, accepted quirk: because the revealed cat visually extends
+   PAST .hero-visual's own box (that's the whole point), moving the pointer
+   from the phone onto the peeking part of the cat itself exits the hover
+   region and hides it again -- inherent to a hover-triggered peek with no
+   JS, not a bug to chase.
+
+   Decorative, not informational (unlike round 10's feature-row text,
+   which had to stay screen-reader-reachable): .hero-photos already carries
+   aria-hidden="true" in the markup, and this being hover-only rather than
+   also focus-triggered is intentional -- there is no keyboard equivalent
+   to "hover the phone" to preserve here. */
+@media (hover: hover) and (pointer: fine) and (min-width: 1024px) {
   .hero-photos { display: block; }
 
   .hero-photo--cat {
-    /* Round 12: re-tuned again after round 11's fraction still read as an
-       accidental crop in review -- one eye, an ear, part of a cheek, not a
-       clear "peeking" moment. Because .hero-photo--cat uses
-       `background-size: contain` against a box whose aspect-ratio already
-       matches the source image, NOTHING about it is ever cropped by the
-       image itself -- the box is shown in full, unscaled by
-       background-position. The only thing hiding part of the cat is the
-       opaque phone sitting on top (z-index) over whatever portion of the
-       box falls inside the phone's own bounds. So the fraction of the cat
-       that reads as "visible" is peek_px / box_width -- shrinking the box
-       while holding peek roughly constant raises that fraction without
-       needing more horizontal room than the viewport has. That's the lever
-       pulled here: a notably SMALLER box than round 11's, so the same (or
-       smaller) peek past the phone's edge now shows most of the face
-       instead of a sliver of it.
-       `.hero { overflow: hidden }` clips whatever runs past the section,
-       intended rather than tolerated. */
-    right: -13%;
-    bottom: 4%;
-    width: 22%;
-    max-width: 70px;
+    right: -28%;
+    bottom: 5%;
+    width: 50%;
+    max-width: 180px;
     aspect-ratio: 620 / 674;
     background-image: url('../assets/marketing/petlist_hero-cat-web.png');
     background-position: right bottom;
-    /* Grounds the cat in the same lit space as the phone rather than
-       floating flat against the gradient -- a soft, directional shadow
-       roughly matching the phone's own drop-shadow angle/darkness
-       (.hero .phone-frame below), scaled down for the cat's smaller size. */
-    filter: drop-shadow(0 14px 18px rgba(0, 0, 0, 0.4));
+    filter: drop-shadow(0 16px 22px rgba(0, 0, 0, 0.42));
     opacity: 0;
-    animation: fade-up 0.6s var(--ease-standard) 0.46s forwards;
-    transform: translateY(14px);
+    /* Anchored to the same corner the cat emerges from, so the scale-in
+       reads as growing out from behind the phone rather than zooming from
+       the image's own center. */
+    transform-origin: right bottom;
+    transform: translateY(10px) scale(0.86);
+    transition: opacity 0.22s var(--ease-standard), transform 0.22s var(--ease-standard);
+  }
+
+  .hero-visual:hover .hero-photo--cat {
+    opacity: 1;
+    transform: translateY(0) scale(1);
   }
 }
 
-/* Round 12: the tightest margin in the whole 700-1920px range is NOT at
-   700px -- .hero-body is single-column below 860px, so .hero-visual (and
-   the phone it wraps) sits centered in the FULL container width there,
-   with 150-215px of clear space beside it. The 860px breakpoint below
-   switches .hero-body to two columns (see its own rule further down),
-   which is what actually squeezes the phone's column and, with it, the
-   margin available for this peek -- measured as low as ~55px right at
-   860px itself, worst case across the whole tested range, growing back up
-   past 90px by 1024px and past 500px by 1920px as the container
-   approaches and then exceeds its 1120px max-width.
-   That's why this file now has a THIRD cat breakpoint, keyed off 1024px
-   rather than reusing .phone-frame's own 860px one: the 860-1023px window
-   has to keep the smaller, margin-safe sizing above (it was verified
-   against 860px's own worst case, not against 1024's more generous one),
-   and only widens once the two-column margin has genuinely opened back up.
-   The result isn't monotonic across breakpoints -- 700-859px has the same
-   modest size as 860-1023px despite having far more room to spare, rather
-   than being sized independently to its own (very generous) margin -- a
-   deliberate simplification so the cat doesn't visibly shrink and then
-   regrow as the viewport crosses 860px; it only ever grows, once, at
-   1024px. */
-@media (min-width: 1024px) {
+/* Bigger again at 1440px+: margin between the phone and the viewport edge
+   is already ~130px+ at the 1024px tier's own sizing, and grows past
+   270px by 1440px and past 500px by 1920px (container approaches, then
+   exceeds, its 1120px max-width) -- comfortable room for a larger, more
+   confident reveal at typical desktop widths. Only the three properties
+   that actually change are redeclared; bottom, the aspect-ratio, the
+   image, the shadow and the transition all keep cascading from the base
+   rule above. */
+@media (hover: hover) and (pointer: fine) and (min-width: 1440px) {
   .hero-photo--cat {
-    right: -23%;
-    width: 35%;
-    max-width: 130px;
+    right: -50%;
+    width: 70%;
+    max-width: 230px;
   }
 }
 
@@ -1767,8 +1790,6 @@ a { color: inherit; }
   .hero-extras,
   .feature-row,
   .hero-photos,
-  .hero-photo,
-  .hero-photo--cat,
   .trust-bar,
   .cta-note {
     animation: none !important;
@@ -1777,6 +1798,24 @@ a { color: inherit; }
   }
 
   .feature-chip {
+    transition: none !important;
+  }
+
+  /* .hero-photo (the base class every .hero-photo* slot carries, including
+     .hero-photo--cat) is deliberately NOT in the force-visible list above
+     either -- it's currently only ever the cat, which is hidden-until-
+     hovered by design now (round 13), and forcing opacity:1 here would
+     make it permanently visible for reduced-motion users regardless of
+     hover, which is the exact "always on" composition round 13 removed.
+     If a future second .hero-photo slot (see the comment near
+     .hero-photos) is ever added as a PERMANENT element rather than a
+     hover-reveal, this exclusion needs revisiting for that slot
+     specifically. */
+  /* The hover-triggered show/hide itself is a direct response to user
+     input, not autoplaying motion, so it stays enabled here too -- only
+     the transition animating INTO that state collapses to an instant
+     cut. */
+  .hero-photo--cat {
     transition: none !important;
   }
 
