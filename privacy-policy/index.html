@@ -164,155 +164,99 @@
 <main>
   <div class="card">
     <h1>Privacy Policy for PetList</h1>
-
-<p><strong>Last updated:</strong> <code>2026-08-11</code></p>
+<p><strong>Effective Date:</strong> August 19, 2026</p>
 <h2>Overview</h2>
-<p>PetList (&quot;the app&quot;) is a mobile app for organizing multi-pet household
-records — vaccination and deworming history, health event timelines, and
-expense tracking. This policy explains what information the app handles
-and, just as importantly, what it does not.</p>
-<p><strong>The short version:</strong> PetList stores everything you enter — your pets&#39;
-profiles, health records, expenses, and photos — in a database on your own
-device. As of this writing, the app has no user accounts, does not send
-your data to any server the developer operates, includes no analytics or
-advertising SDKs, and includes no crash-reporting service. The only
-network activity the app performs on its own is checking for app updates
-(see &quot;App updates&quot; below).</p>
-<h2>Information the app stores</h2>
-<p>All of the following is entered directly by you and stored <strong>only in a
-local SQLite database on your device</strong> (via <code>expo-sqlite</code>), plus a local
-photos folder in the app&#39;s own document storage (via <code>expo-file-system</code>)
-for pet profile photos:</p>
+<p>PetList is a mobile app for organizing multi-pet household information: pet
+profiles, health records, reminders, weight tracking, daily care tasks, and
+expenses. This policy explains what information PetList handles and how it
+is used.</p>
+<p>PetList does not require an account. Your pet and household records are
+stored locally on your device. PetList does not operate a cloud database or
+sync service for your records, does not include advertising or
+behavioral-tracking software, and does not sell your information.</p>
+<h2>Information You Store in PetList</h2>
+<p>When you use PetList, you choose what to enter. This may include:</p>
 <ul>
-<li>Household name(s)</li>
-<li>Pet profiles: name, species, breed, birthdate, weight, gender, photo</li>
-<li>Health event records: vaccinations, deworming, vet visits, medications,
-grooming, neuter/spay records, weight logs, and free-text notes/location
-you enter for any of them</li>
-<li>Reminders and their scheduling (due dates, recurrence, time of day)</li>
-<li>Expense records: amounts, categories, descriptions, dates</li>
-<li>Daily-task checklists and completion history</li>
-<li>App preferences (currency, units, theme, notification settings)</li>
+<li>Household and pet profiles (name, species, breed, birthdate, weight,
+gender, photo)</li>
+<li>Health records, such as vaccinations, deworming, vet visits, medications,
+grooming, spay/neuter records, weight logs, and any notes you add</li>
+<li>Reminders and their scheduling</li>
+<li>Expenses, both per-pet and household-wide</li>
+<li>Daily care tasks and their completion history</li>
+<li>App preferences such as currency, units, theme, and notification settings</li>
 </ul>
-<p>None of this is transmitted to the developer, to the developer&#39;s
-infrastructure, or to any analytics or advertising company, because no
-code path in the app sends it anywhere. It is not backed up to any cloud
-service by the app itself. If your device is lost, or the app is
-uninstalled, this data is not recoverable by the developer — the developer
-never had a copy of it.</p>
-<p><strong>Multiple pets/households:</strong> the app can organize records for more than
-one pet or (in principle) more than one household, but this is a purely
-local organizational grouping within the on-device database — it is not a
-shared or synced feature between different people&#39;s devices. Nothing about
-adding another pet or household sends anything off your device either.</p>
-<h2>Permissions the app requests</h2>
-<h3>Camera and Photo Library</h3>
-<p>The app asks for camera and/or photo library access only when you choose
-to set or change a pet&#39;s profile photo. The photo you pick or take is
-copied into the app&#39;s own local storage on your device and displayed
-within the app. It is not uploaded anywhere. You can deny these
-permissions and still use every other feature of the app — a pet simply
-has no photo.</p>
-<h3>Notifications</h3>
-<p>The app asks for notification permission so it can remind you about
-upcoming health events and daily tasks. These are <strong>local notifications</strong>
-scheduled directly on your device by the app itself — the app does not use
-push notifications, does not register your device with any push
-notification service, and does not collect a device token or any other
-identifier for this purpose. You can decline or later revoke notification
-permission in your device&#39;s Settings; the app continues to show upcoming
-items in-app either way, it just won&#39;t alert you.</p>
-<h2>Exporting a vet summary</h2>
-<p>PetList can generate a PDF summary of a single pet&#39;s health records —
-identity details, logged health events, vaccinations, spay/neuter status,
-current medications and recent weight readings — and hand it to your
-device&#39;s own share sheet. It is reached from the &quot;...&quot; menu on that pet&#39;s
-profile screen and only ever runs when you tap it.</p>
-<p>What happens, precisely:</p>
+<p>PetList does not ask for your name, email address, or any other contact
+information in order to use the app.</p>
+<h2>Where Your Information Is Stored</h2>
+<p>The information above is stored locally, in a database on your device,
+along with any photos you add. PetList does not operate a cloud database or
+synchronization service, and its developer does not have access to, or a
+copy of, your records at any time.</p>
+<p>Because this information exists only on your device, uninstalling PetList
+or losing your device without a backup you made yourself (see &quot;Device
+Backups&quot; below) means it cannot be recovered by PetList or its developer.</p>
+<h2>Network Communication and Service Providers</h2>
+<p>PetList&#39;s own features do not send your pet, health, or expense records
+over a network. The app does periodically check for and download
+application updates through Expo, PetList&#39;s update infrastructure
+provider. That process involves standard technical information about your
+device and app version, the same as any app update check, and does not
+include your pet or household records. Expo&#39;s handling of that technical
+information is described in its own privacy policy at
+<a href="https://expo.dev/privacy">https://expo.dev/privacy</a>.</p>
+<h2>Sharing and Exporting Information</h2>
+<p>PetList never shares or transmits your information anywhere on its own.
+Two features let you choose to do so yourself:</p>
 <ul>
-<li>The PDF is created <strong>on your device</strong>, from data already stored locally.
-Nothing is sent anywhere to produce it.</li>
-<li>It is written to the app&#39;s own temporary storage, so your device can
-reclaim that space automatically. It is not added to your photo library
-or to any shared folder.</li>
-<li>It is then passed to your operating system&#39;s standard share sheet.
-<strong>Where it goes next is entirely your choice</strong> — PetList does not upload
-it, does not send it anywhere on your behalf, and has no knowledge of
-what you pick. If you send it to another app, that app&#39;s own privacy
-policy governs whatever happens to it from that point on.</li>
-<li>Expense records are deliberately excluded from this summary; it contains
-health information only.</li>
+<li><strong>Vet summary:</strong> generates a PDF summary of a single pet&#39;s health
+information and hands it to your device&#39;s share sheet.</li>
+<li><strong>Backup:</strong> creates a single file containing your household&#39;s
+information, so you can restore it later or move it to a new device, and
+can likewise hand that file to your device&#39;s share sheet.</li>
 </ul>
-<h2>What the app does not do</h2>
-<p>As of this writing, PetList does <strong>not</strong>:</p>
-<ul>
-<li>Require or offer an account, login, sign-up, or any form of
-authentication</li>
-<li>Collect your name, email address, or any other contact information
-(other than the free-text pet/household names you choose to enter, which
-stay local)</li>
-<li>Include any analytics, advertising, or tracking SDK of any kind</li>
-<li>Include any crash-reporting or error-monitoring service</li>
-<li>Sync or back up your data to any cloud service</li>
-<li>Share, sell, or transmit your data to any third party — including the
-vet summary above, which your device shares at your instruction, not the
-app</li>
-<li>Offer any bulk export of your whole database. The vet summary above is
-the only export that exists, and it covers one pet&#39;s health records.
-<strong>A general export/backup feature remains planned (tracked internally as
-PET-70) and has not been built.</strong> If and when it ships, this policy will
-be updated to describe exactly what it does before it&#39;s published.</li>
-</ul>
-<h2>App updates</h2>
-<p>PetList uses Expo&#39;s over-the-air update service (<code>expo-updates</code>) to check
-for and deliver app updates without requiring a full app store
-reinstall. As part of this, your device communicates with Expo&#39;s update
-servers, which — like any network request — necessarily involves standard
-technical information such as your device&#39;s platform and the app&#39;s current
-version/build. This is operational infrastructure for delivering app
-updates, not data collection by the developer, and no data from your
-pet/health/expense records is involved. This is a data flow to a
-third-party infrastructure provider (Expo), even though no app content is
-included in it — Expo&#39;s own privacy policy, covering their update/EAS
-service, is published at <a href="https://expo.dev/privacy">https://expo.dev/privacy</a>.</p>
-<h2>Children&#39;s privacy</h2>
-<p>PetList is not directed at children and, based on the &quot;What the app does
-not do&quot; section above (no accounts, no analytics, no advertising), the
-app does not knowingly collect personal information from anyone,
-including children under 13 or the relevant age in your jurisdiction.
-This assessment is an engineering-level judgment, not a lawyer&#39;s review
-against COPPA (US) or any other applicable children&#39;s-privacy law for the
-app&#39;s actual distribution markets — treat it accordingly.</p>
-<h2>Data deletion</h2>
-<p>Because all data lives only on your device, you control its deletion
-directly:</p>
-<ul>
-<li>Delete an individual pet, health event, or expense from within the app.</li>
-<li>&quot;Clear household data&quot; and &quot;Delete household&quot; (in Profile settings)
-remove all pets and records for a household from the local database.</li>
-<li>Uninstalling the app removes its local database and photo storage
-entirely, per your device OS&#39;s normal app-data handling.</li>
-</ul>
-<p>There is currently no server-side copy for the developer to delete on your
-behalf, because none is ever created.</p>
-<h2>Changes to this policy</h2>
-<p>The current version of this policy is always published at
-<a href="https://mypetlist.app/privacy-policy/">https://mypetlist.app/privacy-policy/</a>. When it
-changes, the &quot;Last updated&quot; date at the top of this document will be
-updated to match. This app does not currently link to this policy or
-notify you in-app of changes to it; if that changes, this section will be
-updated to describe how.</p>
+<p>Both are created entirely on your device and only run when you choose to
+use them. Where the resulting file goes afterward is your choice - PetList
+has no visibility into it and does not upload either file anywhere on your
+behalf. A backup file is not encrypted, so store it somewhere you consider
+private.</p>
+<h2>Notifications and Device Permissions</h2>
+<p>PetList may ask for permission to send local notifications, so it can
+remind you about upcoming health events and daily tasks. These
+notifications are scheduled directly on your device; PetList does not use
+push notifications or register your device with any notification service.</p>
+<p>PetList may also ask for camera or photo library access when you choose to
+add a pet&#39;s photo. Declining any of these permissions does not prevent you
+from using the rest of the app - the associated feature is simply
+unavailable.</p>
+<h2>Device Backups</h2>
+<p>PetList does not provide its own cloud backup or sync service for your
+records. However, your device&#39;s operating system, or account services you
+have separately configured (such as iCloud or a similar account), may back
+up PetList&#39;s data as part of your device&#39;s general backup settings.
+Whether that happens, and what it covers, is controlled by your device and
+account settings, not by PetList.</p>
+<h2>Data Retention and Deletion</h2>
+<p>Your information stays on your device for as long as you keep it there.
+You can delete an individual pet, record, or expense from within the app,
+clear or delete a household from Settings, or remove all of PetList&#39;s data
+at once by uninstalling the app. PetList has no server-side copy to delete
+on your behalf, because none exists.</p>
+<h2>Children&#39;s Privacy</h2>
+<p>PetList is not directed at children and does not knowingly collect
+personal information from anyone, including children under 13 or the
+applicable age in your jurisdiction. Because the app requires no account
+and collects no personal information to function, it has no means of
+distinguishing a child user from any other user.</p>
+<h2>Changes to This Policy</h2>
+<p>This policy may be updated from time to time. The current version is
+always published at <a href="https://mypetlist.app/privacy-policy/">https://mypetlist.app/privacy-policy/</a>, and the
+effective date above reflects the most recent update.</p>
 <h2>Contact</h2>
-<p>Questions about this policy: <code>support@mypetlist.app</code></p>
-<p>This policy is issued by Harley Canasa, operating as a sole
-proprietorship (there is no separate registered company). No physical
-mailing address is listed, as none is currently required for this app&#39;s
-distribution markets; one will be added here if a specific market&#39;s
-requirements make it necessary.</p>
-<h2>Governing law</h2>
-<p>These practices, and this policy, are governed by the laws of the
-Republic of the Philippines, without regard to its conflict-of-law
-principles.</p>
+<p>Questions about this policy can be sent to <code>support@mypetlist.app</code>.</p>
+<p>PetList is developed and operated by Harley Canasa. These practices, and
+this policy, are governed by the laws of the Republic of the Philippines,
+without regard to its conflict-of-law principles.</p>
 
 
   </div>

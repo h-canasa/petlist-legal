@@ -74,5 +74,5 @@ it (see the `.hero-photos` comment in `css/styles.css`).
 
 ## Status
 
-Both documents are first-pass drafts pending legal review — see the
-draft banner at the top of each page.
+Both documents describe the app's actual current behavior as of their
+effective date, but have not been reviewed by a lawyer.
