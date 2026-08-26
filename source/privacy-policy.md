@@ -1,6 +1,6 @@
 # Privacy Policy for PetList
 
-**Effective Date:** August 19, 2026
+**Effective Date:** August 26, 2026
 
 ## Overview
 
@@ -21,7 +21,8 @@ When you use PetList, you choose what to enter. This may include:
 - Household and pet profiles (name, species, breed, birthdate, weight,
   gender, photo)
 - Health records, such as vaccinations, deworming, vet visits, medications,
-  grooming, spay/neuter records, weight logs, and any notes you add
+  grooming, spay/neuter records, weight logs, optional photos you attach to
+  a logged record, and any notes you add
 - Reminders and their scheduling
 - Expenses, both per-pet and household-wide
 - Daily care tasks and their completion history
@@ -33,7 +34,11 @@ information in order to use the app.
 ## Where Your Information Is Stored
 
 The information above is stored locally, in a database on your device,
-along with any photos you add. PetList does not operate a cloud database or
+along with any photos you add - a pet's profile photo, and any photos you
+optionally attach to a logged health record. Those photos stay associated
+with your local PetList data and are not uploaded anywhere; they leave your
+device only if you explicitly export or share them (see "Sharing and
+Exporting Information" below). PetList does not operate a cloud database or
 synchronization service, and its developer does not have access to, or a
 copy of, your records at any time.
 
@@ -60,14 +65,20 @@ Two features let you choose to do so yourself:
 - **Vet summary:** generates a PDF summary of a single pet's health
   information and hands it to your device's share sheet.
 - **Backup:** creates a single file containing your household's
-  information, so you can restore it later or move it to a new device, and
-  can likewise hand that file to your device's share sheet.
+  information - including any photos you've added, such as pet profile
+  photos and photos attached to health records - so you can restore it
+  later or move it to a new device. You can also import a backup file to
+  restore it. Either direction can likewise hand a file to your device's
+  share sheet or file picker.
 
 Both are created entirely on your device and only run when you choose to
-use them. Where the resulting file goes afterward is your choice - PetList
-has no visibility into it and does not upload either file anywhere on your
-behalf. A backup file is not encrypted, so store it somewhere you consider
-private.
+use them. PetList itself never uploads a backup or export to any
+developer-operated server. Where the resulting file goes afterward is your
+choice - PetList has no visibility into it and cannot confirm which
+destination ultimately received it. If you save or share a file to a
+destination you choose (such as cloud storage, messaging, or email), that
+destination's own privacy practices apply to it from that point on. A
+backup file is not encrypted, so store it somewhere you consider private.
 
 ## Notifications and Device Permissions
 
@@ -77,9 +88,12 @@ notifications are scheduled directly on your device; PetList does not use
 push notifications or register your device with any notification service.
 
 PetList may also ask for camera or photo library access when you choose to
-add a pet's photo. Declining any of these permissions does not prevent you
-from using the rest of the app - the associated feature is simply
-unavailable.
+add or change a pet's profile photo, or attach an optional photo to a
+logged health record. Each request happens only at the moment you use one
+of these features - PetList does not access your camera or photo library
+at any other time, and attaching a photo to a health record is always
+optional. Declining any of these permissions does not prevent you from
+using the rest of the app - the associated feature is simply unavailable.
 
 ## Device Backups
 
@@ -143,6 +157,16 @@ Checked directly against the current codebase rather than assumed:
   hand off to the device's system share sheet or file picker - neither
   makes a network call, and neither lets the app observe where a file goes
   or comes from.
+- PET-324 (this pass): re-verified against PET-152 (optional photos
+  attached to a logged health event) and PET-314 (those photos round-trip
+  through Backup & Restore). `event-photo-picker.ts` calls the same local
+  `expo-image-picker` module `pet-photos.ts` already used for profile
+  photos - no new permission API, no network call. `event-photos.ts` writes
+  picked photos only to an app-owned local directory
+  (`Paths.document/event-photos`). The backup writer inlines those files as
+  base64 into the same local backup document pet photos were already
+  included in - no new remote flow. Confirmed the v1.2.0 Vet Summary PDF
+  does not include event photos, so no policy language claims otherwise.
 
 If a future change adds analytics, advertising, cloud sync, a paid
 subscription, or any other new data flow, this document needs to be
