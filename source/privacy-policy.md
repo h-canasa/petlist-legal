@@ -1,6 +1,6 @@
 # Privacy Policy for PetList
 
-**Effective Date:** August 26, 2026
+**Effective Date:** August 28, 2026
 
 ## Overview
 
@@ -24,7 +24,8 @@ When you use PetList, you choose what to enter. This may include:
   grooming, spay/neuter records, weight logs, optional photos you attach to
   a logged record, and any notes you add
 - Reminders and their scheduling
-- Expenses, both per-pet and household-wide
+- Expenses, both per-pet and household-wide, including optional photos you
+  attach to an expense (such as a receipt)
 - Daily care tasks and their completion history
 - App preferences such as currency, units, theme, and notification settings
 
@@ -34,8 +35,9 @@ information in order to use the app.
 ## Where Your Information Is Stored
 
 The information above is stored locally, in a database on your device,
-along with any photos you add - a pet's profile photo, and any photos you
-optionally attach to a logged health record. Those photos stay associated
+along with any photos you add - a pet's profile photo, any photos you
+optionally attach to a logged health record, and any photos you optionally
+attach to an expense, such as a receipt. Those photos stay associated
 with your local PetList data and are not uploaded anywhere; they leave your
 device only if you explicitly export or share them (see "Sharing and
 Exporting Information" below). PetList does not operate a cloud database or
@@ -66,10 +68,10 @@ Two features let you choose to do so yourself:
   information and hands it to your device's share sheet.
 - **Backup:** creates a single file containing your household's
   information - including any photos you've added, such as pet profile
-  photos and photos attached to health records - so you can restore it
-  later or move it to a new device. You can also import a backup file to
-  restore it. Either direction can likewise hand a file to your device's
-  share sheet or file picker.
+  photos, photos attached to health records, and photos attached to
+  expenses - so you can restore it later or move it to a new device. You
+  can also import a backup file to restore it. Either direction can
+  likewise hand a file to your device's share sheet or file picker.
 
 Both are created entirely on your device and only run when you choose to
 use them. PetList itself never uploads a backup or export to any
@@ -88,12 +90,13 @@ notifications are scheduled directly on your device; PetList does not use
 push notifications or register your device with any notification service.
 
 PetList may also ask for camera or photo library access when you choose to
-add or change a pet's profile photo, or attach an optional photo to a
-logged health record. Each request happens only at the moment you use one
-of these features - PetList does not access your camera or photo library
-at any other time, and attaching a photo to a health record is always
-optional. Declining any of these permissions does not prevent you from
-using the rest of the app - the associated feature is simply unavailable.
+add or change a pet's profile photo, attach an optional photo to a logged
+health record, or attach an optional photo (such as a receipt) to an
+expense. Each request happens only at the moment you use one of these
+features - PetList does not access your camera or photo library at any
+other time, and attaching a photo is always optional. Declining any of
+these permissions does not prevent you from using the rest of the app -
+the associated feature is simply unavailable.
 
 ## Device Backups
 
@@ -167,6 +170,15 @@ Checked directly against the current codebase rather than assumed:
   base64 into the same local backup document pet photos were already
   included in - no new remote flow. Confirmed the v1.2.0 Vet Summary PDF
   does not include event photos, so no policy language claims otherwise.
+- PET-341 (this pass): re-verified against PET-316 (optional photos
+  attached to pet-scoped and household expenses, such as receipts).
+  `expense-photo-picker.ts` calls the same local `expo-image-picker` module
+  the pet-profile and health-event pickers already use - no new permission
+  API, no network call. `expense-photos.ts` writes picked photos only to an
+  app-owned local directory (`Paths.document/expense-photos`). The backup
+  writer includes those files in the same local backup package pet and
+  event photos already round-trip through (`backup-data.ts`) - no new
+  remote flow, no change to the app's technical privacy posture.
 
 If a future change adds analytics, advertising, cloud sync, a paid
 subscription, or any other new data flow, this document needs to be
