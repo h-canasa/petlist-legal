@@ -289,11 +289,19 @@ a { color: inherit; }
   gap: var(--space-2);
 }
 
-/* The reversed app wordmark remains legible over both header backgrounds. */
+/* The approved dark wordmark sits on a compact white surface over the header. */
 .site-header .brand {
   display: inline-flex;
   align-items: center;
+  padding: 7px 10px;
+  border-radius: 12px;
+  background: #fff;
   text-decoration: none;
+  transition: padding 0.3s var(--ease-standard);
+}
+
+.site-header.is-scrolled .brand {
+  padding: 5px 8px;
 }
 
 .site-header .brand-image {
@@ -340,13 +348,16 @@ a { color: inherit; }
 }
 
 @media (max-width: 519px) {
-  .site-header .brand-image { height: 34px; }
-  .site-header.is-scrolled .brand-image { height: 30px; }
+  .site-header .brand { padding: 6px 8px; }
+  .site-header.is-scrolled .brand { padding: 5px 7px; }
+  .site-header .brand-image { height: 27px; }
+  .site-header.is-scrolled .brand-image { height: 25px; }
 }
 
 @media (max-width: 359px) {
-  .site-header .brand-image { height: 30px; }
-  .site-header.is-scrolled .brand-image { height: 28px; }
+  .site-header .brand { padding: 5px 6px; }
+  .site-header .brand-image { height: 23px; }
+  .site-header.is-scrolled .brand-image { height: 22px; }
   .trust-badge { font-size: 0.64rem; padding: 5px 10px; }
 }
 

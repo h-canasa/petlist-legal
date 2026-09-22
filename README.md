@@ -46,7 +46,8 @@ The landing page uses eight AVIF marketing screenshots in
 high-density version at quality 75. `dash.avif` is the hero image; the other
 seven are the feature gallery and load lazily. The current dashboard also has
 a JPEG derivative for Open Graph previews. The site header and legal pages use
-the transparent reversed PetList wordmark from the app's image assets.
+the transparent PetList wordmark from the app's image assets, on a white
+rounded surface for contrast against the dark header.
 
 The older JPG screenshot, preview, mascot, and banner assets in
 `assets/marketing/` are no longer used in the visible pages. They are retained
