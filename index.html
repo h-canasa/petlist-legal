@@ -61,9 +61,20 @@
       <h1 class="hero-headline" data-split-lines>Every pet's health, care, and spending — <span class="hero-em">all in one place.</span></h1>
       <p class="hero-pitch">Organize your pet's life with ease.<span class="pitch-break"> </span>One payment. <span class="pitch-em">No subscriptions.</span> Ever.</p>
       <div class="hero-cta">
-        <a class="appstore-badge" href="https://apps.apple.com/app/id6800233515" aria-label="Download PetList on the App Store">
-          <img src="assets/marketing/app-store-badge.svg" alt="Download on the App Store" width="180" height="60">
-        </a>
+        <div class="store-badges" aria-label="Download PetList">
+          <a class="appstore-badge store-badge-link" href="https://apps.apple.com/app/id6800233515" aria-label="Download PetList on the App Store">
+            <img src="assets/marketing/app-store-badge.svg" alt="Download on the App Store" width="180" height="60">
+          </a>
+          <a class="google-play-badge store-badge-link" href="/android" aria-label="Get PetList on Google Play">
+            <svg class="google-play-mark" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M5.5 3.75v16.5L19 12z"/>
+            </svg>
+            <span class="google-play-copy">
+              <span class="google-play-kicker">GET IT ON</span>
+              <span class="google-play-name">Google Play</span>
+            </span>
+          </a>
+        </div>
         <span class="cta-note">
           <svg class="cta-note-arrow" viewBox="0 0 64 40" aria-hidden="true" focusable="false">
             <path d="M60,9 C44,5 22,8 9,20"/>
@@ -76,41 +87,25 @@
     </div>
 
     <div class="hero-visual">
-      <!-- Photography zone. Structured as a LIST of .hero-photo slots, not
-           a single hard-coded one, so a second animal (a dog, bleeding off
-           an outer edge rather than peeking) can be added later by adding
-           one span and one CSS block, without rebuilding this section. -->
-      <div class="hero-photos" aria-hidden="true">
-        <span class="hero-photo hero-photo--cat"></span>
-      </div>
-
-      <div class="phone-stage">
-        <div class="phone-frame">
-          <div class="phone-island" aria-hidden="true"></div>
-          <div class="phone-screen">
-            <img src="assets/marketing/petlist_home-dashboard-web.jpg" alt="PetList Home dashboard showing multiple pets, upcoming care, and household spending at a glance" width="720" height="1565">
-          </div>
-        </div>
-      </div>
+      <figure class="store-shot store-shot--hero">
+        <img src="assets/marketing/store/dash.avif"
+             alt="PetList dashboard showing household spending, upcoming care, and pet cards for Biscuit and Luna"
+             width="320" height="696" decoding="async" fetchpriority="high">
+      </figure>
     </div>
   </div>
 
   <!-- Sibling of .hero-body, NOT a child of it: dropping this into
        .hero-copy would make the left column roughly twice the height of the
        right one, breaking the grid's align-items:center and dragging the
-       phone to the middle of a very tall row. As a sibling the 860px
+       screenshot to the middle of a very tall row. As a sibling the 860px
        two-column rule needs no change at all. -->
   <div class="container hero-extras">
-    <!-- Round 10 left these chips as non-triggers (see css/styles.css);
-         round 11 removes the fifth "All in One Place" item outright in
-         favor of a fourth, Vet-Ready Summary, folded in from the former
-         standalone .vet-card below -- see that class's own removal note in
-         css/styles.css. petlist_{pet-timeline,calendar,expenses,
-         home-dashboard}-preview.jpg remain orphaned -- still on disk,
-         referenced nowhere -- a cleanup pass still isn't in scope here. -->
+    <!-- These feature summaries are static content. The store screenshots
+         below provide the detailed visual tour. -->
     <ul class="feature-row">
       <li>
-        <button type="button" class="feature-chip">
+        <div class="feature-chip">
           <svg class="feature-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
             <path d="M6 2.75h8.5L19 7.25v14H6z"/>
             <path d="M14 2.75v4.5h4.5"/>
@@ -118,10 +113,10 @@
           </svg>
           <span class="feature-label">Health Records</span>
           <span class="feature-desc">Vaccines, vet visits, meds &amp; more.</span>
-        </button>
+        </div>
       </li>
       <li>
-        <button type="button" class="feature-chip">
+        <div class="feature-chip">
           <svg class="feature-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
             <rect x="3.25" y="5" width="17.5" height="16" rx="2.5"/>
             <path d="M3.25 9.75h17.5M8 2.75v4M16 2.75v4"/>
@@ -129,10 +124,10 @@
           </svg>
           <span class="feature-label">Care Reminders</span>
           <span class="feature-desc">Never miss important dates again.</span>
-        </button>
+        </div>
       </li>
       <li>
-        <button type="button" class="feature-chip">
+        <div class="feature-chip">
           <svg class="feature-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
             <path d="M3.5 20.25V3.75M3.5 20.25h17"/>
             <path d="M7.5 16.5l4-4.5 3 2.5 5-6.5"/>
@@ -140,10 +135,10 @@
           </svg>
           <span class="feature-label">Spending Tracker</span>
           <span class="feature-desc">See where your money goes.</span>
-        </button>
+        </div>
       </li>
       <li>
-        <button type="button" class="feature-chip">
+        <div class="feature-chip">
           <svg class="feature-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
             <path d="M5.5 2.75h8L18.5 7.75v13.5h-13z"/>
             <path d="M13.5 2.75v5h5"/>
@@ -151,7 +146,7 @@
           </svg>
           <span class="feature-label">Vet-Ready Summary</span>
           <span class="feature-desc">Generate a vet-ready summary in one tap</span>
-        </button>
+        </div>
       </li>
     </ul>
 
@@ -208,74 +203,42 @@
         <h2 class="section-title" id="showcase-heading">Everything your pets' care needs, organized</h2>
       </div>
 
-      <div class="showcase-grid">
-        <article class="showcase-item">
-          <div class="showcase-visual scroll-fade">
-            <div class="phone-frame">
-              <div class="phone-island" aria-hidden="true"></div>
-              <div class="phone-screen">
-                <img src="assets/marketing/petlist_home-dashboard-web.jpg" alt="PetList Home dashboard with multiple pet cards and a spending summary" width="720" height="1565" loading="lazy">
-              </div>
-            </div>
-          </div>
-          <div class="showcase-copy scroll-fade">
-            <h3 class="showcase-headline">Every pet, at a glance</h3>
-            <p class="showcase-body">See every pet's status, upcoming care, and spending at a glance — all your pets, one household, one dashboard.</p>
-          </div>
-        </article>
-
-        <article class="showcase-item">
-          <div class="showcase-visual scroll-fade">
-            <div class="phone-frame">
-              <div class="phone-island" aria-hidden="true"></div>
-              <div class="phone-screen">
-                <img src="assets/marketing/petlist_expenses-web.jpg" alt="PetList Expenses tab showing monthly totals, a spending trend chart, and a breakdown by pet" width="720" height="1565" loading="lazy">
-              </div>
-            </div>
-          </div>
-          <div class="showcase-copy scroll-fade">
-            <h3 class="showcase-headline">Know what they cost</h3>
-            <p class="showcase-body">Log per-pet and household expenses, see monthly and year-to-date totals, spending trends, and a breakdown by pet.</p>
-          </div>
-        </article>
-
-        <article class="showcase-item">
-          <div class="showcase-visual scroll-fade">
-            <div class="phone-frame">
-              <div class="phone-island" aria-hidden="true"></div>
-              <div class="phone-screen">
-                <img src="assets/marketing/petlist_calendar-web.jpg" alt="PetList Calendar tab with health events and reminders marked on the month grid" width="720" height="1565" loading="lazy">
-              </div>
-            </div>
-          </div>
-          <div class="showcase-copy scroll-fade">
-            <h3 class="showcase-headline">Never miss what's due</h3>
-            <p class="showcase-body">See every logged health event and upcoming reminder laid out on a monthly calendar.</p>
-          </div>
-        </article>
-
-        <article class="showcase-item is-document">
-          <div class="showcase-visual scroll-fade">
-            <div class="phone-frame">
-              <div class="phone-island" aria-hidden="true"></div>
-              <div class="phone-screen">
-                <img src="assets/marketing/petlist_vet-pdf-export-web.jpg" alt="PetList's pet detail screen with its menu open, showing the Vet Summary export option" width="720" height="1565" loading="lazy">
-              </div>
-              <button type="button" class="doc-peek-trigger has-coral-pulse" aria-label="View the full vet summary document"
-                      data-lightbox-trigger
-                      data-lightbox-src="assets/marketing/petlist_vet-pdf-document-large.jpg"
-                      data-lightbox-w="900" data-lightbox-h="1285"
-                      data-lightbox-alt="Full PetList vet visit summary PDF document"
-                      data-lightbox-label="Vet summary document">
-                <img src="assets/marketing/petlist_vet-pdf-letterhead-web.jpg" alt="Letterhead of a generated PetList vet visit summary PDF, showing the pet's health events table" width="560" height="801" loading="lazy">
-              </button>
-            </div>
-          </div>
-          <div class="showcase-copy scroll-fade">
-            <h3 class="showcase-headline">Ready for the vet, in one tap</h3>
-            <p class="showcase-body">Generate a clean PDF summary of a pet's health history — vaccinations, medications, weight trend, and more — ready to share with your vet.</p>
-          </div>
-        </article>
+      <div class="store-gallery" role="list" aria-label="PetList feature highlights">
+        <figure class="store-shot store-shot-card scroll-fade" role="listitem">
+          <img src="assets/marketing/store/calendar.avif"
+               alt="PetList Calendar showing upcoming grooming and vaccine care across Biscuit and Luna"
+               width="320" height="696" loading="lazy" decoding="async">
+        </figure>
+        <figure class="store-shot store-shot-card scroll-fade" role="listitem">
+          <img src="assets/marketing/store/schedule-reminders.avif"
+               alt="PetList Schedule an event form with recurring care, reminders, and an overdue care prompt"
+               width="320" height="696" loading="lazy" decoding="async">
+        </figure>
+        <figure class="store-shot store-shot-card scroll-fade" role="listitem">
+          <img src="assets/marketing/store/daily-tasks.avif"
+               alt="PetList Daily Tasks showing recurring household and pet care streaks"
+               width="320" height="696" loading="lazy" decoding="async">
+        </figure>
+        <figure class="store-shot store-shot-card scroll-fade" role="listitem">
+          <img src="assets/marketing/store/timeline-history.avif"
+               alt="PetList pet timeline for Biscuit with upcoming care, weight, expenses, and history"
+               width="320" height="696" loading="lazy" decoding="async">
+        </figure>
+        <figure class="store-shot store-shot-card scroll-fade" role="listitem">
+          <img src="assets/marketing/store/expense.avif"
+               alt="PetList Expenses showing monthly totals, category breakdown, spending by pet, and recent expenses"
+               width="320" height="696" loading="lazy" decoding="async">
+        </figure>
+        <figure class="store-shot store-shot-card scroll-fade" role="listitem">
+          <img src="assets/marketing/store/vet-summary.avif"
+               alt="PetList vet-ready summary showing health events, vaccinations, neuter status, and weight trend"
+               width="320" height="696" loading="lazy" decoding="async">
+        </figure>
+        <figure class="store-shot store-shot-card scroll-fade" role="listitem">
+          <img src="assets/marketing/store/backup.avif"
+               alt="PetList Backup and Restore screen showing private household backup and restore controls"
+               width="320" height="696" loading="lazy" decoding="async">
+        </figure>
       </div>
     </div>
   </section>
@@ -312,24 +275,24 @@
     </div>
   </section>
 
-  <section id="android" class="waitlist" aria-labelledby="waitlist-heading">
-    <div class="container waitlist-inner scroll-fade">
-      <h2 class="waitlist-title" id="waitlist-heading">PetList is on iOS first</h2>
-      <p class="waitlist-body">Building for Android next. Leave your email and we'll let you know the moment it's ready.</p>
-
-      <div id="waitlist-form-wrap">
-        <form class="waitlist-form" id="waitlist-form" action="https://formspree.io/f/mrpzlykv" method="POST">
-          <label class="visually-hidden" for="waitlist-email">Email address</label>
-          <input class="waitlist-email" id="waitlist-email" type="email" name="email" placeholder="you@example.com" required>
-          <input type="hidden" name="_subject" value="PetList Android waitlist signup">
-          <button class="waitlist-submit" type="submit">Notify me</button>
-        </form>
-        <p class="waitlist-error" id="waitlist-error" role="alert" hidden></p>
-        <p class="waitlist-note">No spam — just one email when PetList for Android launches.</p>
-      </div>
-      <div class="waitlist-success" id="waitlist-success" role="status" tabindex="-1" hidden>
-        <p class="waitlist-success-title">You're on the list!</p>
-        <p class="waitlist-success-body">We'll email you the moment Android launches.</p>
+  <section id="android" class="store-availability" aria-labelledby="store-availability-heading">
+    <div class="container store-availability-inner scroll-fade">
+      <p class="store-availability-eyebrow">Available now</p>
+      <h2 class="store-availability-title" id="store-availability-heading">PetList is on iOS and Android</h2>
+      <p class="store-availability-body">Choose your platform and keep every pet's care in one private place. One payment, no subscriptions.</p>
+      <div class="store-badges store-availability-badges" aria-label="Get PetList">
+        <a class="appstore-badge store-badge-link" href="https://apps.apple.com/app/id6800233515" aria-label="Download PetList on the App Store">
+          <img src="assets/marketing/app-store-badge.svg" alt="Download on the App Store" width="180" height="60">
+        </a>
+        <a class="google-play-badge store-badge-link" href="/android" aria-label="Get PetList on Google Play">
+          <svg class="google-play-mark" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M5.5 3.75v16.5L19 12z"/>
+          </svg>
+          <span class="google-play-copy">
+            <span class="google-play-kicker">GET IT ON</span>
+            <span class="google-play-name">Google Play</span>
+          </span>
+        </a>
       </div>
     </div>
   </section>
@@ -345,17 +308,6 @@
     </nav>
   </div>
 </footer>
-
-<!-- One shared lightbox for every trigger on the page (PET-205 round 9).
-     The resting src/alt/dimensions are the vet PDF's, so the element is
-     never src-less; openLightbox overwrites all four from the trigger's
-     own data-lightbox-* attributes. -->
-<div class="lightbox" id="media-lightbox" role="dialog" aria-modal="true" aria-label="Vet summary document">
-  <div class="lightbox-panel">
-    <button type="button" class="lightbox-close" data-lightbox-close aria-label="Close">&times;</button>
-    <img id="lightbox-image" src="assets/marketing/petlist_vet-pdf-document-large.jpg" alt="Full PetList vet visit summary PDF document" width="900" height="1285" decoding="async" loading="lazy">
-  </div>
-</div>
 
 <script>
   (function () {
@@ -469,11 +421,6 @@
       // .scroll-fade to its resting visible state with !important, so
       // there's nothing for this script to do.
     } else if (!(window.CSS && CSS.supports && CSS.supports('animation-timeline', 'view()'))) {
-      // PET-205 round 5: the vet-PDF preview (.doc-peek-trigger) dropped its
-      // bespoke rotate/translateX slide-in along with the horizontal-scroll
-      // treatment it used to accompany -- it's a plain .scroll-fade element
-      // now like everything else, so this fallback no longer needs to
-      // special-case it at all.
       var fadeTargets = Array.prototype.slice.call(
         document.querySelectorAll('.scroll-fade')
       );
@@ -545,140 +492,7 @@
       updateHeader();
     }
 
-    // ---- Shared media lightbox (generalized in PET-205 round 9) ----
-    // Was hardcoded to the vet PDF: a singular querySelector for the one
-    // trigger, and a fixed <img> in the markup. Round 9 added five more
-    // entry points (the four feature chips and the vet-PDF highlight card);
-    // round 10 removed the four feature-chip triggers again, and round 11
-    // removed the vet-PDF highlight card itself (folded into the feature
-    // row as a plain, non-triggering fourth chip -- see css/styles.css's
-    // .vet-card removal note), leaving exactly one trigger: the showcase
-    // strip's own document-peek badge. Kept generalized rather than
-    // reverted to a hardcoded single-trigger version: the querySelectorAll
-    // below still finds it correctly with one match, and a future round
-    // re-adding a second trigger is a markup-only change again rather than
-    // a JS rewrite. The trigger is whatever was clicked, and the image is
-    // driven from that element's own data-lightbox-* attributes.
-    //
-    // Dismiss via the close button, a backdrop tap, or Escape -- unchanged.
-    // Still no focus trap: Tab can leave the dialog. That's pre-existing and
-    // deliberately left as-is rather than growing this round's scope, but
-    // it's a real gap worth a ticket.
-    var lightbox = document.getElementById('media-lightbox');
-    var lightImg = document.getElementById('lightbox-image');
-    var closeBtn = document.querySelector('[data-lightbox-close]');
-    var triggers = document.querySelectorAll('[data-lightbox-trigger]');
-    // Which trigger opened it, so focus returns to the RIGHT one on close.
-    // The old code closed over a single module-scoped `trigger`, which was
-    // correct only while exactly one existed.
-    var lastTrigger = null;
 
-    if (lightbox && lightImg && closeBtn && triggers.length) {
-      var openLightbox = function (trigger) {
-        // Two entry points, one dialog (round 10 -- was six while the four
-        // feature chips were also triggers). Without this guard a click
-        // landing on a second trigger while the first is open would swap
-        // the image underneath the user and lose the focus-return target.
-        if (lightbox.classList.contains('is-open')) return;
-        lastTrigger = trigger;
-
-        // Dimensions BEFORE src: the width/height attributes are what give
-        // the <img> its aspect-ratio box, so setting them first means the
-        // panel reserves the right shape the instant it opens and can't
-        // resize under the user when the new file finishes decoding.
-        var src = trigger.getAttribute('data-lightbox-src');
-        lightImg.width = trigger.getAttribute('data-lightbox-w');
-        lightImg.height = trigger.getAttribute('data-lightbox-h');
-        lightImg.alt = trigger.getAttribute('data-lightbox-alt') || '';
-        if (src && lightImg.getAttribute('src') !== src) lightImg.setAttribute('src', src);
-        lightbox.setAttribute('aria-label', trigger.getAttribute('data-lightbox-label') || 'Media viewer');
-
-        lightbox.classList.add('is-open');
-        document.body.style.overflow = 'hidden';
-        closeBtn.focus();
-      };
-      var closeLightbox = function () {
-        lightbox.classList.remove('is-open');
-        document.body.style.overflow = '';
-        if (lastTrigger) lastTrigger.focus();
-      };
-
-      Array.prototype.forEach.call(triggers, function (trigger) {
-        trigger.addEventListener('click', function () { openLightbox(trigger); });
-      });
-      closeBtn.addEventListener('click', closeLightbox);
-      lightbox.addEventListener('click', function (event) {
-        if (event.target === lightbox) closeLightbox();
-      });
-      document.addEventListener('keydown', function (event) {
-        if (event.key === 'Escape' && lightbox.classList.contains('is-open')) closeLightbox();
-      });
-    }
-
-    // ---- Android waitlist form: AJAX submit (PET-205 follow-up) ----
-    // Formspree's plain-HTML POST redirects to its own generic success
-    // page on submit, which breaks the page's identity at the exact
-    // moment of highest user intent. Intercepting the submit and posting
-    // via fetch() with Accept: application/json (Formspree's documented
-    // AJAX signal -- without it Formspree tries to send an HTML redirect
-    // back instead of JSON) keeps the user on this page for both outcomes.
-    var waitlistForm = document.getElementById('waitlist-form');
-    var waitlistWrap = document.getElementById('waitlist-form-wrap');
-    var waitlistSuccess = document.getElementById('waitlist-success');
-    var waitlistError = document.getElementById('waitlist-error');
-    var waitlistSubmit = waitlistForm ? waitlistForm.querySelector('.waitlist-submit') : null;
-
-    if (waitlistForm && waitlistWrap && waitlistSuccess && waitlistError && waitlistSubmit) {
-      var submitLabel = waitlistSubmit.textContent;
-
-      var showError = function (message) {
-        waitlistError.textContent = message;
-        waitlistError.hidden = false;
-      };
-
-      var clearError = function () {
-        waitlistError.hidden = true;
-        waitlistError.textContent = '';
-      };
-
-      waitlistForm.addEventListener('submit', function (event) {
-        event.preventDefault();
-        clearError();
-        waitlistSubmit.disabled = true;
-        waitlistSubmit.textContent = 'Sending…';
-
-        fetch(waitlistForm.action, {
-          method: 'POST',
-          body: new FormData(waitlistForm),
-          headers: { 'Accept': 'application/json' }
-        }).then(function (response) {
-          if (response.ok) {
-            waitlistWrap.hidden = true;
-            waitlistSuccess.hidden = false;
-            waitlistSuccess.focus();
-            return;
-          }
-          // Formspree returns { errors: [{ message, ... }, ...] } on a
-          // rejected submission (e.g. a bad field) -- surface its own
-          // message when present rather than a generic one.
-          response.json().then(function (data) {
-            var message = data && data.errors && data.errors.length
-              ? data.errors.map(function (e) { return e.message; }).join(', ')
-              : 'Something went wrong. Please try again.';
-            showError(message);
-          }).catch(function () {
-            showError('Something went wrong. Please try again.');
-          });
-        }).catch(function () {
-          showError('Network error -- please check your connection and try again.');
-        }).finally(function () {
-          if (waitlistSuccess.hidden) {
-            waitlistSubmit.disabled = false;
-            waitlistSubmit.textContent = submitLabel;
-          }
-        });
-      });
-    }
   })();
 </script>
 
