@@ -83,9 +83,24 @@ const STYLE = `
     margin: 0 auto;
     padding: 0 20px;
   }
+  header.site-header .brand {
+    display: inline-flex;
+    align-items: center;
+    padding: 7px 10px;
+    border-radius: 12px;
+    background: #fff;
+  }
   header.site-header .brand-mark {
-    height: 48px;
+    height: 40px;
     width: auto;
+  }
+  @media (max-width: 519px) {
+    header.site-header .brand { padding: 6px 8px; }
+    header.site-header .brand-mark { height: 27px; }
+  }
+  @media (max-width: 359px) {
+    header.site-header .brand { padding: 5px 6px; }
+    header.site-header .brand-mark { height: 23px; }
   }
 
   main {
@@ -219,8 +234,8 @@ function page({ title, description, bodyHtml, currentPath, root }) {
 <body>
 <header class="site-header">
   <div class="inner">
-    <a href="${root}" aria-label="PetList home">
-      <img class="brand-mark" src="${root}assets/marketing/petlist_icon-banner-web.png" alt="PetList" width="114" height="48">
+    <a class="brand" href="${root}" aria-label="PetList home">
+      <img class="brand-mark" src="${root}assets/marketing/petlist-wordmark.png" alt="PetList" width="1560" height="384">
     </a>
   </div>
 </header>

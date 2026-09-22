@@ -10,7 +10,7 @@
 <meta property="og:type" content="website">
 <meta property="og:title" content="PetList — Multi-Pet Household Organizer">
 <meta property="og:description" content="Pay once, own it. No subscriptions, no cloud, no ads.">
-<meta property="og:image" content="https://mypetlist.app/assets/marketing/petlist_home-dashboard-web.jpg">
+<meta property="og:image" content="https://mypetlist.app/assets/marketing/store/og-dashboard.jpg">
 <meta property="og:url" content="https://mypetlist.app/">
 <meta name="twitter:card" content="summary_large_image">
 
@@ -24,9 +24,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<!-- Caveat (PET-205 round 9, item 5) is a single small playful accent next
-     to the App Store badge, not a new body font -- one weight, one use. -->
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700;900&family=Inter:wght@400;500;600;700&family=Caveat:wght@600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <link rel="stylesheet" href="css/styles.css">
 <noscript>
@@ -46,8 +44,7 @@
 <header class="site-header" id="site-header">
   <div class="container site-header-inner">
     <a class="brand" href="./" aria-label="PetList home">
-      <img class="brand-icon" src="assets/marketing/petlist_mascot-icon-web.png" alt="" width="128" height="128">
-      <span class="brand-word" aria-hidden="true"><span class="brand-word-pet">pet</span><span class="brand-word-list">list</span></span>
+      <img class="brand-image" src="assets/marketing/petlist-wordmark.png" alt="" width="1560" height="384">
     </a>
     <p class="trust-badge"><span class="trust-badge-glyph" aria-hidden="true">🐾</span>Privacy-first pet care</p>
   </div>
@@ -75,22 +72,16 @@
             </span>
           </a>
         </div>
-        <span class="cta-note">
-          <svg class="cta-note-arrow" viewBox="0 0 64 40" aria-hidden="true" focusable="false">
-            <path d="M60,9 C44,5 22,8 9,20"/>
-            <path d="M9,20 L20,15"/>
-            <path d="M9,20 L17,27"/>
-          </svg>
-          <span class="cta-note-text">One-time payment.<br>Yours forever.</span>
-        </span>
       </div>
     </div>
 
     <div class="hero-visual">
       <figure class="store-shot store-shot--hero">
         <img src="assets/marketing/store/dash.avif"
+             srcset="assets/marketing/store/dash.avif 320w, assets/marketing/store/dash-800.avif 800w"
+             sizes="(max-width: 410px) 78vw, 320px"
              alt="PetList dashboard showing household spending, upcoming care, and pet cards for Biscuit and Luna"
-             width="320" height="696" decoding="async" fetchpriority="high">
+             width="320" height="693" decoding="async" fetchpriority="high">
       </figure>
     </div>
   </div>
@@ -206,38 +197,52 @@
       <div class="store-gallery" role="list" aria-label="PetList feature highlights">
         <figure class="store-shot store-shot-card scroll-fade" role="listitem">
           <img src="assets/marketing/store/calendar.avif"
+               srcset="assets/marketing/store/calendar.avif 320w, assets/marketing/store/calendar-800.avif 800w"
+               sizes="(max-width: 760px) min(78vw, 320px), (max-width: 1199px) min(44vw, 320px), min(24vw, 254px)"
                alt="PetList Calendar showing upcoming grooming and vaccine care across Biscuit and Luna"
-               width="320" height="696" loading="lazy" decoding="async">
+               width="320" height="693" loading="lazy" decoding="async">
         </figure>
         <figure class="store-shot store-shot-card scroll-fade" role="listitem">
           <img src="assets/marketing/store/schedule-reminders.avif"
+               srcset="assets/marketing/store/schedule-reminders.avif 320w, assets/marketing/store/schedule-reminders-800.avif 800w"
+               sizes="(max-width: 760px) min(78vw, 320px), (max-width: 1199px) min(44vw, 320px), min(24vw, 254px)"
                alt="PetList Schedule an event form with recurring care, reminders, and an overdue care prompt"
-               width="320" height="696" loading="lazy" decoding="async">
+               width="320" height="695" loading="lazy" decoding="async">
         </figure>
         <figure class="store-shot store-shot-card scroll-fade" role="listitem">
           <img src="assets/marketing/store/daily-tasks.avif"
+               srcset="assets/marketing/store/daily-tasks.avif 320w, assets/marketing/store/daily-tasks-800.avif 800w"
+               sizes="(max-width: 760px) min(78vw, 320px), (max-width: 1199px) min(44vw, 320px), min(24vw, 254px)"
                alt="PetList Daily Tasks showing recurring household and pet care streaks"
-               width="320" height="696" loading="lazy" decoding="async">
+               width="320" height="695" loading="lazy" decoding="async">
         </figure>
         <figure class="store-shot store-shot-card scroll-fade" role="listitem">
           <img src="assets/marketing/store/timeline-history.avif"
+               srcset="assets/marketing/store/timeline-history.avif 320w, assets/marketing/store/timeline-history-800.avif 800w"
+               sizes="(max-width: 760px) min(78vw, 320px), (max-width: 1199px) min(44vw, 320px), min(24vw, 254px)"
                alt="PetList pet timeline for Biscuit with upcoming care, weight, expenses, and history"
-               width="320" height="696" loading="lazy" decoding="async">
+               width="320" height="695" loading="lazy" decoding="async">
         </figure>
         <figure class="store-shot store-shot-card scroll-fade" role="listitem">
           <img src="assets/marketing/store/expense.avif"
+               srcset="assets/marketing/store/expense.avif 320w, assets/marketing/store/expense-800.avif 800w"
+               sizes="(max-width: 760px) min(78vw, 320px), (max-width: 1199px) min(44vw, 320px), min(24vw, 254px)"
                alt="PetList Expenses showing monthly totals, category breakdown, spending by pet, and recent expenses"
-               width="320" height="696" loading="lazy" decoding="async">
+               width="320" height="693" loading="lazy" decoding="async">
         </figure>
         <figure class="store-shot store-shot-card scroll-fade" role="listitem">
           <img src="assets/marketing/store/vet-summary.avif"
+               srcset="assets/marketing/store/vet-summary.avif 320w, assets/marketing/store/vet-summary-800.avif 800w"
+               sizes="(max-width: 760px) min(78vw, 320px), (max-width: 1199px) min(44vw, 320px), min(24vw, 254px)"
                alt="PetList vet-ready summary showing health events, vaccinations, neuter status, and weight trend"
-               width="320" height="696" loading="lazy" decoding="async">
+               width="320" height="693" loading="lazy" decoding="async">
         </figure>
         <figure class="store-shot store-shot-card scroll-fade" role="listitem">
           <img src="assets/marketing/store/backup.avif"
+               srcset="assets/marketing/store/backup.avif 320w, assets/marketing/store/backup-800.avif 800w"
+               sizes="(max-width: 760px) min(78vw, 320px), (max-width: 1199px) min(44vw, 320px), min(24vw, 254px)"
                alt="PetList Backup and Restore screen showing private household backup and restore controls"
-               width="320" height="696" loading="lazy" decoding="async">
+               width="320" height="695" loading="lazy" decoding="async">
         </figure>
       </div>
     </div>
