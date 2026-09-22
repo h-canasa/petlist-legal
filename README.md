@@ -3,7 +3,7 @@
 Hosts the public marketing/landing page for the PetList mobile app at
 `mypetlist.app`, plus the Privacy Policy and Terms of Service at stable
 public URLs for App Store Connect / Google Play Console submission fields.
-
+ 
 This repo exists only because the main `petlist` app repository is
 private, and GitHub Pages is not available on a private repo without a
 paid GitHub plan. This repo holds no app source — only the rendered
