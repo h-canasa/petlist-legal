@@ -92,7 +92,7 @@ a { color: inherit; }
 
 /* ---------- Scroll-linked fade-up (PET-205 round 3, item 3) ---------- */
 /* The single, consistent entrance effect for everything from "What's
-   inside" onward (the showcase strip, upcoming features, waitlist, footer)
+   inside" onward (the showcase strip, upcoming features, store availability, footer)
    -- replacing the previous round's per-line text stagger and 92%->100%
    scale-up, both cited as reading as "wonky." One treatment: fades in and
    slides up from translateY(28px), continuously tied to scroll position
@@ -553,7 +553,7 @@ a { color: inherit; }
    Both the explicit line-height here and the min-height on the wrapper
    exist to stop the webfont swap reflowing the App Store badge: Caveat's
    fallback metrics differ enough that a late swap would otherwise resize
-   this box and nudge the badge. Reserving the space up front means the
+   this box and nudge the store CTA group. Reserving the space up front means the
    swap repaints without moving anything, which is what keeps CLS at 0. */
 .cta-note {
   display: flex;
@@ -584,8 +584,8 @@ a { color: inherit; }
 }
 
 /* Below the two-column breakpoint the CTA block is centred, so the note
-   stacks under the badge and the arrow rotates to point back up at it.
-   From 860px the two sit side by side and the arrow points left, as drawn. */
+   stacks under the store badges and the arrow rotates to point back up at them.
+   From 860px the badge group and note sit side by side and the arrow points left. */
 .hero-cta {
   display: flex;
   flex-direction: column;
@@ -672,32 +672,94 @@ a { color: inherit; }
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* App Store badge (PET-205 follow-up item 4) — Apple's actual official
-   "Download on the App Store" artwork (developer.apple.com/assets/elements/
-   badges/download-on-the-app-store.svg), used unmodified per Apple's
-   marketing guidelines: no recoloring, no stretching, no added effects on
-   the artwork itself. This supersedes the original brief's "coral is the
-   CTA-only accent" for this one element specifically -- Apple's guidelines
-   don't allow recoloring the badge, so it can't be made coral. The lift/
-   shadow below is applied to the surrounding link on hover, not to the
-   badge artwork. */
+/* Store CTAs. Apple's badge remains the official unmodified artwork; the
+   Google Play link uses the site's own compact black CTA treatment so the
+   two platforms have equal visual weight without adding another remote asset. */
+.store-badges {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+@media (min-width: 520px) {
+  .store-badges {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
+
+@media (min-width: 860px) {
+  .hero-cta .store-badges {
+    justify-content: flex-start;
+  }
+}
+
+.store-badge-link {
+  flex: none;
+  transition: transform 0.18s var(--ease-standard), filter 0.18s var(--ease-standard);
+}
+
+.store-badge-link:hover,
+.store-badge-link:focus-visible {
+  transform: translateY(-1px);
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.35));
+}
+
 .appstore-badge {
   display: inline-block;
   line-height: 0;
   border-radius: 8px;
-  transition: transform 0.18s var(--ease-standard), filter 0.18s var(--ease-standard);
-}
-
-.appstore-badge:hover,
-.appstore-badge:focus-visible {
-  transform: translateY(-1px);
-  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.35));
 }
 
 .appstore-badge img {
   height: 54px;
   width: auto;
   display: block;
+}
+
+.google-play-badge {
+  box-sizing: border-box;
+  min-width: 176px;
+  height: 54px;
+  padding: 6px 14px 6px 11px;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 8px;
+  background: #000;
+  color: #fff;
+  text-decoration: none;
+  font-family: var(--font-body);
+}
+
+.google-play-mark {
+  width: 29px;
+  height: 29px;
+  flex: none;
+  fill: currentColor;
+}
+
+.google-play-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1;
+}
+
+.google-play-kicker {
+  font-size: 0.57rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.google-play-name {
+  margin-top: 3px;
+  font-size: 1.12rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
 }
 
 /* ---------- Hero photography zone (round 9, item 9) ---------- */
@@ -1630,128 +1692,44 @@ a { color: inherit; }
   color: var(--text-secondary);
 }
 
-/* ---------- Android waitlist ---------- */
+/* ---------- Store availability ---------- */
 
-.waitlist {
+.store-availability {
   background: var(--purple-secondary);
   padding: var(--space-6) 0;
 }
 
-.waitlist-inner {
-  max-width: 560px;
+.store-availability-inner {
+  max-width: 720px;
   margin: 0 auto;
   text-align: center;
 }
 
-.waitlist-title {
+.store-availability-eyebrow {
+  margin: 0 0 var(--space-1);
+  color: var(--coral);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.store-availability-title {
+  margin: 0 0 var(--space-2);
   font-family: var(--font-display);
   font-weight: 700;
   font-size: clamp(1.5rem, 2.6vw, 2rem);
   color: var(--on-dark);
-  margin: 0 0 var(--space-1);
 }
 
-.waitlist-body {
+.store-availability-body {
+  max-width: 56ch;
+  margin: 0 auto;
   color: var(--on-dark-secondary);
-  margin: 0 0 var(--space-4);
 }
 
-.waitlist-form {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  align-items: stretch;
-}
-
-@media (min-width: 520px) {
-  .waitlist-form {
-    flex-direction: row;
-    justify-content: center;
-  }
-}
-
-.waitlist-form label {
-  text-align: left;
-}
-
-.waitlist-email {
-  font-family: var(--font-body);
-  font-size: 1rem;
-  padding: 12px 16px;
-  border-radius: var(--radius-pill);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--on-dark);
-  min-width: 0;
-  flex: 1 1 auto;
-}
-
-.waitlist-email::placeholder { color: rgba(255, 255, 255, 0.55); }
-
-.waitlist-email:focus-visible {
-  outline: 2px solid var(--coral);
-  outline-offset: 2px;
-}
-
-.waitlist-submit {
-  font-family: var(--font-body);
-  font-weight: 600;
-  font-size: 1rem;
-  background: var(--coral);
-  /* Same reasoning as .appstore-badge above: white-on-coral fails 4.5:1
-     text AA (~3.4:1 measured), purple-deep clears it (~4.96:1). */
-  color: var(--purple-deep);
-  border: none;
-  padding: 12px 26px;
-  border-radius: var(--radius-pill);
-  cursor: pointer;
-  transition: transform 0.18s var(--ease-standard), box-shadow 0.18s var(--ease-standard);
-}
-
-.waitlist-submit:hover,
-.waitlist-submit:focus-visible {
-  transform: translateY(-1px);
-  box-shadow: 0 10px 20px -8px rgba(224, 99, 122, 0.6);
-}
-
-.waitlist-submit:disabled {
-  cursor: default;
-  opacity: 0.7;
-  transform: none;
-  box-shadow: none;
-}
-
-.waitlist-note {
-  margin-top: var(--space-2);
-  font-size: 0.82rem;
-  color: rgba(255, 255, 255, 0.55);
-}
-
-/* Warm coral-orange rather than --coral itself: needs to read as a
-   distinct "something's wrong" signal, not the same hue as the CTA button
-   sitting right above it. #FFAB91 on --purple-secondary measures ~7.6:1,
-   well past the 4.5:1 text AA floor. */
-.waitlist-error {
-  margin: var(--space-2) 0 0;
-  font-size: 0.9rem;
-  color: #FFAB91;
-}
-
-.waitlist-success {
-  outline: none;
-}
-
-.waitlist-success-title {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: clamp(1.25rem, 2.2vw, 1.6rem);
-  color: var(--on-dark);
-  margin: 0 0 var(--space-1);
-}
-
-.waitlist-success-body {
-  color: var(--on-dark-secondary);
-  margin: 0;
+.store-availability-badges {
+  margin-top: var(--space-4);
 }
 
 /* ---------- Footer ---------- */
@@ -1917,8 +1895,7 @@ a { color: inherit; }
     transition: none !important;
   }
 
-  .appstore-badge,
-  .waitlist-submit {
+  .store-badge-link {
     transition: none;
   }
 }
