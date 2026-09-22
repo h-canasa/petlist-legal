@@ -26,7 +26,7 @@ sections for what was checked against the codebase). The `source/`
 folder here is a **copy**, not synced automatically.
 
 ## Regenerating after a content change
-
+ 
 1. Copy the updated file(s) from the main repo:
    ```
    cp <petlist-repo>/docs/privacy-policy.md source/privacy-policy.md
