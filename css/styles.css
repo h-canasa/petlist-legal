@@ -262,7 +262,7 @@ a { color: inherit; }
 /* ---------- Persistent site header (PET-205 follow-up item 5) ---------- */
 /* Fixed so it survives past the hero; transparent/large at rest, shrinks
    and gains a blurred backdrop once scrolled past the hero, so it stays
-   legible over both the lavender showcase and purple waitlist sections
+   legible over both the lavender showcase and purple store availability sections
    below. position:fixed keeps it out of document flow, so its own size
    change on scroll can never shift any other content -- CLS stays 0. */
 .site-header {
@@ -872,44 +872,7 @@ a { color: inherit; }
   background: rgba(255, 255, 255, 0.06);
   color: var(--on-dark);
   font-family: inherit;
-  cursor: pointer;
   text-align: center;
-  transition: background-color 0.18s var(--ease-standard), border-color 0.18s var(--ease-standard);
-}
-
-.feature-chip:hover,
-.feature-chip:focus-visible {
-  background: rgba(255, 255, 255, 0.11);
-  border-color: rgba(255, 255, 255, 0.26);
-}
-
-/* ---------- Hover/focus "pop" (round 11, item 3) ---------- */
-/* Purely a liveliness cue now -- there's no information left to reveal, so
-   nothing here needs to be additive/accessible the way round 10's
-   :hover/:focus-visible/.is-open trio was. Scoped inside
-   `(prefers-reduced-motion: no-preference)` rather than relying on a
-   transition-less snap: with the scale rule unconditional, a
-   reduced-motion user would still get an instant, un-eased jump to 1.08x
-   on focus, which is exactly the kind of motion this preference exists to
-   suppress even though "instant" has no animation to strip. Gating the
-   whole rule out is what makes "scale/pop disabled" literally true rather
-   than merely un-animated. The background/border tint above stays active
-   for both preferences -- a colour change isn't motion, and reduced-motion
-   users still get *some* hover/focus feedback. */
-@media (prefers-reduced-motion: no-preference) {
-  .feature-chip {
-    transition: background-color 0.18s var(--ease-standard), border-color 0.18s var(--ease-standard),
-                transform 0.15s var(--ease-standard), box-shadow 0.15s var(--ease-standard);
-  }
-
-  .feature-chip:hover,
-  .feature-chip:focus-visible {
-    transform: scale(1.08);
-    box-shadow: 0 14px 28px -10px rgba(0, 0, 0, 0.5);
-    /* Lifts the popped chip above its neighbours so the 1.08x scale-up
-       paints over the next card's edge instead of under it. */
-    z-index: 3;
-  }
 }
 
 .feature-icon {
@@ -928,14 +891,7 @@ a { color: inherit; }
   line-height: 1.25;
 }
 
-/* ---------- Feature subtitle (round 11) ---------- */
-/* Round 10's version of this class was an absolutely-positioned popover,
-   hidden until hover/focus/tap. That entire mechanism -- the .is-open
-   toggle, the position:absolute/opacity transition, the click handler in
-   index.html -- is gone: the subtitle is now plain static content, always
-   in the card's normal flow, always visible, no interaction required to
-   read it. It was already never aria-hidden and never removed from the
-   DOM, so screen reader behaviour is unchanged by this simplification. */
+/* Static feature subtitle, visible without interaction. */
 .feature-desc {
   font-size: 0.78rem;
   font-weight: 500;
@@ -1248,11 +1204,6 @@ a { color: inherit; }
     opacity: 1 !important;
     transform: none !important;
   }
-
-  .feature-chip {
-    transition: none !important;
-  }
-
 
   .site-header,
   .site-header .brand,

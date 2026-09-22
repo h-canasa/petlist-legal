@@ -98,19 +98,14 @@
   <!-- Sibling of .hero-body, NOT a child of it: dropping this into
        .hero-copy would make the left column roughly twice the height of the
        right one, breaking the grid's align-items:center and dragging the
-       phone to the middle of a very tall row. As a sibling the 860px
+       screenshot to the middle of a very tall row. As a sibling the 860px
        two-column rule needs no change at all. -->
   <div class="container hero-extras">
-    <!-- Round 10 left these chips as non-triggers (see css/styles.css);
-         round 11 removes the fifth "All in One Place" item outright in
-         favor of a fourth, Vet-Ready Summary, folded in from the former
-         standalone .vet-card below -- see that class's own removal note in
-         css/styles.css. petlist_{pet-timeline,calendar,expenses,
-         home-dashboard}-preview.jpg remain orphaned -- still on disk,
-         referenced nowhere -- a cleanup pass still isn't in scope here. -->
+    <!-- These feature summaries are static content. The store screenshots
+         below provide the detailed visual tour. -->
     <ul class="feature-row">
       <li>
-        <button type="button" class="feature-chip">
+        <div class="feature-chip">
           <svg class="feature-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
             <path d="M6 2.75h8.5L19 7.25v14H6z"/>
             <path d="M14 2.75v4.5h4.5"/>
@@ -118,10 +113,10 @@
           </svg>
           <span class="feature-label">Health Records</span>
           <span class="feature-desc">Vaccines, vet visits, meds &amp; more.</span>
-        </button>
+        </div>
       </li>
       <li>
-        <button type="button" class="feature-chip">
+        <div class="feature-chip">
           <svg class="feature-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
             <rect x="3.25" y="5" width="17.5" height="16" rx="2.5"/>
             <path d="M3.25 9.75h17.5M8 2.75v4M16 2.75v4"/>
@@ -129,10 +124,10 @@
           </svg>
           <span class="feature-label">Care Reminders</span>
           <span class="feature-desc">Never miss important dates again.</span>
-        </button>
+        </div>
       </li>
       <li>
-        <button type="button" class="feature-chip">
+        <div class="feature-chip">
           <svg class="feature-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
             <path d="M3.5 20.25V3.75M3.5 20.25h17"/>
             <path d="M7.5 16.5l4-4.5 3 2.5 5-6.5"/>
@@ -140,10 +135,10 @@
           </svg>
           <span class="feature-label">Spending Tracker</span>
           <span class="feature-desc">See where your money goes.</span>
-        </button>
+        </div>
       </li>
       <li>
-        <button type="button" class="feature-chip">
+        <div class="feature-chip">
           <svg class="feature-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
             <path d="M5.5 2.75h8L18.5 7.75v13.5h-13z"/>
             <path d="M13.5 2.75v5h5"/>
@@ -151,7 +146,7 @@
           </svg>
           <span class="feature-label">Vet-Ready Summary</span>
           <span class="feature-desc">Generate a vet-ready summary in one tap</span>
-        </button>
+        </div>
       </li>
     </ul>
 
@@ -426,11 +421,6 @@
       // .scroll-fade to its resting visible state with !important, so
       // there's nothing for this script to do.
     } else if (!(window.CSS && CSS.supports && CSS.supports('animation-timeline', 'view()'))) {
-      // PET-205 round 5: the vet-PDF preview (.doc-peek-trigger) dropped its
-      // bespoke rotate/translateX slide-in along with the horizontal-scroll
-      // treatment it used to accompany -- it's a plain .scroll-fade element
-      // now like everything else, so this fallback no longer needs to
-      // special-case it at all.
       var fadeTargets = Array.prototype.slice.call(
         document.querySelectorAll('.scroll-fade')
       );
