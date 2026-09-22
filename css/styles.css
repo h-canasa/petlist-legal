@@ -14,10 +14,6 @@
 
   --font-display: "Fraunces", Georgia, serif;
   --font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  /* Single-use accent (round 9, item 5): the hand-drawn note beside the App
-     Store badge, and nothing else. Not mirrored into build.js's STYLE --
-     the legal pages don't use it. */
-  --font-script: "Caveat", "Segoe Script", cursive;
 
   --space-1: 8px;
   --space-2: 16px;
@@ -293,96 +289,27 @@ a { color: inherit; }
   gap: var(--space-2);
 }
 
-/* ---------- Brand lockup (PET-205 round 9, item 1) ---------- */
-/* Replaces the single petlist_icon-banner-web.png image with the mascot
-   icon plus LIVE text, so the wordmark is selectable, scales crisply, and
-   costs 7KB instead of 27KB. The banner PNG itself is deliberately NOT
-   deleted from the repo -- build.js:219 and both generated legal pages
-   still reference it (they carry their own inline <style> and don't load
-   this file at all, so nothing here affects them).
-
-   The chip sits behind the ICON AND THE TEXT TOGETHER, which is the whole
-   design problem this element poses: .site-header's background is dark in
-   every state it has -- transparent over --purple-deep at rest, and
-   rgba(27,22,63,0.82) once .is-scrolled -- so there is no state in which a
-   #1B163F "pet" is legible without a light surface underneath it. One chip
-   behind the whole lockup is also live-text parity with the shipped banner
-   image (and with the App Store icon), rather than a compromise.
-
-   CHIP MUST BE #FFFFFF, NOT --lavender. Measured: coral #E0637A on
-   --lavender #F3EFFA is 2.97:1, which fails the 3:1 floor; on #FFFFFF it
-   is 3.37:1, which passes AA-large. "pet" #1B163F on #FFFFFF is 17.03:1.
-   That 3.37:1 only counts as AA-large while "list" renders at >=18.66px
-   bold -- which is what pins the scrolled font-size below to 1.2rem
-   (19.2px) rather than following the old brand-mark's proportional 56->44
-   shrink down to ~18.4px.
-
-   Rejected, worth recording: a chip behind the mascot only with "pet" in
-   white (loses the purple/coral pairing entirely and diverges from the
-   App Store mark, leaving the chip reading as an unrelated badge beside
-   floating text); and no chip at all with a text-shadow halo behind the
-   purple (illegible purple-on-purple at 20px, and fails contrast anyway). */
+/* The reversed app wordmark remains legible over both header backgrounds. */
 .site-header .brand {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  /* Asymmetric: the mascot PNG carries ~10% transparent padding of its own
-     (the app icon's safe area, deliberately left untrimmed so it doesn't
-     render larger here than everywhere else it appears), so a symmetric
-     chip would look right-heavy. */
-  padding: 6px 12px 6px 6px;
-  background: var(--lavender-card);
-  border-radius: 14px;
   text-decoration: none;
-  /* Keeps the chip from looking pasted onto flat purple. Dropped once the
-     header has its own shadow. */
-  box-shadow: 0 2px 10px -4px rgba(0, 0, 0, 0.35);
-  transition: padding 0.3s var(--ease-standard), box-shadow 0.3s var(--ease-standard);
 }
 
-.site-header.is-scrolled .brand {
-  padding: 5px 10px 5px 5px;
-  box-shadow: none;
-}
-
-/* 6 + 40 + 6 = 52px chip + the header's own 20/20 padding = 92px, which is
-   exactly the constant .hero { padding-top } compensates with. Changing
-   either the icon height or the chip padding means re-checking that sum. */
-.site-header .brand-icon {
+.site-header .brand-image {
   height: 40px;
   width: auto;
   display: block;
   transition: height 0.3s var(--ease-standard);
 }
 
-.site-header.is-scrolled .brand-icon {
-  height: 32px;
+.site-header.is-scrolled .brand-image {
+  height: 34px;
 }
-
-.site-header .brand-word {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 1.35rem;
-  line-height: 1;
-  letter-spacing: -0.01em;
-  transition: font-size 0.3s var(--ease-standard);
-}
-
-/* Not 1.15rem: see the AA-large note above -- 1.2rem is 19.2px, the
-   smallest size at which coral-on-white's 3.37:1 still qualifies. */
-.site-header.is-scrolled .brand-word {
-  font-size: 1.2rem;
-}
-
-.brand-word-pet { color: var(--purple-deep); }
-.brand-word-list { color: var(--coral); }
 
 /* ---------- Trust badge (PET-205 round 9, item 2) ---------- */
 /* A <p>, not a button or link -- it states something, it doesn't do
-   anything. Deliberately quiet: this hero now carries four separate
-   "you only pay once" statements (this badge's privacy framing, the
-   subhead, the CTA annotation, and the trust bar's No Subscriptions item),
-   all ticket-mandated, so none of them should shout. --on-dark-secondary
+   anything. Deliberately quiet beside the wordmark. --on-dark-secondary
    on --purple-deep measures 10.03:1.
 
    white-space:nowrap makes this the one element in the header that can
@@ -412,9 +339,14 @@ a { color: inherit; }
   line-height: 1;
 }
 
+@media (max-width: 519px) {
+  .site-header .brand-image { height: 34px; }
+  .site-header.is-scrolled .brand-image { height: 30px; }
+}
+
 @media (max-width: 359px) {
-  .site-header .brand-icon { height: 32px; }
-  .site-header .brand-word { font-size: 1.05rem; }
+  .site-header .brand-image { height: 30px; }
+  .site-header.is-scrolled .brand-image { height: 28px; }
   .trust-badge { font-size: 0.64rem; padding: 5px 10px; }
 }
 
@@ -535,78 +467,14 @@ a { color: inherit; }
   animation-delay: 0.3s;
 }
 
-/* ---------- Hand-drawn CTA annotation (round 9, item 5) ---------- */
-/* One occurrence on the page, deliberately. Caveat is loaded at a single
-   weight for this one element -- a small playful accent, not a new body
-   font.
-
-   Both the explicit line-height here and the min-height on the wrapper
-   exist to stop the webfont swap reflowing the App Store badge: Caveat's
-   fallback metrics differ enough that a late swap would otherwise resize
-   this box and nudge the store CTA group. Reserving the space up front means the
-   swap repaints without moving anything, which is what keeps CLS at 0. */
-.cta-note {
-  display: flex;
-  align-items: center;
-  gap: var(--space-1);
-  min-height: 44px;
-  color: var(--on-dark-secondary);
-}
-
-.cta-note-arrow {
-  width: 52px;
-  height: 32px;
-  flex: none;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.7;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  opacity: 0.85;
-}
-
-.cta-note-text {
-  font-family: var(--font-script);
-  font-size: 1.15rem;
-  font-weight: 600;
-  line-height: 1.25;
-  white-space: nowrap;
-}
-
-/* Below the two-column breakpoint the CTA block is centred, so the note
-   stacks under the store badges and the arrow rotates to point back up at them.
-   From 860px the badge group and note sit side by side and the arrow points left. */
-.hero-cta {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-1);
-}
-
-.hero-cta .cta-note-arrow {
-  transform: rotate(-118deg);
-}
-
-@media (min-width: 860px) {
-  .hero-cta {
-    flex-direction: row;
-    align-items: center;
-    gap: var(--space-2);
-  }
-
-  .hero-cta .cta-note-arrow {
-    transform: none;
-  }
-}
-
 /* ---------- Bottom trust bar (round 9, item 7) ---------- */
 /* auto-fit + minmax reflows 1 -> 2 -> 4 columns continuously across
    320-1440 with no breakpoints of its own, which is why it's used here
    rather than another media query.
 
    Separated from the vet card above by a hairline rather than being carded
-   itself: this hero already states "you only pay once" in the subhead, the
-   annotation and this bar's own second item, so the treatment stays quiet
+   itself: this hero already states "you only pay once" in the subhead and
+   this bar's second item, so the treatment stays quiet
    on purpose. */
 .trust-bar {
   list-style: none;
@@ -933,19 +801,30 @@ a { color: inherit; }
 
 .store-gallery {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 320px));
+  grid-template-columns: repeat(8, minmax(0, 1fr));
   justify-content: center;
   align-items: start;
-  gap: clamp(18px, 2vw, 28px);
+  gap: clamp(16px, 1.5vw, 22px);
 }
 
 .store-shot-card {
   width: 100%;
+  grid-column: span 2;
 }
 
-@media (min-width: 761px) and (max-width: 1050px) {
+/* Center the three cards in the second row of the four-column gallery. */
+.store-shot-card:nth-child(5) {
+  grid-column: 2 / span 2;
+}
+
+@media (min-width: 761px) and (max-width: 1199px) {
   .store-gallery {
     grid-template-columns: repeat(2, minmax(0, 320px));
+  }
+
+  .store-shot-card,
+  .store-shot-card:nth-child(5) {
+    grid-column: auto;
   }
 }
 
@@ -1198,8 +1077,7 @@ a { color: inherit; }
   .trust-badge,
   .hero-extras,
   .feature-row,
-  .trust-bar,
-  .cta-note {
+  .trust-bar {
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;
@@ -1207,8 +1085,7 @@ a { color: inherit; }
 
   .site-header,
   .site-header .brand,
-  .site-header .brand-icon,
-  .site-header .brand-word {
+  .site-header .brand-image {
     transition: none !important;
   }
 

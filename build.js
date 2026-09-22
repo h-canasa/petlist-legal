@@ -84,7 +84,7 @@ const STYLE = `
     padding: 0 20px;
   }
   header.site-header .brand-mark {
-    height: 48px;
+    height: 40px;
     width: auto;
   }
 
@@ -220,7 +220,7 @@ function page({ title, description, bodyHtml, currentPath, root }) {
 <header class="site-header">
   <div class="inner">
     <a href="${root}" aria-label="PetList home">
-      <img class="brand-mark" src="${root}assets/marketing/petlist_icon-banner-web.png" alt="PetList" width="114" height="48">
+      <img class="brand-mark" src="${root}assets/marketing/petlist-wordmark-reversed.png" alt="PetList" width="1560" height="384">
     </a>
   </div>
 </header>

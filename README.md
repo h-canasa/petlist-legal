@@ -41,16 +41,17 @@ folder here is a **copy**, not synced automatically.
 
 ## Marketing image assets
 
-The landing page uses eight optimized 320 × 696 AVIF marketing screenshots in
-`assets/marketing/store/`. `dash.avif` is the hero image; the other seven are
-the feature gallery. The App Store badge SVG and mascot icon are also used by
-the page. `petlist_home-dashboard-web.jpg` remains referenced by its Open
-Graph image metadata.
+The landing page uses eight AVIF marketing screenshots in
+`assets/marketing/store/`. Each has a 320px fallback and an `-800.avif`
+high-density version at quality 75. `dash.avif` is the hero image; the other
+seven are the feature gallery and load lazily. The current dashboard also has
+a JPEG derivative for Open Graph previews. The site header and legal pages use
+the transparent reversed PetList wordmark from the app's image assets.
 
-The older JPG screenshot and preview assets in `assets/marketing/` are no
-longer used in the visible page. They are retained for now rather than removed
-as part of the store screenshot change. `build.js` generates the legal pages
-only; it does not process marketing images.
+The older JPG screenshot, preview, mascot, and banner assets in
+`assets/marketing/` are no longer used in the visible pages. They are retained
+for now rather than removed as part of this visual fix. `build.js` generates
+the legal pages only; it does not process marketing images.
 
 ## Status
 
