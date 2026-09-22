@@ -48,18 +48,8 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Horizontal-overflow backstop (PET-205 round 2, item 3). The actual
-   offending element was fixed at its source (`.doc-peek-trigger`'s
-   transform, then round 4's containing wrapper); round 5 removed that
-   whole horizontal-scroll interaction outright in favor of a small static
-   preview badge, so there's nothing left in the showcase strip that comes
-   anywhere near a column edge any more -- this backstop is now purely
-   defensive, with no known element depending on it.
-   `clip` is preferred over `hidden` because `hidden` makes the element a
-   scroll container, which would break the sticky showcase visual added in
-   item 4c. `hidden` is kept as the fallback for browsers without `clip`
-   (pre-16 Safari), where sticky-vs-hidden is the lesser tradeoff against a
-   horizontally scrollable page. */
+/* Defensive page-level overflow guard. The feature gallery handles its own
+   horizontal scrolling on narrow screens; the document itself never should. */
 html, body {
   overflow-x: hidden;
 }
@@ -762,155 +752,38 @@ a { color: inherit; }
   letter-spacing: -0.01em;
 }
 
-/* ---------- Hero photography zone (round 9, item 9) ---------- */
-/* .hero-visual wraps the photography zone and the phone together and
-   becomes the hero grid's second child, so the two-column rule at 860px is
-   untouched -- it still sees exactly two children.
+/* ---------- Hero store screenshot ---------- */
 
-   The zone is a container of .hero-photo slots rather than one hard-coded
-   image, so a second animal can be added later (a dog bleeding off an
-   outer edge instead of peeking) by adding one span plus one CSS block.
-   Each slot is an absolutely-positioned box carrying its photo as a
-   background, aria-hidden, and painted UNDER .phone-stage.
-
-   `width: fit-content` is load-bearing, not tidiness (round 11 fix). As a
-   CSS Grid item (.hero-visual is .hero-body's second column), this element
-   stretches to fill its ENTIRE grid track by default -- at 1440px that's
-   ~486px, nearly 200px wider than the 300px phone it wraps. .hero-photos
-   below is `inset: 0` against THIS element, not against .phone-stage, so
-   every .hero-photo's percentage offset was resolving against that
-   phantom-wide box instead of the phone's real edge -- which is what made
-   the cat read as "a separate element at the viewport's far edge" rather
-   than overlapping the phone. Constraining this box to its content's actual
-   width (the phone) makes .hero-photos' bounds equal the phone's bounds, so
-   `right: -N%` below now genuinely means "N% of the phone's own width past
-   its edge." `margin: 0 auto` re-centers the now-narrower box within its
-   grid column, replacing the centering `justify-content: center` on this
-   flex container used to provide for free at full-track width. */
 .hero-visual {
-  position: relative;
   display: flex;
   justify-content: center;
-  width: fit-content;
-  margin: 0 auto;
+  min-width: 0;
 }
 
-.hero-photos {
-  /* Round 13: hidden unless the visitor is on a hover-capable, fine-pointer
-     device AND the viewport is wide enough for .hero-body's two-column
-     layout (1024px -- see the media query below for why that value, not
-     700px). Declared display:none here, not just opacity:0, so neither the
-     background-image request nor any layout box exists for anyone this
-     doesn't apply to -- which by definition already excluded the
-     majority-mobile audience even in earlier rounds, and now also excludes
-     desktop/laptop touchscreens and anyone who can't hover. */
-  display: none;
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
+.store-shot {
+  margin: 0;
+  overflow: hidden;
+  background: #15103D;
+  border-radius: 28px;
+  box-shadow: 0 24px 54px -18px rgba(0, 0, 0, 0.42);
 }
 
-.hero-photo {
-  position: absolute;
+.store-shot img {
   display: block;
-  background-repeat: no-repeat;
-  background-size: contain;
+  width: 100%;
+  height: auto;
 }
 
-/* .phone-stage must sit ABOVE the photos -- that stacking order is the
-   whole effect. The cat's body deliberately bleeds off the LEFT edge of
-   its own crop (see README), so placing it to the right of the phone with
-   the phone overlapping that edge is what makes it read as peeking around
-   the phone rather than standing beside it. */
-.hero-visual .phone-stage {
-  position: relative;
-  z-index: 1;
+.store-shot--hero {
+  width: min(78vw, 320px);
+  opacity: 0;
+  transform: translateY(24px) scale(0.96);
+  animation: store-shot-in 0.75s var(--ease-standard) forwards;
+  animation-delay: 0.38s;
 }
 
-/* ---------- Hero cat: hover-reveal, not permanent (round 13) ---------- */
-/* Rounds 11-12 kept fighting the same tension: big enough to read clearly
-   vs. small enough not to compete with the phone in a composition that's
-   ALWAYS on screen. Round 13 removes the "always on" half of that tension
-   instead of continuing to tune around it -- the cat is hidden at rest and
-   only reveals while the phone itself is hovered, so it no longer has to
-   coexist with the phone as permanent visual weight, and can be sized
-   generously (round 9/10 territory) without a permanent-margin budget to
-   fit inside.
-
-   Gated on THREE conditions, all required:
-   - `(hover: hover) and (pointer: fine)` -- the same capability-gating
-     convention round 9 established for the feature-row hover previews.
-     Without it, a touchscreen laptop would ship the image and hover
-     listener for an interaction it can never trigger.
-   - `(min-width: 1024px)` -- not the 700px earlier rounds gated on. Round
-     12's own investigation found the real constraint here is where
-     .hero-body switches from single- to two-column (860px, see that rule
-     elsewhere in this file), and that the margin between the phone and the
-     viewport edge doesn't recover to something generous until 1024px --
-     860-1023px is a real but cramped window. Since this is no longer a
-     permanent element with a permanent-margin budget to defend at every
-     width, there's no reason to also support that cramped middle ground:
-     it's simpler and just as correct to start the whole mechanism where
-     the room is already generous.
-
-   Triggered by `.hero-visual:hover` rather than `.phone-stage:hover` --
-   the two are equivalent hit-test regions (.hero-visual is width:
-   fit-content around exactly the phone, see that rule above), but a plain
-   descendant selector needs no DOM-order assumptions the way a sibling
-   combinator would (.hero-photos precedes .phone-stage in the markup).
-   One known, accepted quirk: because the revealed cat visually extends
-   PAST .hero-visual's own box (that's the whole point), moving the pointer
-   from the phone onto the peeking part of the cat itself exits the hover
-   region and hides it again -- inherent to a hover-triggered peek with no
-   JS, not a bug to chase.
-
-   Decorative, not informational (unlike round 10's feature-row text,
-   which had to stay screen-reader-reachable): .hero-photos already carries
-   aria-hidden="true" in the markup, and this being hover-only rather than
-   also focus-triggered is intentional -- there is no keyboard equivalent
-   to "hover the phone" to preserve here. */
-@media (hover: hover) and (pointer: fine) and (min-width: 1024px) {
-  .hero-photos { display: block; }
-
-  .hero-photo--cat {
-    right: -28%;
-    bottom: 5%;
-    width: 50%;
-    max-width: 180px;
-    aspect-ratio: 620 / 674;
-    background-image: url('../assets/marketing/petlist_hero-cat-web.png');
-    background-position: right bottom;
-    filter: drop-shadow(0 16px 22px rgba(0, 0, 0, 0.42));
-    opacity: 0;
-    /* Anchored to the same corner the cat emerges from, so the scale-in
-       reads as growing out from behind the phone rather than zooming from
-       the image's own center. */
-    transform-origin: right bottom;
-    transform: translateY(10px) scale(0.86);
-    transition: opacity 0.22s var(--ease-standard), transform 0.22s var(--ease-standard);
-  }
-
-  .hero-visual:hover .hero-photo--cat {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-/* Bigger again at 1440px+: margin between the phone and the viewport edge
-   is already ~130px+ at the 1024px tier's own sizing, and grows past
-   270px by 1440px and past 500px by 1920px (container approaches, then
-   exceeds, its 1120px max-width) -- comfortable room for a larger, more
-   confident reveal at typical desktop widths. Only the three properties
-   that actually change are redeclared; bottom, the aspect-ratio, the
-   image, the shadow and the transition all keep cascading from the base
-   rule above. */
-@media (hover: hover) and (pointer: fine) and (min-width: 1440px) {
-  .hero-photo--cat {
-    right: -50%;
-    width: 70%;
-    max-width: 230px;
-  }
+@keyframes store-shot-in {
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 /* ---------- Wave divider (round 9, item 8) ---------- */
@@ -1071,118 +944,6 @@ a { color: inherit; }
   text-align: center;
 }
 
-/* ---------- Phone mockup (signature element) ---------- */
-
-.phone-stage {
-  display: flex;
-  justify-content: center;
-  perspective: 1400px;
-  opacity: 0;
-  /* Scales up from 92% as it fades in (PET-205 round 2, item 4b), matching
-     the showcase visuals' reveal. */
-  transform: translateY(24px) scale(0.92);
-  animation: phone-in 0.75s var(--ease-standard) forwards;
-  animation-delay: 0.38s;
-}
-
-@keyframes phone-in {
-  to { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-.phone-frame {
-  --frame-w: 240px;
-  position: relative;
-  width: var(--frame-w);
-  aspect-ratio: 720 / 1565;
-  background: #0B0A14;
-  border-radius: 34px;
-  padding: 9px;
-  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.06) inset;
-}
-
-@media (min-width: 500px) {
-  .phone-frame { --frame-w: 270px; }
-}
-
-@media (min-width: 860px) {
-  .phone-frame { --frame-w: 300px; }
-}
-
-.hero .phone-frame {
-  transform: rotateY(-9deg) rotateX(3deg);
-  filter: drop-shadow(0 34px 46px rgba(0, 0, 0, 0.45)) drop-shadow(0 10px 18px rgba(0, 0, 0, 0.3));
-}
-
-.phone-frame .phone-screen {
-  width: 100%;
-  height: 100%;
-  border-radius: 25px;
-  overflow: hidden;
-  background: #fff;
-}
-
-.phone-frame .phone-screen img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-/* PET-205 round 5, item 2a; corrected in round 6. The vet-PDF item's
-   screenshot is a full-device capture (kebab menu open over the pet detail
-   screen) rather than a pre-cropped shot like the other three -- its own
-   aspect ratio is nearly identical to the phone frame's, so
-   object-fit: cover alone crops almost nothing and the menu renders too
-   small to read at thumbnail size. Scaled up and anchored top-LEFT via
-   transform (not object-position -- cover has no crop margin to reposition
-   within when source and container aspect ratios already match, so there's
-   nothing for object-position to shift).
-
-   Round 5 shipped scale(1.5) with a top-CENTER origin (50% 0%), reasoning
-   that a symmetric zoom crops both sides equally. It doesn't: the source's
-   status bar and "Back" button sit near the LEFT edge while the kebab menu
-   sits right-of-center, so a center-anchored zoom cropped real content on
-   the left ("11:51" -> "51", "Back" -> "ack") while only eating into the
-   menu's own right-side whitespace margin -- round 5's own screenshot check
-   evidently looked at the menu staying legible and missed the left-edge
-   damage entirely.
-
-   Round 6 re-derived this by rendering the actual composite with a
-   percentage grid overlaid on the source image (not by reasoning about the
-   transform math): the rightmost content that must stay visible -- the
-   kebab menu and the status bar's battery icon -- sits at ~91% of the
-   source's width. With transform-origin pinned to the top-LEFT corner
-   (0% 0%), the visible window is [0, 1/scale] in source-fraction terms, so
-   scale must stay at or below ~1/0.91 (~1.10) to keep that 91% mark inside
-   frame -- confirmed empirically at 1.05x for a safety margin against the
-   measurement's own imprecision (the battery's rounded terminal was still
-   clipping a hair at 1.10x). This also means full width and a bigger zoom
-   are in real tension here, not just a prior tuning miss: any uniform
-   scale-up of an image already filling its container must crop SOME width
-   once clipped by .phone-screen's overflow:hidden, so 1.05x is a
-   deliberately modest zoom chosen to keep the left edge intact rather than
-   a value squeezed for maximum menu-text size. */
-.showcase-item.is-document .phone-screen img {
-  transform: scale(1.05);
-  transform-origin: 0% 0%;
-}
-
-.phone-frame .phone-island {
-  /* PET-205 follow-up item 1: a real Dynamic Island is ~4.4% of screen
-     height (iPhone 14 Pro: 37.33pt of 852pt) and ~32% of width -- the
-     previous 6.5%/34% rendered as a wide bar tall enough to overlap
-     screenshot content underneath it. */
-  position: absolute;
-  top: 8px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 30%;
-  height: 4.4%;
-  min-height: 10px;
-  background: #0B0A14;
-  border-radius: var(--radius-pill);
-  z-index: 2;
-}
-
 /* ---------- Showcase ---------- */
 
 .showcase {
@@ -1214,376 +975,56 @@ a { color: inherit; }
   line-height: 1.15;
 }
 
-.showcase-grid {
+.store-gallery {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--space-6) var(--space-4);
-}
-
-@media (min-width: 700px) {
-  .showcase-grid { grid-template-columns: 1fr 1fr; }
-}
-
-.showcase-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
-
-/* Entrance (PET-205 round 3, item 3): copy and visual each get the shared
-   .scroll-fade treatment (see that class's own comment above) as two
-   units -- not the prior round's 3-way headline/body/visual stagger with
-   hand-tuned delays. Each naturally reveals at its own scroll position
-   (the visual is laid out first in the card and enters the viewport
-   first), so no manual delay is needed to get a cascade. */
-.showcase-visual {
-  position: relative;
-  margin-bottom: var(--space-4);
-  display: flex;
+  grid-template-columns: repeat(3, minmax(0, 320px));
   justify-content: center;
+  align-items: start;
+  gap: clamp(18px, 2vw, 28px);
+}
+
+.store-shot-card {
   width: 100%;
 }
 
-/* Pre-existing bug, found while verifying round 9's lightbox entry points
-   and confirmed present at round 8 (195b4da) too -- not introduced here.
-
-   .doc-peek-trigger hangs 32% of the phone frame's height BELOW that frame
-   (bottom: -32%, i.e. ~167px at the 240px mobile frame width) while
-   .showcase-visual reserves only --space-4 (32px) of margin under itself.
-   In the single-column mobile layout that left ~135px of the preview
-   overlapping .showcase-copy, and the copy won the paint order: the
-   headline and body text rendered straight through the preview image, so
-   BOTH were illegible, and elementFromPoint at the trigger's own centre
-   returned .showcase-headline -- meaning the button could not be tapped at
-   all below 900px. Only the desktop layout, where the copy sits beside the
-   visual rather than under it, was unaffected.
-
-   Two things are needed and neither substitutes for the other:
-
-   1. Clearance, so the overhang lands in empty space instead of on the
-      copy. This is the part that actually fixes legibility.
-   2. z-index on .showcase-visual, so the trigger paints above the copy.
-      The trigger's own z-index: 2 cannot do this -- it orders the trigger
-      only among .phone-frame's children, and .showcase-copy is a sibling
-      of .showcase-visual two levels further up. zIndex orders siblings,
-      so the elevation has to be applied at the level where the two
-      subtrees actually meet.
-
-   Scoped to .is-document because it is the only item with an overhanging
-   child, and to the single-column layout because >=900px already places
-   the copy beside the visual.
-
-   Round 10 shrank the badge's own overhang from ~167px (bottom: -32% of
-   the frame) down to a flat 10px (bottom: -10px, see .doc-peek-trigger),
-   as part of docking it into the corner instead of hanging it off below
-   the frame -- so the +150px this rule used to reserve is now roughly
-   15x more than the 10px it actually needs to clear, which would leave a
-   large dead gap between the visual and the copy. Measured directly
-   (Chromium, 375px, .doc-peek-trigger's own rendered bottom edge minus
-   .showcase-visual's): exactly 10px at every width in this range, since
-   --frame-w is the same flat 210px throughout <900px and the overhang is
-   set in px, not %. Reserved value is that 10px plus a small buffer,
-   not the bare minimum, so sub-pixel rounding across browsers can't
-   reopen the overlap this block exists to prevent. */
-.showcase-item.is-document .showcase-visual {
-  z-index: 1;
-}
-
-@media (max-width: 899px) {
-  .showcase-item.is-document .showcase-visual {
-    margin-bottom: calc(var(--space-4) + 12px);
+@media (min-width: 761px) and (max-width: 1050px) {
+  .store-gallery {
+    grid-template-columns: repeat(2, minmax(0, 320px));
   }
 }
 
-.showcase-visual .phone-frame {
-  --frame-w: 210px;
-  box-shadow: 0 22px 36px -14px rgba(27, 22, 63, 0.35);
-}
-
-/* ---------- Pinned showcase (PET-205 round 2, item 4c) ---------- */
-/* The signature scroll moment: each feature's phone mockup pins in the
-   viewport while that feature's copy scrolls past beside it, then releases
-   and hands off to the next feature's mockup.
-
-   Built with per-item `position: sticky` and no JavaScript at all. Because
-   each visual is sticky within its OWN item, the handoff the ticket
-   describes ("swapping to the next item's mockup once its copy section has
-   fully scrolled through") falls out of the layout for free: item 1's
-   visual unpins exactly when item 1's row ends, which is the same moment
-   item 2's begins pinning. A JS-driven version would need scroll listeners,
-   an active-index state machine and a duplicated stack of all four visuals
-   in the DOM; this needs none of that and cannot desync.
-
-   Desktop only, deliberately. This repo's own brief calls the page
-   mobile-first ("assume most visitors arrive from a phone"), and a pinned
-   two-column layout has nowhere to put the pinned column on a narrow
-   screen -- the honest mobile treatment is the existing stacked card, which
-   is what stays below 900px. So this is an enhancement for the wide
-   viewports that can carry it, not a layout the small ones have to
-   awkwardly emulate. */
-@media (min-width: 900px) {
-  .showcase-grid {
-    grid-template-columns: 1fr;
-    gap: 0;
+@media (max-width: 760px) {
+  .showcase .container {
+    padding-left: 0;
+    padding-right: 0;
   }
 
-  .showcase-item {
-    display: grid;
-    grid-template-columns: 0.85fr 1.15fr;
-    gap: var(--space-6);
-    /* start-aligned so each visual's grid area spans the whole row -- that
-       area is the sticky containing block, so it's what gives the pin its
-       travel. Centering here instead would collapse the area to the
-       visual's own height and the pin would never move. */
-    align-items: start;
-    min-height: 104vh;
-    text-align: left;
+  .showcase .section-heading {
+    padding-left: var(--space-3);
+    padding-right: var(--space-3);
   }
 
-  .showcase-visual {
-    position: sticky;
-    top: 9vh;
-    margin-bottom: 0;
+  .store-gallery {
+    display: flex;
+    justify-content: flex-start;
+    gap: 16px;
+    overflow-x: auto;
+    padding: 0 var(--space-3) 18px;
+    scroll-padding-inline: var(--space-3);
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    overscroll-behavior-inline: contain;
+    -webkit-overflow-scrolling: touch;
   }
 
-  .showcase-visual .phone-frame {
-    --frame-w: 260px;
+  .store-gallery::-webkit-scrollbar {
+    display: none;
   }
 
-  .showcase-copy {
-    /* Centered in the row (rather than pushed down from the top with
-       padding) so the leftover height splits above and below the copy and
-       reads as deliberate whitespace instead of a gap under it. */
-    align-self: center;
+  .store-shot-card {
+    flex: 0 0 min(78vw, 320px);
+    scroll-snap-align: center;
   }
-
-  .showcase-body {
-    max-width: 40ch;
-  }
-
-  .showcase-headline {
-    font-size: 1.6rem;
-  }
-}
-
-/* Vet PDF export — distinct treatment: a static document preview badge,
-   tappable to open the full document in a lightbox. */
-
-/* ---------- Corner-overlap badge (PET-205 round 10) ---------- */
-/* Rounds 5-7 built this as a small badge hanging mostly OUTSIDE the phone
-   frame's own bottom-right corner -- round 5 introduced it as a static
-   preview (30%/max 80px), round 6 enlarged and corner-anchored it
-   (44%/max 132px, bottom: -8%), round 7 enlarged it again and pushed it
-   further off-corner still (58%/max 174px, bottom: -32%, right: -46px) --
-   each pass specifically choosing to keep it clear of the real screenshot
-   content underneath, and connecting it back to the kebab menu with a
-   drawn line (removed this round) because the badge itself no longer
-   touched the screen it was illustrating.
-
-   Round 10 reverses that whole direction on purpose: this screenshot is
-   now the ONLY place on the page that shows the real Vet Summary menu
-   action inside a real screen (the hero's own feature row dropped its
-   equivalent screenshot references this same round), so the badge needs
-   to read as a deliberate, substantial corner overlap rather than a
-   small peeking afterthought -- "docked at the corner," per the ticket,
-   not "hanging beside it." Overlapping real on-screen content below it is
-   now the INTENDED read, not a bug to route around, which is also why the
-   connector line (whose entire job was bridging a badge that didn't touch
-   the screen back to the menu action) was removed outright rather than
-   re-routed.
-
-   Switched from aspect-ratio-locked (width set, height:auto following the
-   letterhead image's own 560:801 ratio) to independently-set width AND
-   height percentages, with the image cropped to fill via object-fit:cover
-   below. That decouples the badge's on-screen footprint from the source
-   image's incidental proportions -- necessary because the ticket specifies
-   size as a fraction of the phone's SCREEN HEIGHT ("roughly the bottom
-   third to bottom 40%"), which an aspect-locked width can only hit by
-   coincidence.
-
-   height: 38% sits in the middle of that third-to-40% range. Sized against
-   .phone-frame's own definite height (aspect-ratio + a definite width
-   computes to a definite height, which is why percentage sizing already
-   works for .phone-island elsewhere in this file) rather than any element
-   the connector line used to need to target.
-
-   right/bottom: -10px, not the deeply negative offsets rounds 6-7 used --
-   this is what makes it read as DOCKED INTO the corner rather than hung
-   off it: a small overhang past the frame's own bezel edge for the "still
-   peeking, not fully inset" read the earlier rounds valued, while the
-   overwhelming majority of the badge's area sits on top of the phone
-   screen itself. */
-.doc-peek-trigger {
-  position: absolute;
-  right: -10px;
-  bottom: -10px;
-  width: 62%;
-  max-width: 200px;
-  min-width: 150px;
-  height: 38%;
-  max-height: 220px;
-  min-height: 160px;
-  overflow: hidden;
-  border: none;
-  background: none;
-  padding: 0;
-  cursor: pointer;
-  border-radius: 12px;
-  z-index: 2;
-  /* The pulse itself lives in the shared .has-coral-pulse utility below
-     (PET-205 round 9) so the hero's vet-PDF card carries the identical
-     affordance. This rule keeps only its positioning. */
-}
-
-/* ---------- Shared "tap this, it opens a document" glow ---------- */
-/* Slow, low-key ambient pulse (originally item 2d, as .doc-peek-trigger's
-   own animation) -- ~40% peak coral opacity, 3.2s breathing cadence,
-   running continuously rather than scroll-triggered. Calibrated against
-   this page's other coral moments (the CTA buttons' hover shadow, the
-   ambient hero blobs) to read as "quietly alive," not a notification badge
-   or an alert.
-
-   Round 9 extracted it into a utility rather than duplicating the
-   keyframes, so the showcase strip's PDF preview and the hero's
-   Vet-Ready PDF Export card give the user one consistent signal for the
-   same action. Applied via a class in the markup, so anything that opens a
-   document can opt in. */
-@keyframes coral-pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(224, 99, 122, 0.36), 0 8px 16px -6px rgba(45, 27, 105, 0.35); }
-  50%      { box-shadow: 0 0 0 7px rgba(224, 99, 122, 0), 0 8px 16px -6px rgba(45, 27, 105, 0.35); }
-}
-
-.has-coral-pulse {
-  animation: coral-pulse 3.2s ease-in-out infinite;
-}
-
-/* object-fit: cover (round 10) fills the badge's independently-sized box
-   exactly rather than letterboxing or overflowing it -- see the box's own
-   comment for why width/height are no longer aspect-locked to this image.
-   object-position: top biases the crop toward the top of the source
-   letterhead (the pet's name and the health-events table header, the most
-   identifying content) rather than the default center crop, which would
-   cut into that header to keep an equal margin of blank table rows at the
-   bottom instead. */
-.doc-peek-trigger img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: top;
-  display: block;
-  border-radius: 10px;
-  border: 2px solid var(--lavender-card);
-}
-
-.showcase-item.is-document .phone-frame {
-  position: relative;
-  z-index: 1;
-}
-
-/* ---------- Vet PDF lightbox (PET-205 follow-up item 3) ---------- */
-
-.lightbox {
-  position: fixed;
-  inset: 0;
-  z-index: 100;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--space-3);
-  background: rgba(27, 22, 63, 0.72);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.25s var(--ease-standard), visibility 0s linear 0.25s;
-}
-
-.lightbox.is-open {
-  opacity: 1;
-  visibility: visible;
-  transition: opacity 0.25s var(--ease-standard), visibility 0s linear 0s;
-}
-
-/* PET-205 round 9: the panel now shrink-wraps its image instead of forcing
-   it to 100% width and scrolling the overflow. That was fine while the only
-   thing this dialog ever showed was one 900x1285 document, whose 0.70 aspect
-   ratio fits 520x743 inside an 88vh box. It is NOT fine for the phone
-   screenshots the feature row now opens here: a 720x1565 shot at width:100%
-   becomes 520x1130, which overruns 88vh on any viewport shorter than
-   ~1284px and lands the user in an in-panel scrollbar. Shrink-wrapped, the
-   same shot renders ~405x880 on a 1000px-tall viewport -- fully visible,
-   no scroll. */
-.lightbox-panel {
-  position: relative;
-  max-width: min(520px, 92vw);
-  max-height: 88vh;
-  overflow: hidden;
-  border-radius: var(--radius-card);
-  background: #fff;
-  box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.5);
-  transform: scale(0.96) translateY(8px);
-  transition: transform 0.25s var(--ease-standard);
-}
-
-.lightbox.is-open .lightbox-panel {
-  transform: scale(1) translateY(0);
-}
-
-.lightbox-panel img {
-  display: block;
-  width: auto;
-  height: auto;
-  max-width: min(520px, 92vw);
-  max-height: 88vh;
-}
-
-/* position:absolute, not sticky (PET-205 round 9). Sticky existed because
-   the panel used to scroll -- it kept the button reachable while the user
-   scrolled a too-tall document. The panel now shrink-wraps its image and
-   never scrolls, so sticky buys nothing and its in-flow box actively hurt:
-   12px top margin + 36px height - 44px bottom margin left a net +4px of
-   content below the image, which pushed scrollHeight past the panel's own
-   max-height and, under the new overflow:hidden, clipped the last 4px of
-   every image. Absolute takes it out of flow entirely, so the panel is
-   exactly the size of its image. */
-.lightbox-close {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  border: none;
-  background: rgba(27, 22, 63, 0.85);
-  color: #fff;
-  font-size: 1.2rem;
-  line-height: 1;
-  cursor: pointer;
-  z-index: 1;
-}
-
-.lightbox-close:hover,
-.lightbox-close:focus-visible {
-  background: var(--purple-deep);
-}
-
-.showcase-headline {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 1.3rem;
-  color: var(--purple-deep);
-  margin: 0 0 var(--space-1);
-}
-
-.showcase-body {
-  font-size: 0.98rem;
-  color: var(--text-secondary);
-  margin: 0;
-  max-width: 34ch;
 }
 
 /* ---------- Upcoming features (PET-205 follow-up item 6) ---------- */
@@ -1797,11 +1238,10 @@ a { color: inherit; }
   .hero-headline,
   .hero-pitch,
   .hero-cta,
-  .phone-stage,
+  .store-shot--hero,
   .trust-badge,
   .hero-extras,
   .feature-row,
-  .hero-photos,
   .trust-bar,
   .cta-note {
     animation: none !important;
@@ -1813,23 +1253,6 @@ a { color: inherit; }
     transition: none !important;
   }
 
-  /* .hero-photo (the base class every .hero-photo* slot carries, including
-     .hero-photo--cat) is deliberately NOT in the force-visible list above
-     either -- it's currently only ever the cat, which is hidden-until-
-     hovered by design now (round 13), and forcing opacity:1 here would
-     make it permanently visible for reduced-motion users regardless of
-     hover, which is the exact "always on" composition round 13 removed.
-     If a future second .hero-photo slot (see the comment near
-     .hero-photos) is ever added as a PERMANENT element rather than a
-     hover-reveal, this exclusion needs revisiting for that slot
-     specifically. */
-  /* The hover-triggered show/hide itself is a direct response to user
-     input, not autoplaying motion, so it stays enabled here too -- only
-     the transition animating INTO that state collapses to an instant
-     cut. */
-  .hero-photo--cat {
-    transition: none !important;
-  }
 
   .site-header,
   .site-header .brand,
@@ -1843,9 +1266,6 @@ a { color: inherit; }
     animation: none !important;
   }
 
-  .hero .phone-frame {
-    transform: none;
-  }
 
   .scroll-fade,
   .has-split .line-word {
@@ -1855,45 +1275,8 @@ a { color: inherit; }
     transform: none !important;
   }
 
-  /* Releases the pinned showcase (item 4c). Sticky is layout rather than a
-     transition, so nothing above would have disabled it -- but a viewport-
-     pinned element moving against the scroll is exactly the kind of motion
-     this preference is asking us not to produce. The row also drops back to
-     its natural height so the released layout doesn't leave tall gaps. */
-  .showcase-visual {
-    position: static !important;
-  }
 
-  .showcase-item {
-    min-height: 0 !important;
-  }
 
-  .showcase-copy {
-    align-self: start !important;
-  }
-
-  /* Stops the ambient pulse (item 2f) rather than removing the glow
-     outright: it still signals "this is tappable" at a glance, which a
-     reduced-motion user benefits from just as much as anyone else -- only
-     the breathing motion itself is what this preference asks to remove.
-     Not frozen at the pulse's own 0%/100% keyframe -- that's a 0-spread
-     ring, i.e. invisible, which would silently remove the affordance
-     rather than hold it still. Uses a fixed mid-way spread/opacity instead
-     so a real (static) ring is always visible. */
-  /* Frozen at a static mid-intensity ring rather than removed outright:
-     the glow is the affordance that says "this opens a document," so
-     deleting it would take away the signal, not just the motion. Now keyed
-     off the shared utility (round 9) so the hero's vet card is covered by
-     the same rule as the showcase strip's preview. */
-  .has-coral-pulse {
-    animation: none !important;
-    box-shadow: 0 0 0 3px rgba(224, 99, 122, 0.2), 0 8px 16px -6px rgba(45, 27, 105, 0.35) !important;
-  }
-
-  .lightbox,
-  .lightbox-panel {
-    transition: none !important;
-  }
 
   .store-badge-link {
     transition: none;
