@@ -128,7 +128,7 @@
 
     if (payload.email) {
       var emailLink = el('a', 'action-row');
-      emailLink.href = 'mailto:' + payload.email;
+      emailLink.href = Sentences.safeMailtoUri(payload.email);
       emailLink.setAttribute('aria-label', 'Email ' + payload.email);
       emailLink.appendChild(svgIcon(ICONS.mail));
       emailLink.appendChild(el('span', 'action-value', payload.email));

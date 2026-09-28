@@ -161,3 +161,58 @@ test('ifFoundLines preserves emoji/Unicode content untouched', () => {
     'Gracias 感謝',
   ]);
 });
+
+// ---- PET-479: safe mailto URI construction ----
+// The canonical v1 email validator (payload.js's isValidPetIdEmail, mirroring
+// pet-id-config.ts's isValidPetIdPhone/Email) allows local parts containing URI-reserved
+// characters such as `?` and `#`, which raw `'mailto:' + email` concatenation would
+// misinterpret as the start of a query string or fragment -- silently changing the recipient.
+
+test('ordinary address is unaffected', () => {
+  assert.equal(Sentences.safeMailtoUri('owner@example.com'), 'mailto:owner@example.com');
+});
+
+test('plus-addressing survives round-trip: percent-encoded in the URI, recovers exactly on decode', () => {
+  // encodeURIComponent escapes "+" to "%2B" (unlike application/x-www-form-urlencoded, mailto's
+  // addr-spec has no "+ means space" convention, so this is correct, not a bug) -- what matters
+  // is that it decodes back to the original address unchanged, not the literal URI spelling.
+  const uri = Sentences.safeMailtoUri('owner+petid@example.com');
+  assert.equal(uri, 'mailto:owner%2Bpetid@example.com');
+  assert.equal(decodeURIComponent(uri.slice('mailto:'.length)), 'owner+petid@example.com');
+});
+
+test('an app-valid local part containing "?" is percent-encoded, not left as a query separator', () => {
+  const uri = Sentences.safeMailtoUri('a?b@example.com');
+  assert.equal(uri, 'mailto:a%3Fb@example.com');
+  assert.doesNotMatch(uri, /\?/);
+});
+
+test('an app-valid local part containing "#" is percent-encoded, not left as a fragment separator', () => {
+  const uri = Sentences.safeMailtoUri('a#b@example.com');
+  assert.equal(uri, 'mailto:a%23b@example.com');
+  assert.doesNotMatch(uri, /#/);
+});
+
+test('percent-decoding the resulting URI recovers exactly the original validated address', () => {
+  const original = 'a?weird#local@example.com';
+  const uri = Sentences.safeMailtoUri(original);
+  const withoutScheme = uri.slice('mailto:'.length);
+  const separator = withoutScheme.indexOf('@');
+  const recovered =
+    decodeURIComponent(withoutScheme.slice(0, separator)) +
+    '@' +
+    decodeURIComponent(withoutScheme.slice(separator + 1));
+  assert.equal(recovered, original);
+});
+
+test('the resulting URI never contains an unintended query or fragment: exactly one "@" and no bare "?"/"#"', () => {
+  for (const email of ['a?b@example.com', 'a#b@example.com', 'a?b#c@example.com']) {
+    const uri = Sentences.safeMailtoUri(email);
+    assert.equal((uri.match(/@/g) || []).length, 1);
+    assert.doesNotMatch(uri, /[?#]/);
+  }
+});
+
+test('safeMailtoUri does not add subject/body/cc/bcc or any other mailto parameter', () => {
+  assert.doesNotMatch(Sentences.safeMailtoUri('owner@example.com'), /[?&](subject|body|cc|bcc)=/i);
+});

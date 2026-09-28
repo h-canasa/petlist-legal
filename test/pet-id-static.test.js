@@ -97,3 +97,13 @@ test('the eyebrow is the only pre-hero identifier -- no second PetList wordmark 
   const wordmarkReferences = mainJs.match(/petlist-wordmark\.png/g) || [];
   assert.equal(wordmarkReferences.length, 1);
 });
+
+// PET-479 regression guard: the email action must never go back to raw concatenation.
+test('the email action href is built through the safe mailto helper, never raw concatenation', () => {
+  assert.doesNotMatch(mainJs, /['"]mailto:['"]\s*\+\s*payload\.email/);
+  assert.match(mainJs, /Sentences\.safeMailtoUri\(payload\.email\)/);
+});
+
+test('the visible email text still equals payload.email exactly (unchanged by the mailto fix)', () => {
+  assert.match(mainJs, /el\('span', 'action-value', payload\.email\)/);
+});

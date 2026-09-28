@@ -1,7 +1,7 @@
 /**
- * PET-477: pure text builders for the Finder View's conversational hero and If Found line
- * splitting. No DOM here — kept separate from `main.js` so the sentence grammar is unit
- * testable with Node's built-in test runner without a browser.
+ * PET-477: pure text/URI builders for the Finder View's conversational hero, If Found line
+ * splitting, and (PET-479) safe `mailto:` construction. No DOM here — kept separate from
+ * `main.js` so this logic is unit testable with Node's built-in test runner without a browser.
  */
 (function (root, factory) {
   var api = factory();
@@ -74,10 +74,34 @@
     return String(value).split(/\r\n|\r|\n/);
   }
 
+  /**
+   * PET-479: builds a `mailto:` URI whose recipient always matches the validated, visible
+   * `email` value — even when raw concatenation would not. The canonical v1 email validator
+   * (`isValidPetIdEmail` in payload.js, mirroring the app's `pet-id-config.ts`) allows any
+   * non-whitespace, non-`@` local part, which includes URI-reserved characters like `?` and `#`.
+   * `'mailto:' + email` for an address such as `a?b@example.com` produces `mailto:a?b@example.com`
+   * — a URI whose query string is `b@example.com`, so the actual recipient becomes just `a`, not
+   * the address that was displayed. That validator is never tightened here; this only changes
+   * how an already-valid address is placed into a URI.
+   *
+   * The validator guarantees exactly one `@` (the local part's own char class excludes `@`), so
+   * splitting on the first occurrence is exact — never a heuristic. Each side is
+   * `encodeURIComponent`-escaped independently and rejoined on a literal `@`, which
+   * percent-encodes any reserved character (`?`, `#`, `/`, `&`, ...) without touching the address
+   * separator itself. No subject/body/cc/bcc or other mailto parameters are ever added.
+   */
+  function safeMailtoUri(email) {
+    var separator = email.indexOf('@');
+    var local = email.slice(0, separator);
+    var domain = email.slice(separator + 1);
+    return 'mailto:' + encodeURIComponent(local) + '@' + encodeURIComponent(domain);
+  }
+
   return {
     naturalLanguageList: naturalLanguageList,
     breedSpeciesSentence: breedSpeciesSentence,
     temperamentSentence: temperamentSentence,
     ifFoundLines: ifFoundLines,
+    safeMailtoUri: safeMailtoUri,
   };
 });
