@@ -1,0 +1,278 @@
+/*
+ * PET-477 Finder View — deliberately isolated from css/styles.css (the marketing/legal
+ * stylesheet). This is a different product surface (a finder recovery page, not a marketing
+ * page), so it keeps its own token scope rather than inheriting or overriding the shared one.
+ */
+
+:root {
+  --pet-id-purple-deep: #1B163F;
+  --pet-id-lavender-name: #A79DDE;
+  --pet-id-coral: #E0637A;
+  --pet-id-on-dark: #FFFFFF;
+  --pet-id-on-dark-secondary: #C9C3E0;
+  --pet-id-inset-surface: rgba(255, 255, 255, 0.06);
+  --pet-id-inset-border: rgba(255, 255, 255, 0.14);
+  --pet-id-divider: rgba(255, 255, 255, 0.12);
+
+  --pet-id-font-display: "Fraunces", Georgia, serif;
+  --pet-id-font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.pet-id-page * {
+  box-sizing: border-box;
+}
+
+.pet-id-page {
+  margin: 0;
+  background: var(--pet-id-purple-deep);
+  color: var(--pet-id-on-dark);
+  font-family: var(--pet-id-font-body);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+.pet-id-page img {
+  max-width: 100%;
+}
+
+.pet-id-page a {
+  color: inherit;
+}
+
+/* No fixed-height content containers anywhere in this file: every block grows with its
+   content so a long name, five wrapped traits, or 200% text zoom never gets clipped. */
+.pet-id-shell {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 28px 20px 40px;
+}
+
+.eyebrow {
+  margin: 0 0 32px;
+  font-family: var(--pet-id-font-body);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--pet-id-on-dark-secondary);
+}
+
+/* ---------- Hero: large conversational introduction ---------- */
+
+.hero {
+  margin-bottom: 40px;
+}
+
+.hero-name-line {
+  margin: 0 0 14px;
+  font-family: var(--pet-id-font-display);
+  font-weight: 700;
+  font-size: clamp(44px, 8vw + 16px, 56px);
+  line-height: 1.15;
+  color: var(--pet-id-on-dark);
+  /* Never truncate or shrink a long/emoji name: it wraps like any other text. */
+  overflow-wrap: break-word;
+}
+
+.hero-name {
+  color: var(--pet-id-lavender-name);
+}
+
+.hero-line {
+  margin: 0 0 8px;
+  font-family: var(--pet-id-font-display);
+  font-weight: 600;
+  font-size: clamp(26px, 5vw + 8px, 32px);
+  line-height: 1.3;
+  color: var(--pet-id-on-dark-secondary);
+  overflow-wrap: break-word;
+}
+
+.hero-line:last-child {
+  margin-bottom: 0;
+}
+
+/* ---------- Recovery sections ---------- */
+
+.recovery-section {
+  padding: 28px 0;
+  border-top: 1px solid var(--pet-id-divider);
+}
+
+.section-heading-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.section-heading {
+  margin: 0;
+  font-family: var(--pet-id-font-body);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--pet-id-on-dark);
+}
+
+.contact-section > .section-heading-row {
+  margin-bottom: 16px;
+}
+
+.action-icon {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: var(--pet-id-coral);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ---------- If Found: one restrained inset surface, never a danger state ---------- */
+
+.if-found-section {
+  border-top: none;
+  padding: 20px;
+  margin-bottom: 28px;
+  background: var(--pet-id-inset-surface);
+  border: 1px solid var(--pet-id-inset-border);
+  border-radius: 16px;
+}
+
+.if-found-body {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--pet-id-on-dark);
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+
+/* ---------- Contact / Home Base action rows ---------- */
+
+.action-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.action-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 44px;
+  padding: 12px 16px;
+  border: 1px solid var(--pet-id-inset-border);
+  border-radius: 12px;
+  background: var(--pet-id-inset-surface);
+  text-decoration: none;
+  font-family: var(--pet-id-font-body);
+}
+
+.action-row--secondary {
+  margin-top: 14px;
+}
+
+.action-value {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--pet-id-on-dark);
+  overflow-wrap: anywhere;
+}
+
+.action-row:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.home-base-label {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--pet-id-on-dark);
+  overflow-wrap: break-word;
+}
+
+/* ---------- Invalid / unsupported state ---------- */
+
+.invalid-state {
+  padding: 60px 0;
+}
+
+.invalid-heading {
+  margin: 0 0 10px;
+  font-family: var(--pet-id-font-display);
+  font-weight: 700;
+  font-size: clamp(28px, 5vw + 12px, 36px);
+  color: var(--pet-id-on-dark);
+}
+
+.invalid-body {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--pet-id-on-dark-secondary);
+}
+
+/* ---------- Footer: quiet wordmark + domain, always last ---------- */
+
+.site-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 40px;
+  padding-top: 28px;
+  border-top: 1px solid var(--pet-id-divider);
+}
+
+.footer-wordmark-wrap {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 8px;
+  border-radius: 10px;
+  /* The approved wordmark asset is dark-on-transparent (built for light surfaces); a small
+     white pill is the same legibility treatment the marketing header already uses for this
+     exact asset over a dark background (see css/styles.css .site-header .brand). */
+  background: #fff;
+}
+
+.footer-wordmark {
+  display: block;
+  height: 18px;
+  width: auto;
+}
+
+.footer-separator {
+  color: var(--pet-id-on-dark-secondary);
+}
+
+.footer-domain {
+  font-size: 0.85rem;
+  color: var(--pet-id-on-dark-secondary);
+}
+
+/* ---------- Focus visibility ---------- */
+
+.pet-id-page a:focus-visible,
+.pet-id-page button:focus-visible {
+  outline: 2px solid var(--pet-id-on-dark);
+  outline-offset: 2px;
+}
+
+/* ---------- Reduced motion (no entrance animation exists today, but guarded regardless) ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .pet-id-page * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* ---------- Larger viewports: same composition, more surrounding space ---------- */
+
+@media (min-width: 720px) {
+  .pet-id-shell {
+    max-width: 720px;
+    padding-top: 48px;
+    padding-bottom: 64px;
+  }
+}
