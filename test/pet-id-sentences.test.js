@@ -5,26 +5,72 @@ const assert = require('node:assert/strict');
 const Sentences = require('../pet-id/sentences.js');
 const Payload = require('../pet-id/payload.js');
 
-// ---- Line 2: breed / species sentence wording (cases 5-8) ----
+// ---- PET-478: Line 2 conversational grammar ----
+// Locked rules (see sentences.js's own comment for the root cause): a simple
+// "I am a <breed> <species>." template reads wrong for real data ("I am a Abyssinian cat.") and
+// a first-letter a/an heuristic is unreliable since Breed is free text ("European ..."). These
+// tests match the ticket's exact locked copy.
 
-test('both breed and species: "I am a <breed> <species>."', () => {
-  assert.equal(Sentences.breedSpeciesSentence('Siberian', 'cat'), 'I am a Siberian cat.');
+test('cat + Siberian: "I am a cat, and my breed is Siberian."', () => {
+  assert.equal(Sentences.breedSpeciesSentence('Siberian', 'cat'), 'I am a cat, and my breed is Siberian.');
 });
 
-test('species only: "I am a <species>."', () => {
+test('cat + Abyssinian: "I am a cat, and my breed is Abyssinian." (not "I am a Abyssinian cat.")', () => {
+  assert.equal(
+    Sentences.breedSpeciesSentence('Abyssinian', 'cat'),
+    'I am a cat, and my breed is Abyssinian.'
+  );
+});
+
+test('dog + Australian Shepherd: "I am a dog, and my breed is Australian Shepherd."', () => {
+  assert.equal(
+    Sentences.breedSpeciesSentence('Australian Shepherd', 'dog'),
+    'I am a dog, and my breed is Australian Shepherd.'
+  );
+});
+
+test('dog species-only: "I am a dog."', () => {
+  assert.equal(Sentences.breedSpeciesSentence(undefined, 'dog'), 'I am a dog.');
+});
+
+test('cat species-only: "I am a cat."', () => {
   assert.equal(Sentences.breedSpeciesSentence(undefined, 'cat'), 'I am a cat.');
 });
 
-test('breed only: "I am a <breed>."', () => {
-  assert.equal(Sentences.breedSpeciesSentence('Siberian', undefined), 'I am a Siberian.');
+test('bird species-only: "I am a bird."', () => {
+  assert.equal(Sentences.breedSpeciesSentence(undefined, 'bird'), 'I am a bird.');
+});
+
+test('breed-only (no species): "My breed is <Breed>."', () => {
+  assert.equal(Sentences.breedSpeciesSentence('Siberian', undefined), 'My breed is Siberian.');
+});
+
+test('species=other + breed: "My breed is <Breed>." -- never "I am a other ..."', () => {
+  const sentence = Sentences.breedSpeciesSentence('Siberian', 'other');
+  assert.equal(sentence, 'My breed is Siberian.');
+  assert.doesNotMatch(sentence, /\bother\b/);
+});
+
+test('species=other without breed: "I am another kind of pet."', () => {
+  assert.equal(Sentences.breedSpeciesSentence(undefined, 'other'), 'I am another kind of pet.');
 });
 
 test('neither breed nor species: sentence omitted (null), no placeholder', () => {
   assert.equal(Sentences.breedSpeciesSentence(undefined, undefined), null);
 });
 
-test('preserves the breed value exactly as supplied, no re-casing', () => {
-  assert.equal(Sentences.breedSpeciesSentence('siberian FOREST cat', 'cat'), 'I am a siberian FOREST cat cat.');
+test('preserves the breed value exactly as supplied, no re-casing/trimming/rewriting', () => {
+  assert.equal(
+    Sentences.breedSpeciesSentence('siberian FOREST cat', 'cat'),
+    'I am a cat, and my breed is siberian FOREST cat.'
+  );
+});
+
+test('a breed starting with a vowel sound never needs an "an" heuristic (European ...)', () => {
+  assert.equal(
+    Sentences.breedSpeciesSentence('European Shorthair', 'cat'),
+    'I am a cat, and my breed is European Shorthair.'
+  );
 });
 
 // ---- Line 3: temperament sentence and natural-language list grammar (cases 9-13) ----

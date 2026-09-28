@@ -25,16 +25,33 @@
   }
 
   /**
-   * Line 2: "I am a <breed> <species>." / "I am a <species>." / "I am a <breed>." / omitted
-   * entirely when neither exists. `species` is expected already in its natural-noun form
-   * (the stored wire values 'dog'/'cat'/'bird'/'other' already read that way).
+   * PET-478: Line 2's conversational grammar. The straightforward "I am a <breed> <species>."
+   * template read wrong for real PetList data ("I am a Abyssinian cat.", and outright wrong for
+   * species `other`: "I am a other."). Breed is free text an owner typed (no controlled
+   * vocabulary), so a first-letter a/an heuristic is not reliable either (e.g. "European ...").
+   * These locked rules sidestep both problems by never needing an article in front of Breed:
+   *
+   *   dog/cat/bird + breed  -> "I am a <species>, and my breed is <Breed>."
+   *   dog/cat/bird, no breed -> "I am a <species>."
+   *   breed, no species      -> "My breed is <Breed>."
+   *   other + breed          -> "My breed is <Breed>." (never "I am a other ...")
+   *   other, no breed        -> "I am another kind of pet."
+   *   neither                -> omitted (null), no placeholder
+   *
+   * Breed is passed straight through — never re-cased, trimmed, or otherwise rewritten.
    */
+  var NAMED_SPECIES = { dog: true, cat: true, bird: true };
+
   function breedSpeciesSentence(breed, species) {
     var hasBreed = typeof breed === 'string' && breed.length > 0;
-    var hasSpecies = typeof species === 'string' && species.length > 0;
-    if (hasBreed && hasSpecies) return 'I am a ' + breed + ' ' + species + '.';
-    if (hasSpecies) return 'I am a ' + species + '.';
-    if (hasBreed) return 'I am a ' + breed + '.';
+    var isNamedSpecies = typeof species === 'string' && NAMED_SPECIES[species] === true;
+    var isOtherSpecies = species === 'other';
+
+    if (isNamedSpecies && hasBreed) return 'I am a ' + species + ', and my breed is ' + breed + '.';
+    if (isNamedSpecies) return 'I am a ' + species + '.';
+    if (isOtherSpecies && hasBreed) return 'My breed is ' + breed + '.';
+    if (isOtherSpecies) return 'I am another kind of pet.';
+    if (hasBreed) return 'My breed is ' + breed + '.';
     return null;
   }
 
