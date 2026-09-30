@@ -53,7 +53,6 @@ button, a { -webkit-tap-highlight-color: transparent; }
 }
 
 .card-header,
-.card-footer,
 .identity,
 .home-base-row,
 .home-base-label,
@@ -65,6 +64,13 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .card-header { justify-content: space-between; gap: 20px; }
 
 .wordmark { width: 124px; height: auto; display: block; }
+
+.wordmark-link {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
 
 .eyebrow {
   color: var(--muted);
@@ -124,6 +130,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 
 .recovery { border-top: 1px solid var(--border); }
 .recovery-section { padding: 22px 0; border-bottom: 1px solid var(--border); }
+.recovery-section:last-child { border-bottom: 0; }
 .section-title { margin: 0 0 12px; color: var(--primary); font-size: 1rem; line-height: 1.4; font-weight: 700; }
 
 .if-found {
@@ -193,23 +200,6 @@ button:focus-visible {
   outline: 3px solid var(--accent);
   outline-offset: 3px;
 }
-
-.card-footer {
-  justify-content: center;
-  gap: 7px;
-  padding-top: 20px;
-  color: var(--muted);
-  font-size: 0.78rem;
-}
-
-.card-footer a {
-  min-height: 44px;
-  display: inline-flex;
-  align-items: center;
-  color: inherit;
-  text-underline-offset: 3px;
-}
-.footer-dot { color: #aaa3bc; }
 
 .message-state {
   display: flex;

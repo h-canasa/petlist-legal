@@ -43,22 +43,17 @@
 
   function header() {
     const node = element('header', 'card-header');
+    const wordmarkLink = document.createElement('a');
+    wordmarkLink.className = 'wordmark-link';
+    wordmarkLink.href = 'https://mypetlist.app/';
     const wordmark = document.createElement('img');
     wordmark.src = '../assets/marketing/petlist-wordmark.png';
     wordmark.alt = 'PetList';
     wordmark.className = 'wordmark';
     wordmark.width = 1560;
     wordmark.height = 384;
-    node.append(wordmark, element('span', 'eyebrow', 'PET ID'));
-    return node;
-  }
-
-  function footer() {
-    const node = element('footer', 'card-footer');
-    const link = element('a', '', 'mypetlist.app');
-    link.href = 'https://mypetlist.app/';
-    link.rel = 'noopener noreferrer';
-    node.append(element('span', '', 'PetList'), element('span', 'footer-dot', '·'), link);
+    wordmarkLink.append(wordmark);
+    node.append(wordmarkLink, element('span', 'eyebrow', 'PET ID'));
     return node;
   }
 
@@ -131,7 +126,7 @@
         recovery.append(home);
       }
     }
-    fragment.append(recovery, footer());
+    fragment.append(recovery);
     root.replaceChildren(fragment);
     root.dataset.state = 'available';
     root.removeAttribute('aria-busy');
@@ -151,7 +146,7 @@
       button.addEventListener('click', run);
       state.append(button);
     }
-    fragment.append(state, footer());
+    fragment.append(state);
     root.replaceChildren(fragment);
     root.dataset.state = kind;
     root.removeAttribute('aria-busy');
@@ -173,8 +168,7 @@
       loading,
       element('div', 'skeleton skeleton-panel'),
       element('div', 'skeleton skeleton-row'),
-      element('div', 'skeleton skeleton-row skeleton-row-lower'),
-      footer()
+      element('div', 'skeleton skeleton-row skeleton-row-lower')
     );
     root.replaceChildren(fragment);
   }

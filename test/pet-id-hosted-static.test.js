@@ -33,6 +33,28 @@ test('wordmark declarations match the approved PNG intrinsic dimensions', () => 
   assert.match(mainJs, /wordmark\.height = 384;/);
 });
 
+test('static loading wordmark is the sole same-tab PetList navigation link', () => {
+  const link = indexHtml.match(/<a class="wordmark-link"[^>]*>[\s\S]*?<\/a>/)?.[0] ?? '';
+  assert.match(link, /href="https:\/\/mypetlist\.app\/"/);
+  assert.match(link, /petlist-wordmark\.png[^>]*width="1560" height="384"/);
+  assert.doesNotMatch(link, /target=/);
+});
+
+test('dynamic header links the approved intrinsic-size wordmark in the same tab', () => {
+  assert.match(mainJs, /document\.createElement\('a'\)/);
+  assert.match(mainJs, /wordmarkLink\.href = 'https:\/\/mypetlist\.app\/';/);
+  assert.match(mainJs, /wordmarkLink\.append\(wordmark\)/);
+  assert.match(mainJs, /wordmark\.width = 1560;/);
+  assert.match(mainJs, /wordmark\.height = 384;/);
+  assert.doesNotMatch(mainJs, /wordmarkLink\.target/);
+});
+
+test('text footer markup, render path, and footer-only CSS are fully removed', () => {
+  assert.doesNotMatch(indexHtml, /card-footer|footer-dot|>mypetlist\.app</);
+  assert.doesNotMatch(mainJs, /function footer\s*\(|card-footer|footer-dot|>mypetlist\.app</);
+  assert.doesNotMatch(css, /\.card-footer|\.footer-dot/);
+});
+
 test('the shipped source contains the locked unavailable and retry states', () => {
   assert.match(viewJs, /This Pet ID isn't available\./);
   assert.match(viewJs, /Check the link or ask the pet's owner for an updated Pet ID\./);
@@ -65,9 +87,16 @@ test('thumbnail failure removes only the image so the always-present paw fallbac
 test('responsive/accessibility CSS includes hit targets, focus, narrow layout, zoom-safe wrapping, and reduced motion', () => {
   assert.match(css, /min-height:\s*44px/);
   assert.match(css, /:focus-visible/);
+  assert.match(css, /\.wordmark-link\s*\{[^}]*min-height:\s*44px/s);
+  assert.match(css, /\.wordmark\s*\{[^}]*width:\s*124px/s);
   assert.match(css, /@media\s*\(max-width:\s*360px\)/);
   assert.match(css, /overflow-wrap:\s*anywhere/);
   assert.match(css, /prefers-reduced-motion:\s*reduce/);
+});
+
+test('normal recovery separators remain while the final section ends without a floating divider', () => {
+  assert.match(css, /\.recovery-section\s*\{[^}]*border-bottom:\s*1px solid var\(--border\)/s);
+  assert.match(css, /\.recovery-section:last-child\s*\{[^}]*border-bottom:\s*0/s);
 });
 
 test('loading has no forced near-viewport card height and outer gutters honor every safe area inset', () => {
