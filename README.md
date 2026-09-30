@@ -42,6 +42,7 @@ companion Finder update and tests carrying the same PET key.
 - `p/finder.css` — isolated responsive Finder styling.
 - `p/profile.js` — strict public-ID, Firestore DTO, profile and action-URL validation.
 - `p/load.js` — the single hosted document GET and state classification.
+- `p/view.js` — dependency-free conditional rendering decisions, shared with Node tests.
 - `p/main.js` — safe DOM rendering for loading, available, unavailable and retry states.
 - `test/` — Node's built-in test runner (`node --test`); no Jest/Vitest or runtime dependency is
   added for this page.

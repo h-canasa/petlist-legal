@@ -1,6 +1,6 @@
 'use strict';
 
-(function startFinder(Profile, Load) {
+(function startFinder(Load, View) {
   const root = document.querySelector('[data-pet-id-root]');
   const publicId = new URLSearchParams(window.location.search).get('id');
 
@@ -47,8 +47,8 @@
     wordmark.src = '../assets/marketing/petlist-wordmark.png';
     wordmark.alt = 'PetList';
     wordmark.className = 'wordmark';
-    wordmark.width = 124;
-    wordmark.height = 41;
+    wordmark.width = 1560;
+    wordmark.height = 384;
     node.append(wordmark, element('span', 'eyebrow', 'PET ID'));
     return node;
   }
@@ -62,16 +62,15 @@
     return node;
   }
 
-  function avatar(profile) {
+  function avatar(identity) {
     const frame = element('div', 'pet-avatar');
     frame.append(paw());
-    const url = Profile.thumbnailUrl(profile.thumbnail, publicId);
-    if (url !== null) {
+    if (identity.photo.src !== null) {
       const image = document.createElement('img');
       image.className = 'pet-photo';
-      image.src = url;
-      image.alt = `${profile.name}'s photo`;
-      image.addEventListener('error', () => image.remove(), { once: true });
+      image.src = identity.photo.src;
+      image.alt = `${identity.name}'s photo`;
+      image.addEventListener('error', () => View.handlePhotoError(image), { once: true });
       frame.append(image);
     }
     return frame;
@@ -91,59 +90,63 @@
   }
 
   function renderAvailable(profile) {
+    const view = View.available(profile, publicId);
     const fragment = document.createDocumentFragment();
     fragment.append(header());
     const identity = element('section', 'identity');
     const copy = element('div', 'identity-copy');
-    copy.append(element('h1', 'pet-name', profile.name));
-    if (profile.temperament) {
-      copy.append(element('p', 'temperament', Profile.temperamentLabels(profile.temperament).join(' · ')));
+    copy.append(element('h1', 'pet-name', view.identity.name));
+    if (view.identity.temperament.length > 0) {
+      copy.append(element('p', 'temperament', view.identity.temperament.join(' · ')));
     }
-    identity.append(avatar(profile), copy);
+    identity.append(avatar(view.identity), copy);
     fragment.append(identity);
 
     const recovery = element('div', 'recovery');
-    if (profile.ifFound) {
-      const found = section('If Found', 'if-found');
-      found.append(element('p', 'if-found-copy', profile.ifFound));
-      recovery.append(found);
-    }
-    const contact = section('Contact', 'contact');
-    if (profile.phone) contact.append(contactRow('phone', profile.phone, Profile.buildTelUri(profile.phone)));
-    if (profile.email) contact.append(contactRow('mail', profile.email, Profile.buildMailtoUri(profile.email)));
-    recovery.append(contact);
-    if (profile.homeBase) {
-      const home = section('Home Base', 'home-base');
-      const row = element('div', 'home-base-row');
-      const label = element('div', 'home-base-label');
-      label.append(icon('location'), element('span', '', profile.homeBase.label));
-      row.append(label);
-      if (profile.homeBase.coordinate) {
-        const map = element('a', 'map-link', 'Open in Maps');
-        map.href = Profile.buildMapUrl(profile.homeBase.coordinate);
-        map.target = '_blank';
-        map.rel = 'noopener noreferrer';
-        row.append(map);
+    for (const entry of view.sections) {
+      if (entry.kind === 'ifFound') {
+        const found = section('If Found', 'if-found');
+        found.append(element('p', 'if-found-copy', entry.text));
+        recovery.append(found);
+      } else if (entry.kind === 'contact') {
+        const contact = section('Contact', 'contact');
+        for (const action of entry.actions) {
+          contact.append(contactRow(action.kind === 'email' ? 'mail' : 'phone', action.value, action.href));
+        }
+        recovery.append(contact);
+      } else if (entry.kind === 'homeBase') {
+        const home = section('Home Base', 'home-base');
+        const row = element('div', 'home-base-row');
+        const label = element('div', 'home-base-label');
+        label.append(icon('location'), element('span', '', entry.label));
+        row.append(label);
+        if (entry.mapHref !== null) {
+          const map = element('a', 'map-link', 'Open in Maps');
+          map.href = entry.mapHref;
+          map.target = '_blank';
+          map.rel = 'noopener noreferrer';
+          row.append(map);
+        }
+        home.append(row);
+        recovery.append(home);
       }
-      home.append(row);
-      recovery.append(home);
     }
     fragment.append(recovery, footer());
     root.replaceChildren(fragment);
     root.dataset.state = 'available';
     root.removeAttribute('aria-busy');
-    document.title = `${profile.name} · Pet ID`;
   }
 
-  function renderMessage(kind, heading, body, retry) {
+  function renderMessage(kind) {
+    const view = View.message(kind);
     const fragment = document.createDocumentFragment();
     fragment.append(header());
     const state = element('section', 'message-state');
     const fallback = element('div', 'pet-avatar state-avatar');
     fallback.append(paw());
-    state.append(fallback, element('h1', 'state-heading', heading), element('p', 'state-copy', body));
-    if (retry) {
-      const button = element('button', 'retry-button', 'Try Again');
+    state.append(fallback, element('h1', 'state-heading', view.heading), element('p', 'state-copy', view.body));
+    if (view.retryLabel !== null) {
+      const button = element('button', 'retry-button', view.retryLabel);
       button.type = 'button';
       button.addEventListener('click', run);
       state.append(button);
@@ -182,11 +185,11 @@
     if (result.kind === 'available') {
       renderAvailable(result.profile);
     } else if (result.kind === 'network') {
-      renderMessage('network', "Couldn't load this Pet ID.", 'Check your connection and try again.', true);
+      renderMessage('network');
     } else {
-      renderMessage('unavailable', "This Pet ID isn't available.", "Check the link or ask the pet's owner for an updated Pet ID.", false);
+      renderMessage('unavailable');
     }
   }
 
   run();
-})(window.PetIdProfile, window.PetIdLoad);
+})(window.PetIdLoad, window.PetIdView);

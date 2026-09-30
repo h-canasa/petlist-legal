@@ -29,11 +29,17 @@ body {
 button, a { -webkit-tap-highlight-color: transparent; }
 
 .page-shell {
+  --page-gutter-block: 28px;
+  --page-gutter-inline: 20px;
   min-height: 100vh;
   min-height: 100dvh;
   display: grid;
   place-items: center;
-  padding: 28px 20px;
+  padding:
+    max(var(--page-gutter-block), calc(env(safe-area-inset-top, 0px) + 12px))
+    max(var(--page-gutter-inline), calc(env(safe-area-inset-right, 0px) + 12px))
+    max(var(--page-gutter-block), calc(env(safe-area-inset-bottom, 0px) + 12px))
+    max(var(--page-gutter-inline), calc(env(safe-area-inset-left, 0px) + 12px));
 }
 
 .pet-id-card {
@@ -44,10 +50,6 @@ button, a { -webkit-tap-highlight-color: transparent; }
   background: var(--card);
   box-shadow: var(--shadow);
   padding: 24px;
-}
-
-.pet-id-card[data-state="loading"] {
-  min-height: min(760px, calc(100dvh - 40px));
 }
 
 .card-header,
@@ -238,12 +240,12 @@ button:focus-visible {
 @keyframes shimmer { from { background-position: 100% 0; } to { background-position: -100% 0; } }
 
 @media (min-width: 560px) {
-  .page-shell { padding-block: 40px; }
+  .page-shell { --page-gutter-block: 40px; }
   .pet-id-card { padding: 30px 32px; }
 }
 
 @media (max-width: 420px) {
-  .page-shell { padding: 20px; }
+  .page-shell { --page-gutter-block: 20px; --page-gutter-inline: 20px; }
   .pet-id-card { padding: 22px; }
   .identity { gap: 18px; }
   .identity .pet-avatar { flex-basis: 96px; width: 96px; height: 96px; }
@@ -256,7 +258,7 @@ button:focus-visible {
 }
 
 @media (max-width: 360px) {
-  .page-shell { padding: 14px 12px; }
+  .page-shell { --page-gutter-block: 14px; --page-gutter-inline: 12px; }
   .pet-id-card { border-radius: 20px; padding: 20px; }
   .pet-avatar, .skeleton-avatar { flex-basis: 88px; width: 88px; height: 88px; }
   .pet-name { font-size: 2.2rem; }

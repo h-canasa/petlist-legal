@@ -119,6 +119,8 @@ test('requires a same-publicId, version-consistent immutable thumbnail path', ()
 test('builds valid phone and injection-safe email actions without changing display values', () => {
   assert.equal(Profile.buildTelUri('555-0100'), 'tel:5550100');
   assert.equal(Profile.buildTelUri('+63 (917) 555-0142'), 'tel:+639175550142');
+  assert.equal(Profile.buildTelUri('12+34'), 'tel:1234');
+  assert.equal(Profile.buildTelUri('++63 917 555 0142'), 'tel:+639175550142');
   assert.equal(Profile.buildMailtoUri('owner@example.com'), 'mailto:owner@example.com');
   assert.equal(Profile.buildMailtoUri('owner+petid@example.com'), 'mailto:owner%2Bpetid@example.com');
   const reserved = Profile.buildMailtoUri('a?b#c@example.com');

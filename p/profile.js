@@ -167,7 +167,8 @@
   }
 
   function buildTelUri(phone) {
-    return `tel:${phone.replace(/[ .()\-–—]/g, '')}`;
+    const leadingPlus = phone.trim().startsWith('+') ? '+' : '';
+    return `tel:${leadingPlus}${phone.replace(/[^0-9]/g, '')}`;
   }
 
   function buildMailtoUri(email) {
