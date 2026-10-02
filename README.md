@@ -32,14 +32,37 @@ Optional thumbnails are loaded only after their version and exact
 object is immutable/versioned; an image failure falls back to the generic paw without affecting
 recovery information.
 
+**Fonts and browser hardening**: `/p/` serves Fraunces (pet name and state headings) and Inter
+(functional text) from `p/assets/fonts/` with `font-display: swap`; it never contacts Google
+Fonts or another font host. This applies to `/p/` only; the marketing and legal pages keep their
+own typography. Because the site is hosted on GitHub Pages and cannot set response headers, the
+Finder declares an early `<meta http-equiv="Content-Security-Policy">` in `p/index.html`, ahead
+of every resource-bearing element. It denies everything by default and allows only:
+
+- same origin for the HTML, CSS, scripts, wordmark and font files;
+- `https://firestore.googleapis.com` as the sole `connect-src`, for the single document GET;
+- `https://firebasestorage.googleapis.com` as an `img-src` for the optional validated thumbnail.
+
+There is no inline script or style, no `unsafe-*` source and no wildcard. The PetList home link,
+coordinate-only Google Maps link, `tel:` and `mailto:` are plain navigation, not subresource
+fetches, so those origins are deliberately absent from the policy.
+
+A meta CSP cannot enforce `frame-ancestors`, `sandbox` or violation reporting, so they are not
+declared. Protections that need response headers (`X-Frame-Options`, `X-Content-Type-Options`,
+HSTS, a full `Permissions-Policy`, COOP/COEP/CORP) are not available under GitHub Pages and
+are not claimed. The Finder adds no runtime dependency, authentication, analytics or browser
+persistence, and the `no-referrer` referrer meta and generic document title are kept.
+
 **Source of truth**: the private `petlist` app repo owns the hosted contract in
 `src/utils/pet-id-public-profile.ts`, `pet-id-authority-format.ts`, `pet-id-config.ts`,
 `home-base.ts` and `temperament.ts`, with public access constrained by `firebase/firestore.rules`
 and `firebase/storage.rules`. There is no shared build step, so contract changes require a
 companion Finder update and tests carrying the same PET key.
 
-- `p/index.html` — branded loading shell and font loading.
-- `p/finder.css` — isolated responsive Finder styling.
+- `p/index.html` — branded loading shell and the meta-delivered Content Security Policy.
+- `p/finder.css` — isolated responsive Finder styling and the local `@font-face` declarations.
+- `p/assets/fonts/` — first-party Fraunces and Inter WOFF2 files with their OFL licenses and
+  upstream provenance (`README.md`).
 - `p/profile.js` — strict public-ID, Firestore DTO, profile and action-URL validation.
 - `p/load.js` — the single hosted document GET and state classification.
 - `p/view.js` — dependency-free conditional rendering decisions, shared with Node tests.
