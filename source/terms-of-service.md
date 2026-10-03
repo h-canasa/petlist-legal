@@ -1,6 +1,6 @@
 # Terms of Service for PetList
 
-**Effective Date:** August 19, 2026
+**Effective Date:** October 3, 2026
 
 ## 1. Acceptance of Terms
 
@@ -180,9 +180,8 @@ before rendering; see `petlist-legal/build.js`).
   "Sharing and Exporting Information" section describe the same backup
   feature in matching terms - keep them in sync if that feature changes.
 
-The Effective Date above was deliberately not changed by PET-460/PET-496
-because these edits are not yet deployed; set it at the approved
-deployment step, with the Privacy Policy.
+The Effective Date above was set to October 3, 2026 for the approved
+publication of the PET-460/PET-496 update, together with the Privacy Policy.
 
 If the business model changes to include subscriptions, in-app purchases,
 or an account system, this document needs to be revised before that change

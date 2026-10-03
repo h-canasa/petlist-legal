@@ -1,6 +1,6 @@
 # Privacy Policy for PetList
 
-**Effective Date:** August 28, 2026
+**Effective Date:** October 3, 2026
 
 ## Overview
 
@@ -431,10 +431,9 @@ Checked directly against the current codebase rather than assumed:
   event photos already round-trip through (`backup-data.ts`) - no new
   remote flow, no change to the app's technical privacy posture.
 
-The Effective Date above was deliberately not changed by PET-460/PET-496
-because these edits are not yet deployed. It must be set to the actual
-publication date in the final approved deployment step, together with the
-Terms.
+The Effective Date above was set to October 3, 2026 for the approved
+publication of the PET-460/PET-496 privacy-disclosure update, together with
+the Terms.
 
 If a future change adds analytics, advertising, cloud sync, a paid
 subscription, or any other new data flow, this document needs to be
