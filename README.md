@@ -72,26 +72,26 @@ companion Finder update and tests carrying the same PET key.
 - **`ios/`, `android/`** — stable public store redirect routes. The Android
   route points to the Google Play listing for `com.petlist.app`.
 
-## Source of truth 
+## Source of truth (legal documents)
 
-The actual document content is authored and audited in the main
-`petlist` repo, at `docs/privacy-policy.md` and `docs/terms-of-service.md`
-(see those files' own "How this draft was produced" / "re-verified"
-sections for what was checked against the codebase). The `source/`
-folder here is a **copy**, not synced automatically.
+The canonical, editable legal source lives here: `source/privacy-policy.md` and
+`source/terms-of-service.md`. The private `petlist` app repo holds no copy and only links to the
+published pages; edit these files directly. The "How this content was verified against the app"
+section at the end of each file (below its `---` rule) is a maintainer audit trail that
+`build.js` strips before rendering. A change to what the app does with data (new network
+service, export, permission, public sharing) needs a companion change here carrying the same PET
+key. The `Effective Date` line is set at the approved deployment step, not while a change is
+still pending on a feature branch.
 
 ## Regenerating after a content change
- 
-1. Copy the updated file(s) from the main repo:
-   ```
-   cp <petlist-repo>/docs/privacy-policy.md source/privacy-policy.md
-   cp <petlist-repo>/docs/terms-of-service.md source/terms-of-service.md
-   ```
+
+1. Edit `source/privacy-policy.md` and/or `source/terms-of-service.md`.
 2. Run the build script (uses `npx marked` — no local install needed):
    ```
    node build.js
    ```
-3. Commit and push. GitHub Pages redeploys automatically on push to the
+3. Commit the source and the regenerated `privacy-policy/index.html` and
+   `terms-of-service/index.html` together. GitHub Pages redeploys automatically on push to the
    default branch.
 
 ## Marketing image assets
@@ -111,5 +111,5 @@ the legal pages only; it does not process marketing images.
 
 ## Status
 
-Both documents describe the app's actual current behavior as of their
+Both documents describe the app's actual behavior as of their
 effective date, but have not been reviewed by a lawyer.

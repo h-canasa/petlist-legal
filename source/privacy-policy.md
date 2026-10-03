@@ -15,10 +15,12 @@ operate a cloud database or sync service for those records, does not
 include advertising or analytics software, and does not sell your
 information.
 
-PetList is local-first, not offline-only. A few optional features use
-outside services, and this policy describes each one: the Home Base map,
+PetList is local-first, not offline-only. A few features use outside
+services, and this policy describes each one: the optional Home Base map,
 place search and address lookup (see "Home Base and Location Services"),
-and update checks (see "Network Communication and Service Providers").
+the optional Pet ID, which publishes the details you choose to a public
+hosted profile (see "Pet ID: Hosted Public Profile"), and app update
+checks (see "Network Communication and Service Providers").
 
 ## Information You Store in PetList
 
@@ -53,7 +55,9 @@ they leave your device only if you explicitly export or share them (see
 "Sharing and Exporting Information" below). PetList does not operate a
 cloud database or synchronization service for these records, and its
 developer does not receive or hold a copy of your health records,
-expenses, reminders, daily tasks, or backups.
+expenses, reminders, daily tasks, or backups. The exception is the
+optional Pet ID, which publishes only the details you choose (see "Pet ID:
+Hosted Public Profile").
 
 Because these records exist only on your device, uninstalling PetList or
 losing your device without a backup you made yourself (see "Device
@@ -107,6 +111,96 @@ PetList does not choose, and does not control, how long Mapbox or Geoapify
 keep the technical request data they receive. The developer does not
 receive that data.
 
+## Pet ID: Hosted Public Profile
+
+Pet ID is optional and is the one feature that deliberately publishes
+information about your pet. If you never create a Pet ID, none of this
+section applies.
+
+**What it is.** A Pet ID is a QR code and link
+(`https://mypetlist.app/p/?id=...`) that lets someone who finds your pet
+see how to reach you. For that to work without the finder having PetList
+or any account, the details you choose are published to a hosted public
+profile on Firebase, Google's app infrastructure. A hosted profile is an
+ordinary online copy that exists in addition to the details in your
+PetList app.
+
+**What is published.** Only what is listed here, and only when you save a
+Pet ID:
+
+- Your pet's name (always included).
+- A phone number and/or an email address you enter for this purpose (at
+  least one is required), and an optional "If found" note. These are
+  published exactly as you typed them.
+- Optionally, if you switch them on: your pet's photo (cropped and resized
+  on your device to a small square image before upload), your pet's
+  temperament traits, and your pet's Home Base name and, if it has one, its
+  map location. Each is off unless you turn it on. The street address
+  that Home Base lookup may have found is never published.
+
+Breed, species, health records, expenses, reminders, daily tasks, backups,
+and the rest of your household's information are not published. Creating a
+Pet ID does not upload them.
+
+**Public means public by link.** Anyone who has the QR code or link, such
+as a finder who scans a tag, or anyone you or they pass it on to, can open
+the profile and read what you chose to publish, without signing in. The
+link contains a long random identifier rather than your pet's name, and
+the hosted profiles cannot be listed or searched, but anything on a public page should be treated as public. Publish only
+contact details you are comfortable sharing with anyone who finds your pet
+and the link.
+
+**It stays in step with your pet.** The QR code and link stay the same when
+you change a Pet ID. While a Pet ID exists, the published profile is
+updated to match your pet's current name and, where you have included them,
+photo, temperament, and Home Base. Changing those details in PetList
+therefore changes the public profile the next time PetList can connect.
+
+**Technical service identity.** To let your device add, change, or remove
+its own hosted profile, PetList uses Firebase Authentication to create a
+technical anonymous identifier for the app installation, and Firebase App
+Check, which relies on Apple App Attest on iOS and Google Play Integrity on
+Android, to confirm the request comes from a genuine copy of PetList.
+This is not an account: you do not create, see, or sign in to anything, and
+PetList does not ask for your name or email address for it. PetList also
+generates a secret update key for each Pet ID, stored on your device and
+in backups you create; only a one-way hash of it is kept on the server, and
+it is used to check that a request to change or remove a profile comes from
+the owner. Firebase, Google, Apple, and Google Play process technical
+information such as IP address and device or app information when these
+requests are made, under their own policies, including
+<https://firebase.google.com/support/privacy> and
+<https://policies.google.com/privacy>. The Pet ID photo is uploaded to a
+private staging area first and then copied to the public profile.
+
+**When it happens.** PetList contacts these services only when you have
+saved, changed, or removed a Pet ID and a change is waiting to be sent.
+Households that have never used Pet ID cause no such requests. If you are
+offline, the change stays queued on your device and is sent the next time
+the app is open and can connect.
+
+**Opening a profile.** When someone opens a Pet ID link, their browser loads
+the page from `mypetlist.app` (hosted on GitHub Pages) and reads the
+published profile and photo directly from Google's servers. The page has
+no login, analytics, or advertising. Those hosts receive ordinary
+technical information about the visitor's request, and a visitor who taps
+the phone, email, or map link leaves the page for their own phone, email,
+or map app.
+
+**Removing a Pet ID.** If you delete a Pet ID, delete the pet, clear the
+household's data, or restore a backup that replaces it, PetList asks the
+server to remove the public profile and photo. The removal request is
+sent when the app can connect: until it succeeds, the profile may remain
+available to anyone with the link. If you uninstall PetList or lose the
+device before the request has been sent, the request cannot be sent and the
+profile may remain online. Delete the Pet ID in the app, and confirm it has
+finished removing, before uninstalling. After removal, a minimal
+non-public technical record (the identifier, a hash of the update key, and
+a deleted status) may remain so the same link cannot be reused. Copies a
+finder has already saved, such as a screenshot, a downloaded page, or a
+photo, are outside PetList's control, and so are copies in Google's
+routine system logs or backups.
+
 ## Network Communication and Service Providers
 
 PetList's ordinary features do not send your pet, health, or expense
@@ -121,6 +215,8 @@ records over a network. The outside services the app can contact are:
   <https://expo.dev/privacy>.
 - **Mapbox and Geoapify (Home Base only).** As described in "Home Base and
   Location Services" above.
+- **Firebase and Google, with Apple App Attest or Google Play Integrity
+  (Pet ID only).** As described in "Pet ID: Hosted Public Profile" above.
 
 When you tap a link inside PetList, such as a store listing or this
 policy, the destination site's own privacy practices apply.
@@ -141,7 +237,10 @@ anywhere on its own. Two features let you choose to export them yourself:
 
 Both are created entirely on your device and only run when you choose to
 use them. PetList itself never uploads a backup or export to any
-developer-operated server. Where the resulting file goes afterward is your
+developer-operated server. A backup also contains each Pet ID's contact
+details and secret update key, so anyone who obtains a backup file could
+read them and could change or remove that Pet ID's hosted profile.
+Restoring a backup on a device can resume publishing the Pet IDs in it. Where the resulting file goes afterward is your
 choice - PetList has no visibility into it and cannot confirm which
 destination ultimately received it. If you save or share a file to a
 destination you choose (such as cloud storage, messaging, or email), that
@@ -184,7 +283,10 @@ Your information stays on your device for as long as you keep it there.
 You can delete an individual pet, record, or expense from within the app,
 clear or delete a household from Settings, or remove all of PetList's data
 at once by uninstalling the app. PetList holds no server-side copy of your
-records to delete on your behalf. Technical request data that Mapbox or
+ordinary records to delete on your behalf. The one server-side copy is a
+hosted Pet ID profile, which you remove by deleting the Pet ID in the app
+(see "Pet ID: Hosted Public Profile" for how and when removal completes);
+uninstalling the app does not remove it. Technical request data that Mapbox or
 Geoapify received through Home Base (see "Home Base and Location
 Services") is held by them under their own policies, and PetList cannot
 delete it for you.
@@ -193,9 +295,10 @@ delete it for you.
 
 PetList is not directed at children and does not knowingly collect
 personal information from anyone, including children under 13 or the
-applicable age in your jurisdiction. Because the app requires no account
-and collects no personal information to function, it has no means of
-distinguishing a child user from any other user.
+applicable age in your jurisdiction. The app requires no account and does
+not ask for personal information to function, so it has no means of
+distinguishing a child user from any other user. Contact details a user
+chooses to publish in a Pet ID are entered and published by that user.
 
 ## Changes to This Policy
 
@@ -261,6 +364,31 @@ Checked directly against the current codebase rather than assumed:
   attributions}}` locally (version 2); search results are never stored.
   Provider retention statements are deliberately not restated here beyond
   linking to each provider's policy.
+- PET-496 (this pass): re-verified the hosted Pet ID disclosures against the
+  accepted source. `pet-id-desired-profile.ts` is the only projection:
+  name, phone/email (>= 1), If Found, and consent-gated Home Base
+  (label + coordinate only; no provider address), Temperament and photo
+  (all default off); Breed/Species are unrepresentable in
+  `pet-id-public-profile.ts`. `pet-id-cloud-runtime.ts` signs in to Firebase
+  Auth anonymously, obtains an App Check token (App Attest / Play Integrity;
+  debug provider only in `__DEV__`), stages a 512 px JPEG to
+  `pet-id-staging/<uid>/...`, and POSTs to the Functions endpoint
+  (asia-southeast1). The backend verifies both tokens and the capability
+  hash, writes `petIdPublic/<id>` (public `get` only, no list) and the
+  backend-only `petIdControl/<id>`, copies the thumbnail to
+  `pet-id-public/<id>/<version>.jpg` and deletes the staged object. Delete
+  removes the public document and thumbnail and leaves a control record with
+  `status: deleted` and the capability hash. `pet-id-publications.ts`
+  `queuePetIdRevocation` / `preparePetIdPublicationForPetDeletion` persist a
+  `pending_delete` outbox row (backed up, restore-aware) that is flushed on
+  foreground; there is no server-side expiry, so an uninstall before a
+  successful flush leaves the profile online. `pet-id-reconciliation.ts`
+  re-projects name/photo/Temperament/Home Base on changes. Backups include
+  `publicId` and `updateCapability`. The finder (`petlist-legal/p/`)
+  performs one unauthenticated Firestore REST GET and loads the public
+  thumbnail; no analytics. The legacy `pet363/*` Firestore/Storage rules are
+  user-scoped and reachable only from the retained spike harness, not the
+  shipped product. No household sync is implemented.
 - PET-341 (this pass): re-verified against PET-316 (optional photos
   attached to pet-scoped and household expenses, such as receipts).
   `expense-photo-picker.ts` calls the same local `expo-image-picker` module
@@ -270,6 +398,11 @@ Checked directly against the current codebase rather than assumed:
   writer includes those files in the same local backup package pet and
   event photos already round-trip through (`backup-data.ts`) - no new
   remote flow, no change to the app's technical privacy posture.
+
+The Effective Date above was deliberately not changed by PET-460/PET-496
+because these edits are not yet deployed. It must be set to the actual
+publication date in the final approved deployment step, together with the
+Terms.
 
 If a future change adds analytics, advertising, cloud sync, a paid
 subscription, or any other new data flow, this document needs to be
