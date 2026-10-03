@@ -36,10 +36,11 @@ by PetList as a substitute for professional veterinary advice.
 ## 4. Your Data and Responsibilities
 
 You are responsible for the accuracy of the information you enter into
-PetList. As described in the Privacy Policy, your ordinary records (pet
+PetList. As described in the Privacy Policy, your care records (pet
 profiles, health records, reminders, expenses, daily tasks, and photos) are
-stored locally on your device, and PetList does not maintain a cloud copy of
-them. PetList's backup feature lets you create your own backup file and
+stored locally on your device. Except for the specific Pet ID recovery
+details you explicitly choose to publish, PetList does not maintain a cloud
+copy of your household and care database. PetList's backup feature lets you create your own backup file and
 restore from it, but keeping and safeguarding that file is your
 responsibility; a backup file is not encrypted and includes your Pet ID
 contact details and update keys. Because PetList does not hold a copy of
@@ -128,15 +129,16 @@ be liable for any indirect, incidental, special, consequential, or
 punitive damages, or any loss of data, arising out of or related to your
 use of, or inability to use, PetList - including any harm to a pet
 resulting from reliance on information the app displays or produces.
-Because your ordinary records are stored on your device, PetList is not in
+Because your care records are stored on your device, PetList is not in
 a position to prevent, mitigate, or recover from their loss.
 
 ## 13. Termination
 
 You may stop using PetList at any time by uninstalling it, which also
 removes its locally-stored data from your device. Uninstalling does not
-remove a published Pet ID page; delete the Pet ID in the app first (see the
-Privacy Policy). PetList has no user account system, so there is no
+remove a published Pet ID page. If you want the hosted page removed, delete
+the Pet ID in the app and wait for the removal to complete before you
+uninstall (see the Privacy Policy). PetList has no user account system, so there is no
 mechanism for the developer to restrict access to a copy you have already
 installed; removal of PetList from an app store
 affects new downloads, not a copy already on your device.
