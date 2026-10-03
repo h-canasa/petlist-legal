@@ -185,10 +185,15 @@
 profiles, health records, reminders, weight tracking, daily care tasks, and
 expenses. This policy explains what information PetList handles and how it
 is used.</p>
-<p>PetList does not require an account. Your pet and household records are
-stored locally on your device. PetList does not operate a cloud database or
-sync service for your records, does not include advertising or
-behavioral-tracking software, and does not sell your information.</p>
+<p>PetList does not require you to create an account or sign in. Your pet and
+household records are stored locally on your device. PetList does not
+operate a cloud database or sync service for those records, does not
+include advertising or analytics software, and does not sell your
+information.</p>
+<p>PetList is local-first, not offline-only. A few optional features use
+outside services, and this policy describes each one: the Home Base map,
+place search and address lookup (see &quot;Home Base and Location Services&quot;),
+and update checks (see &quot;Network Communication and Service Providers&quot;).</p>
 <h2>Information You Store in PetList</h2>
 <p>When you use PetList, you choose what to enter. This may include:</p>
 <ul>
@@ -202,6 +207,10 @@ a logged record, and any notes you add</li>
 attach to an expense (such as a receipt)</li>
 <li>Daily care tasks and their completion history</li>
 <li>App preferences such as currency, units, theme, and notification settings</li>
+<li>Optionally, a Home Base for a pet: a name you choose for the place the
+pet lives or usually stays, an optional map location, and an optional
+street address that PetList looks up from that location (see &quot;Home Base
+and Location Services&quot;)</li>
 </ul>
 <p>PetList does not ask for your name, email address, or any other contact
 information in order to use the app.</p>
@@ -210,26 +219,74 @@ information in order to use the app.</p>
 along with any photos you add - a pet&#39;s profile photo, any photos you
 optionally attach to a logged health record, and any photos you optionally
 attach to an expense, such as a receipt. Those photos stay associated
-with your local PetList data and are not uploaded anywhere; they leave your
-device only if you explicitly export or share them (see &quot;Sharing and
-Exporting Information&quot; below). PetList does not operate a cloud database or
-synchronization service, and its developer does not have access to, or a
-copy of, your records at any time.</p>
-<p>Because this information exists only on your device, uninstalling PetList
-or losing your device without a backup you made yourself (see &quot;Device
-Backups&quot; below) means it cannot be recovered by PetList or its developer.</p>
+with your local PetList data and are not uploaded by PetList for storage;
+they leave your device only if you explicitly export or share them (see
+&quot;Sharing and Exporting Information&quot; below). PetList does not operate a
+cloud database or synchronization service for these records, and its
+developer does not receive or hold a copy of your health records,
+expenses, reminders, daily tasks, or backups.</p>
+<p>Because these records exist only on your device, uninstalling PetList or
+losing your device without a backup you made yourself (see &quot;Device
+Backups&quot; below) means they cannot be recovered by PetList or its
+developer.</p>
+<h2>Home Base and Location Services</h2>
+<p>Home Base is optional. If you never open it, none of what follows happens.</p>
+<p><strong>What PetList saves on your device.</strong> A Home Base label you type, an
+optional map location (latitude and longitude), and, if one could be
+looked up, a street address and any extra data-source credits that came
+with it. These are stored with the pet&#39;s local record and are included in
+your backups. Place-search results themselves are not saved; only the
+location you pick is.</p>
+<p><strong>Using your current location.</strong> If you tap &quot;Use Current Location&quot;, your
+device asks for foreground (&quot;while using the app&quot;) location permission,
+and PetList reads your position once to centre the map. PetList does not
+track your location in the background or continuously, does not track
+your pet, and does not keep a location history. The position becomes part
+of a Home Base only if you save it. Approximate location is accepted if
+that is what your device provides.</p>
+<p><strong>Map display (Mapbox).</strong> The map is provided by Mapbox. To draw it, the
+app requests map data from Mapbox, which necessarily reveals the map area
+being viewed, together with technical information such as your IP address,
+the app and device type, and PetList&#39;s Mapbox access token. The map
+appears on the Home Base screen and in the Pet ID preview on your device
+when that preview includes a Home Base location. PetList turns off
+Mapbox&#39;s optional usage telemetry. Mapbox&#39;s handling of data is described
+in its privacy policy at <a href="https://www.mapbox.com/legal/privacy">https://www.mapbox.com/legal/privacy</a>.</p>
+<p><strong>Place search (Geoapify).</strong> When you type at least three characters into
+the Home Base search box, the text you type is sent to Geoapify to return
+suggestions, shortly after you pause typing. The request also asks Geoapify
+to favour results in your country, which Geoapify works out from your IP
+address, so Geoapify receives your IP address as a normal part of the
+request. PetList sends no other pet or household information with it.</p>
+<p><strong>Address lookup (Geoapify).</strong> When you save a Home Base with a map
+location that is new or changed, PetList sends that location&#39;s
+coordinates to Geoapify to look up a street address to display. If the
+lookup fails, the Home Base is saved without an address. Geoapify&#39;s
+handling of request data is described in its privacy policy at
+<a href="https://www.geoapify.com/privacy-policy/">https://www.geoapify.com/privacy-policy/</a>. Geoapify&#39;s place data is
+derived from OpenStreetMap contributors.</p>
+<p>PetList does not choose, and does not control, how long Mapbox or Geoapify
+keep the technical request data they receive. The developer does not
+receive that data.</p>
 <h2>Network Communication and Service Providers</h2>
-<p>PetList&#39;s own features do not send your pet, health, or expense records
-over a network. The app does periodically check for and download
+<p>PetList&#39;s ordinary features do not send your pet, health, or expense
+records over a network. The outside services the app can contact are:</p>
+<ul>
+<li><strong>Expo (app updates).</strong> The app periodically checks for and downloads
 application updates through Expo, PetList&#39;s update infrastructure
-provider. That process involves standard technical information about your
-device and app version, the same as any app update check, and does not
-include your pet or household records. Expo&#39;s handling of that technical
-information is described in its own privacy policy at
-<a href="https://expo.dev/privacy">https://expo.dev/privacy</a>.</p>
+provider. That involves standard technical information about your device
+and app version, the same as any app update check, and does not include
+your pet or household records. Expo&#39;s handling of that technical
+information is described in its privacy policy at
+<a href="https://expo.dev/privacy">https://expo.dev/privacy</a>.</li>
+<li><strong>Mapbox and Geoapify (Home Base only).</strong> As described in &quot;Home Base and
+Location Services&quot; above.</li>
+</ul>
+<p>When you tap a link inside PetList, such as a store listing or this
+policy, the destination site&#39;s own privacy practices apply.</p>
 <h2>Sharing and Exporting Information</h2>
-<p>PetList never shares or transmits your information anywhere on its own.
-Two features let you choose to do so yourself:</p>
+<p>PetList does not share or transmit your pet, health, or expense records
+anywhere on its own. Two features let you choose to export them yourself:</p>
 <ul>
 <li><strong>Vet summary:</strong> generates a PDF summary of a single pet&#39;s health
 information and hands it to your device&#39;s share sheet.</li>
@@ -253,6 +310,10 @@ backup file is not encrypted, so store it somewhere you consider private.</p>
 remind you about upcoming health events and daily tasks. These
 notifications are scheduled directly on your device; PetList does not use
 push notifications or register your device with any notification service.</p>
+<p>PetList asks for foreground location permission only if you tap &quot;Use
+Current Location&quot; in Home Base (see &quot;Home Base and Location Services&quot;).
+Declining it does not affect the rest of the app; you can still search for
+or place a Home Base location by hand.</p>
 <p>PetList may also ask for camera or photo library access when you choose to
 add or change a pet&#39;s profile photo, attach an optional photo to a logged
 health record, or attach an optional photo (such as a receipt) to an
@@ -272,8 +333,11 @@ account settings, not by PetList.</p>
 <p>Your information stays on your device for as long as you keep it there.
 You can delete an individual pet, record, or expense from within the app,
 clear or delete a household from Settings, or remove all of PetList&#39;s data
-at once by uninstalling the app. PetList has no server-side copy to delete
-on your behalf, because none exists.</p>
+at once by uninstalling the app. PetList holds no server-side copy of your
+records to delete on your behalf. Technical request data that Mapbox or
+Geoapify received through Home Base (see &quot;Home Base and Location
+Services&quot;) is held by them under their own policies, and PetList cannot
+delete it for you.</p>
 <h2>Children&#39;s Privacy</h2>
 <p>PetList is not directed at children and does not knowingly collect
 personal information from anyone, including children under 13 or the
