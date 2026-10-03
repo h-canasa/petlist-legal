@@ -242,10 +242,14 @@ policy, the destination site's own privacy practices apply.
 
 PetList does not automatically upload your health history, expenses,
 reminders, daily-task records, or unrelated household data to any PetList
-cloud service. Data leaves your device in these ways only: the optional
-Pet ID, which publishes the selected recovery details described above;
-Home Base requests to Mapbox and Geoapify; and the two exports below,
-which you start yourself:
+cloud service. Your care and household content leaves your device only
+through the optional Pet ID, which publishes the selected recovery details
+described above; the Home Base requests described above; or the two
+exports below, which you start yourself. PetList and its service providers
+may also exchange technical app, device, request, and security information
+as described under "Network Communication and Service Providers".
+
+The two exports are:
 
 - **Vet summary:** generates a PDF summary of a single pet's health
   information and lets you save or share it through your device's export
