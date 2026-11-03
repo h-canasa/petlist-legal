@@ -8,7 +8,7 @@
   const PROJECT_ID = 'petlist-cad8b';
   const STORAGE_BUCKET = 'petlist-cad8b.firebasestorage.app';
   const AUTHORITY_PATTERN = /^[A-Za-z0-9_-]{21}[AQgw]$/;
-  const PROFILE_KEYS = ['name', 'phone', 'email', 'ifFound', 'homeBase', 'temperament', 'thumbnail'];
+  const PROFILE_KEYS = ['name', 'phone', 'email', 'ifFound', 'homeBase', 'temperament', 'thumbnail', 'schemaVersion', 'vaccinations'];
   const TRAITS = {
     adventurous: 'Adventurous', affectionate: 'Affectionate', alert: 'Alert', aloof: 'Aloof',
     calm: 'Calm', cautious: 'Cautious', confident: 'Confident', cuddly: 'Cuddly', curious: 'Curious',
@@ -84,8 +84,23 @@
     return value.path === expected;
   }
 
+  function canonicalDate(value) {
+    if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+    const [year, month, day] = value.split('-').map(Number);
+    const leap = year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
+    return year > 0 && month >= 1 && month <= 12 && day >= 1 && day <= [31, leap ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month - 1];
+  }
+
+  function isValidVaccinations(value) {
+    return Array.isArray(value) && value.length > 0 && value.length <= 50 && value.every(row =>
+      isPlainObject(row) && hasOnlyKeys(row, ['title', 'dateAdministered', 'nextDueDate']) &&
+      isTrimmedBounded(row.title, 200) && canonicalDate(row.dateAdministered) &&
+      (row.nextDueDate === undefined || canonicalDate(row.nextDueDate)));
+  }
+
   function isValidProfile(value, requestedPublicId) {
     if (!isPlainObject(value) || !hasOnlyKeys(value, PROFILE_KEYS)) return false;
+    if (value.vaccinations === undefined ? value.schemaVersion !== undefined : value.schemaVersion !== 2 || !isValidVaccinations(value.vaccinations)) return false;
     if (!isTrimmedBounded(value.name, 80)) return false;
     if (value.phone !== undefined && !isValidPhone(value.phone)) return false;
     if (value.email !== undefined && !isValidEmail(value.email)) return false;
@@ -109,7 +124,8 @@
     return undefined;
   }
 
-  function decodeFirestoreValue(field) {
+  function decodeFirestoreValue(field, depth = 0) {
+    if (depth > 4) return undefined;
     if (!isPlainObject(field) || Object.keys(field).length !== 1) return undefined;
     if (Object.hasOwn(field, 'stringValue')) return typeof field.stringValue === 'string' ? field.stringValue : undefined;
     if (Object.hasOwn(field, 'nullValue')) return field.nullValue === null ? null : undefined;
@@ -118,10 +134,10 @@
     if (Object.hasOwn(field, 'arrayValue')) {
       if (!isPlainObject(field.arrayValue) || !hasOnlyKeys(field.arrayValue, ['values'])) return undefined;
       const values = field.arrayValue.values === undefined ? [] : field.arrayValue.values;
-      if (!Array.isArray(values)) return undefined;
+      if (!Array.isArray(values) || values.length > 50) return undefined;
       const decoded = [];
       for (const entry of values) {
-        const result = decodeFirestoreValue(entry);
+        const result = decodeFirestoreValue(entry, depth + 1);
         if (result === undefined) return undefined;
         decoded.push(result);
       }
@@ -130,16 +146,17 @@
     if (Object.hasOwn(field, 'mapValue')) {
       if (!isPlainObject(field.mapValue) || !hasOnlyKeys(field.mapValue, ['fields'])) return undefined;
       const fields = field.mapValue.fields === undefined ? {} : field.mapValue.fields;
-      return decodeFirestoreFields(fields);
+      return decodeFirestoreFields(fields, depth + 1);
     }
     return undefined;
   }
 
-  function decodeFirestoreFields(fields) {
+  function decodeFirestoreFields(fields, depth = 0) {
     if (!isPlainObject(fields)) return undefined;
     const decoded = {};
     for (const [key, field] of Object.entries(fields)) {
-      const value = decodeFirestoreValue(field);
+      if (['__proto__', 'constructor', 'prototype'].includes(key)) return undefined;
+      const value = decodeFirestoreValue(field, depth);
       if (value === undefined) return undefined;
       decoded[key] = value;
     }

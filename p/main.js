@@ -84,6 +84,14 @@
     return link;
   }
 
+  function displayDate(value) {
+    const [year, month, day] = value.split('-').map(Number);
+    const date = new Date(0);
+    date.setFullYear(year, month - 1, day);
+    date.setHours(12, 0, 0, 0);
+    return new Intl.DateTimeFormat(undefined, { year: 'numeric', month: 'short', day: 'numeric' }).format(date);
+  }
+
   function renderAvailable(profile) {
     const view = View.available(profile, publicId);
     const fragment = document.createDocumentFragment();
@@ -124,6 +132,17 @@
         }
         home.append(row);
         recovery.append(home);
+      } else if (entry.kind === 'vaccinations') {
+        const vaccinations = section('Vaccinations', 'vaccinations');
+        for (const item of entry.rows) {
+          const row = element('div', 'vaccination-row');
+          row.append(element('p', 'vaccination-title', item.title));
+          row.append(element('p', 'vaccination-date', 'Given ' + displayDate(item.dateAdministered)));
+          if (item.nextDueDate !== undefined) row.append(element('p', 'vaccination-date', 'Next due ' + displayDate(item.nextDueDate)));
+          vaccinations.append(row);
+        }
+        vaccinations.append(element('p', 'vaccination-attribution', entry.attribution));
+        recovery.append(vaccinations);
       }
     }
     fragment.append(recovery);

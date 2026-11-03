@@ -72,6 +72,19 @@ companion Finder update and tests carrying the same PET key.
 - **`ios/`, `android/`** — stable public store redirect routes. The Android
   route points to the Google Play listing for `com.petlist.app`.
 
+## Vaccination sharing compatibility
+
+Finder accepts both existing unversioned recovery profiles and schemaVersion 2 profiles with
+1–50 latest vaccination rows. Each row permits only title (up to 200 characters),
+dateAdministered and optional nextDueDate, with canonical calendar dates. Vaccinations follow
+recovery contacts and Home Base and remain read-only. No private history, local IDs, clinical
+status or locally invented publication timestamp is displayed.
+
+Release order is owner-controlled: approve legal wording; deploy compatible Finder and backend
+support while retaining legacy reads; verify both contracts; only then distribute an app that can
+send vaccination profiles. A feature-branch push is reviewable source, not authorization to deploy.
+Existing profiles and QR links need no recreation. No legal wording is included in this code pass.
+
 ## Source of truth (legal documents)
 
 The canonical, editable legal source lives here: `source/privacy-policy.md` and
