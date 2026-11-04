@@ -62,7 +62,7 @@
     return node;
   }
 
-  function contactSection(actions) {
+  function contactSection({ actions, plainPhone, plainEmail }) {
     const contact = element('section', 'contact');
     contact.setAttribute('aria-label', 'Contact');
     const secondary = element('div', 'contact-secondary');
@@ -80,6 +80,12 @@
       const address = element('p', 'contact-email', email.value);
       address.id = 'contact-email';
       contact.append(address);
+    }
+    for (const [label, value] of [['Phone', plainPhone], ['Email', plainEmail]]) {
+      if (value === undefined) continue;
+      const detail = element('p', 'contact-detail');
+      detail.append(element('strong', '', label), element('span', '', value));
+      contact.append(detail);
     }
     return contact;
   }
@@ -107,7 +113,7 @@
         found.append(element('p', 'if-found-copy', entry.text));
         recovery.append(found);
       } else if (entry.kind === 'contact') {
-        recovery.append(contactSection(entry.actions));
+        recovery.append(contactSection(entry));
       } else if (entry.kind === 'homeBase') {
         const home = element('section', 'recovery-section home-base');
         const pin = element('div', 'home-base-pin');

@@ -35,7 +35,8 @@ recovery information.
 The Finder presents a centered, overlapping photo or paw, the pet name, and optional
 temperament chips above the recovery content. Owner-authored If Found instructions come first.
 Call leads when a phone link can be constructed, with Text available for supported numbers.
-Email leads when it is the only usable contact method. Shared Home Base follows contact and
+Email leads when it is the only usable contact method. Published contact values that cannot
+form safe links remain visible as selectable text. Shared Home Base follows contact and
 offers Maps only for published coordinates.
 
 **Fonts and browser hardening**: `/p/` serves Fraunces (pet name and state headings) and Inter

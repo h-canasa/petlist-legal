@@ -40,7 +40,15 @@
     if (emailHref !== null) {
       actions.push({ kind: 'email', value: profile.email, href: emailHref, primary: callHref === null });
     }
-    if (actions.length > 0) sections.push({ kind: 'contact', actions });
+    const plainPhone = callHref === null ? profile.phone : undefined;
+    const plainEmail = emailHref === null ? profile.email : undefined;
+    if (actions.length > 0 || plainPhone !== undefined || plainEmail !== undefined) {
+      sections.push({
+        kind: 'contact', actions,
+        ...(plainPhone !== undefined ? { plainPhone } : {}),
+        ...(plainEmail !== undefined ? { plainEmail } : {}),
+      });
+    }
 
     if (profile.homeBase !== undefined) {
       sections.push({

@@ -38,15 +38,33 @@ test('with both contacts, Call is primary and Text and Email follow in order', (
   ]);
 });
 
-test('unsupported contact values do not create dead actions or an empty section', () => {
+test('a safely dialable short number has Call without an unsupported Text action', () => {
   const shortNumber = section(View.available(profile({ phone: '12345' }), PUBLIC_ID), 'contact').actions;
   assert.deepEqual(shortNumber, [{ kind: 'call', value: '12345', href: 'tel:12345', primary: true }]);
+});
 
-  const validEmail = section(View.available(profile({
-    phone: '12+34', email: 'owner@example.com',
-  }), PUBLIC_ID), 'contact').actions;
-  assert.deepEqual(validEmail.map(({ kind, primary }) => [kind, primary]), [['email', true]]);
-  assert.equal(section(View.available(profile({ phone: '++63 917 555 0142' }), PUBLIC_ID), 'contact'), undefined);
+test('a published legacy phone stays visible without a Call or Text link', () => {
+  for (const phone of ['12+34', '++63  917 555 0142', '1'.repeat(30)]) {
+    assert.deepEqual(section(View.available(profile({ phone }), PUBLIC_ID), 'contact'), {
+      kind: 'contact', actions: [], plainPhone: phone,
+    });
+  }
+});
+
+test('a legacy phone stays visible alongside a primary Email link', () => {
+  const email = 'owner+<pet>@example.com';
+  const contact = section(View.available(profile({ phone: '12+34', email }), PUBLIC_ID), 'contact');
+  assert.equal(contact.plainPhone, '12+34');
+  assert.deepEqual(contact.actions, [
+    { kind: 'email', value: email, href: 'mailto:owner%2B%3Cpet%3E@example.com', primary: true },
+  ]);
+});
+
+test('an email that cannot be URI encoded stays visible as text', () => {
+  const email = 'owner\ud800@example.com';
+  assert.deepEqual(section(View.available(profile({ phone: undefined, email }), PUBLIC_ID), 'contact'), {
+    kind: 'contact', actions: [], plainEmail: email,
+  });
 });
 
 test('If Found is absent or present exactly with its hosted text content', () => {
