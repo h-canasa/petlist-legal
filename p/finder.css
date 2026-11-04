@@ -281,6 +281,22 @@ body {
 }
 .home-base-label { margin: 0; font-weight: 600; line-height: 1.35; }
 
+.vaccination-list { margin: 0; padding: 0; list-style: none; }
+.vaccination-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 16px;
+  padding-block: 10px;
+}
+.vaccination-row + .vaccination-row { border-top: 1px solid var(--border); }
+.vaccination-record { flex: 1 1 10rem; min-width: 0; }
+.vaccination-title { margin: 0; font-weight: 600; line-height: 1.4; }
+.vaccination-date, .vaccination-attribution { margin: 0; color: var(--muted); font-size: 0.875rem; line-height: 1.5; }
+.vaccination-due { margin: 0; margin-inline-start: auto; max-width: 100%; text-align: end; font-size: 0.875rem; line-height: 1.5; }
+.vaccination-due time { display: block; font-weight: 600; }
+.vaccination-attribution { margin-top: 6px; }
+
 .map-link,
 .retry-button {
   min-height: 44px;
@@ -344,6 +360,8 @@ button:focus-visible {
 @media (max-width: 360px) {
   .home-base { grid-template-columns: auto minmax(0, 1fr); }
   .home-base .map-link { grid-column: 2; justify-self: start; }
+  .vaccination-record { flex-basis: 100%; }
+  .vaccination-due { margin-inline-start: 0; text-align: start; }
 }
 
 @media (prefers-reduced-motion: reduce) {

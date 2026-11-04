@@ -18,6 +18,7 @@ test('production Finder lives at /p/ with a branded loading shell and approved w
   assert.match(indexHtml, /aria-busy="true"/);
   assert.match(indexHtml, /pet-id-card/);
   assert.match(indexHtml, /<meta name="referrer" content="no-referrer">/);
+  assert.match(indexHtml, /<meta name="format-detection" content="telephone=no">/);
 });
 
 test('document title stays generic and hosted values are never written into browser metadata', () => {

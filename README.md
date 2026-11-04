@@ -21,8 +21,9 @@ marketing page and legal documents.
 
 `p/` is a dependency-free static page served at `https://mypetlist.app/p/?id=<publicId>`. It
 validates the canonical 22-character public ID before making one unauthenticated, no-store
-Firestore REST document GET from `petIdPublic/{publicId}`. It decodes Firestore's typed fields,
-strictly validates the current hosted public-profile contract, and renders hosted values only
+Firestore REST document GET from `petIdPublic/{publicId}`. It strictly decodes Firestore's typed
+fields and validates both legacy profiles (without a version or vaccination fields) and
+`schemaVersion: 2` profiles with one to 50 owner-shared vaccination rows. Hosted values render
 through text/DOM APIs. Invalid, unknown, revoked and malformed profiles share one unavailable
 state; transient failures offer a neutral retry.
 
@@ -38,6 +39,13 @@ Call leads when a phone link can be constructed, with Text available for support
 Email leads when it is the only usable contact method. Published contact values that cannot
 form safe links remain visible as selectable text. Shared Home Base follows contact and
 offers Maps only for published coordinates.
+
+When present, Vaccinations follows Home Base in the same card. It shows only the latest
+administered record per identity that the owner chose to share: a title of up to 200 characters,
+the Given date, and optional Next due. Dates are canonical calendar dates. Rows are read-only
+and carry the attribution “Shared by the owner from their PetList records.” Unknown fields
+are rejected. The public data excludes record IDs, notes, locations, reminders, attachments,
+private links and full history. A legacy profile has no vaccination heading or empty state.
 
 **Fonts and browser hardening**: `/p/` serves Fraunces (pet name and state headings) and Inter
 (functional text) from `p/assets/fonts/` with `font-display: swap`; it never contacts Google
@@ -62,7 +70,7 @@ persistence, and the `no-referrer` referrer meta and generic document title are 
 
 **Source of truth**: the private `petlist` app repo owns the hosted contract in
 `src/utils/pet-id-public-profile.ts`, `pet-id-authority-format.ts`, `pet-id-config.ts`,
-`home-base.ts` and `temperament.ts`, with public access constrained by `firebase/firestore.rules`
+`home-base.ts`, `temperament.ts` and `public-vaccinations.ts`, with public access constrained by `firebase/firestore.rules`
 and `firebase/storage.rules`. There is no shared build step, so contract changes require a
 companion Finder update and tests carrying the same PET key.
 

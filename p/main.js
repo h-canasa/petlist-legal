@@ -4,6 +4,9 @@
   const root = document.querySelector('[data-pet-id-root]');
   const loadingShell = root.cloneNode(true);
   const publicId = new URLSearchParams(window.location.search).get('id');
+  const vaccinationDate = new Intl.DateTimeFormat(undefined, {
+    year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC',
+  });
 
   function element(tag, className, text) {
     const node = document.createElement(tag);
@@ -90,6 +93,34 @@
     return contact;
   }
 
+  function dateElement(value) {
+    const date = element('time', '', vaccinationDate.format(new Date(value + 'T00:00:00Z')));
+    date.setAttribute('datetime', value);
+    return date;
+  }
+
+  function vaccinationSection({ rows, attribution }) {
+    const vaccinations = section('Vaccinations', 'vaccinations');
+    const records = element('ul', 'vaccination-list');
+    records.setAttribute('role', 'list');
+    for (const item of rows) {
+      const row = element('li', 'vaccination-row');
+      const record = element('div', 'vaccination-record');
+      const given = element('p', 'vaccination-date', 'Given ');
+      given.append(dateElement(item.dateAdministered));
+      record.append(element('p', 'vaccination-title', item.title), given);
+      row.append(record);
+      if (item.nextDueDate !== undefined) {
+        const due = element('p', 'vaccination-due');
+        due.append(element('span', 'vaccination-date', 'Next due'), dateElement(item.nextDueDate));
+        row.append(due);
+      }
+      records.append(row);
+    }
+    vaccinations.append(records, element('p', 'vaccination-attribution', attribution));
+    return vaccinations;
+  }
+
   function renderAvailable(profile) {
     const view = View.available(profile, publicId);
     const fragment = document.createDocumentFragment();
@@ -129,6 +160,8 @@
           home.append(map);
         }
         recovery.append(home);
+      } else if (entry.kind === 'vaccinations') {
+        recovery.append(vaccinationSection(entry));
       }
     }
     fragment.append(recovery);

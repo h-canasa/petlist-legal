@@ -60,8 +60,6 @@ test('rejects malformed Firestore value types and unknown hosted fields', () => 
   for (const privateField of ['breed', 'species', 'localId', 'privateNotes', 'updateToken']) {
     assert.equal(Profile.decodeAndValidateProfile(document({ ...FULL, [privateField]: 'private' }), PUBLIC_ID), null);
   }
-  const versioned = { ...FULL, schemaVersion: 2, vaccinations: [{ title: 'Rabies', dateAdministered: '2026-10-26' }] };
-  assert.equal(Profile.decodeAndValidateProfile(document(versioned), PUBLIC_ID), null);
 });
 
 test('rejects missing name/contact and over-bound strings', () => {

@@ -58,6 +58,14 @@
       });
     }
 
+    if (profile.vaccinations !== undefined) {
+      sections.push({
+        kind: 'vaccinations',
+        rows: profile.vaccinations.map(row => ({ ...row })),
+        attribution: 'Shared by the owner from their PetList records.',
+      });
+    }
+
     return {
       kind: 'available',
       identity: {
