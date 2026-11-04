@@ -32,6 +32,12 @@ Optional thumbnails are loaded only after their version and exact
 object is immutable/versioned; an image failure falls back to the generic paw without affecting
 recovery information.
 
+The Finder presents a centered, overlapping photo or paw, the pet name, and optional
+temperament chips above the recovery content. Owner-authored If Found instructions come first.
+Call leads when a phone link can be constructed, with Text available for supported numbers.
+Email leads when it is the only usable contact method. Shared Home Base follows contact and
+offers Maps only for published coordinates.
+
 **Fonts and browser hardening**: `/p/` serves Fraunces (pet name and state headings) and Inter
 (functional text) from `p/assets/fonts/` with `font-display: swap`; it never contacts Google
 Fonts or another font host. This applies to `/p/` only; the marketing and legal pages keep their
@@ -44,7 +50,7 @@ of every resource-bearing element. It denies everything by default and allows on
 - `https://firebasestorage.googleapis.com` as an `img-src` for the optional validated thumbnail.
 
 There is no inline script or style, no `unsafe-*` source and no wildcard. The PetList home link,
-coordinate-only Google Maps link, `tel:` and `mailto:` are plain navigation, not subresource
+coordinate-only Google Maps link, `tel:`, `sms:` and `mailto:` are plain navigation, not subresource
 fetches, so those origins are deliberately absent from the policy.
 
 A meta CSP cannot enforce `frame-ancestors`, `sandbox` or violation reporting, so they are not

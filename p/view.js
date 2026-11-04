@@ -30,13 +30,17 @@
     }
 
     const actions = [];
-    if (profile.phone !== undefined) {
-      actions.push({ kind: 'phone', value: profile.phone, href: Profile.buildTelUri(profile.phone) });
+    const callHref = Profile.buildTelUri(profile.phone);
+    if (callHref !== null) {
+      actions.push({ kind: 'call', value: profile.phone, href: callHref, primary: true });
+      const smsHref = Profile.buildSmsUri(profile.phone);
+      if (smsHref !== null) actions.push({ kind: 'text', href: smsHref, primary: false });
     }
-    if (profile.email !== undefined) {
-      actions.push({ kind: 'email', value: profile.email, href: Profile.buildMailtoUri(profile.email) });
+    const emailHref = Profile.buildMailtoUri(profile.email);
+    if (emailHref !== null) {
+      actions.push({ kind: 'email', value: profile.email, href: emailHref, primary: callHref === null });
     }
-    sections.push({ kind: 'contact', actions });
+    if (actions.length > 0) sections.push({ kind: 'contact', actions });
 
     if (profile.homeBase !== undefined) {
       sections.push({

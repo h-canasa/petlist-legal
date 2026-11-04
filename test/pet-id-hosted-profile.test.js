@@ -57,8 +57,11 @@ test('accepts phone-only, email-only, and absent optional fields', () => {
 
 test('rejects malformed Firestore value types and unknown hosted fields', () => {
   assert.equal(Profile.decodeAndValidateProfile({ fields: { name: { booleanValue: true } } }, PUBLIC_ID), null);
-  assert.equal(Profile.decodeAndValidateProfile(document({ ...FULL, breed: 'Tabby' }), PUBLIC_ID), null);
-  assert.equal(Profile.decodeAndValidateProfile(document({ ...FULL, species: 'cat' }), PUBLIC_ID), null);
+  for (const privateField of ['breed', 'species', 'localId', 'privateNotes', 'updateToken']) {
+    assert.equal(Profile.decodeAndValidateProfile(document({ ...FULL, [privateField]: 'private' }), PUBLIC_ID), null);
+  }
+  const versioned = { ...FULL, schemaVersion: 2, vaccinations: [{ title: 'Rabies', dateAdministered: '2026-10-26' }] };
+  assert.equal(Profile.decodeAndValidateProfile(document(versioned), PUBLIC_ID), null);
 });
 
 test('rejects missing name/contact and over-bound strings', () => {
@@ -119,11 +122,27 @@ test('requires a same-publicId, version-consistent immutable thumbnail path', ()
 test('builds valid phone and injection-safe email actions without changing display values', () => {
   assert.equal(Profile.buildTelUri('555-0100'), 'tel:5550100');
   assert.equal(Profile.buildTelUri('+63 (917) 555-0142'), 'tel:+639175550142');
-  assert.equal(Profile.buildTelUri('12+34'), 'tel:1234');
-  assert.equal(Profile.buildTelUri('++63 917 555 0142'), 'tel:+639175550142');
+  assert.equal(Profile.buildSmsUri('555-0100'), 'sms:5550100');
+  assert.equal(Profile.buildSmsUri('+63 (917) 555-0142'), 'sms:+639175550142');
+  assert.equal(Profile.buildSmsUri('12345'), null);
   assert.equal(Profile.buildMailtoUri('owner@example.com'), 'mailto:owner@example.com');
   assert.equal(Profile.buildMailtoUri('owner+petid@example.com'), 'mailto:owner%2Bpetid@example.com');
   const reserved = Profile.buildMailtoUri('a?b#c@example.com');
   assert.equal(reserved, 'mailto:a%3Fb%23c@example.com');
   assert.doesNotMatch(reserved, /[?#]/);
+  assert.equal(Profile.buildMailtoUri('a@example.com\r\n?bcc=x'), null);
+  assert.equal(Profile.buildMailtoUri('a\u0000@example.com'), null);
+  assert.equal(Profile.buildMailtoUri('a\ud800@example.com'), null);
+});
+
+test('unsupported dial strings never turn into Call or Text links, without changing hosted validation', () => {
+  for (const phone of ['12+34', '++63 917 555 0142', '+012345678', '1', '1'.repeat(16)]) {
+    assert.deepEqual(Profile.decodeAndValidateProfile(document({ name: 'Milo', phone }), PUBLIC_ID), { name: 'Milo', phone });
+    assert.equal(Profile.buildTelUri(phone), null);
+    assert.equal(Profile.buildSmsUri(phone), null);
+  }
+  for (const phone of ['5550100;ext=1', '5550100?body=foo', '5550100,5550200', '5550100\n', 'javascript:5550100']) {
+    assert.equal(Profile.buildTelUri(phone), null);
+    assert.equal(Profile.buildSmsUri(phone), null);
+  }
 });

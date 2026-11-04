@@ -166,14 +166,32 @@
     return `https://firebasestorage.googleapis.com/v0/b/${STORAGE_BUCKET}/o/${encodeURIComponent(thumbnail.path)}?alt=media`;
   }
 
+  function dialableNumber(phone) {
+    if (!isValidPhone(phone)) return null;
+    const number = phone.replace(/[().\-–— ]/g, '');
+    return /^(?:[0-9]{3,15}|\+[1-9][0-9]{2,14})$/.test(number) ? number : null;
+  }
+
   function buildTelUri(phone) {
-    const leadingPlus = phone.trim().startsWith('+') ? '+' : '';
-    return `tel:${leadingPlus}${phone.replace(/[^0-9]/g, '')}`;
+    const number = dialableNumber(phone);
+    return number === null ? null : `tel:${number}`;
+  }
+
+  function buildSmsUri(phone) {
+    const number = dialableNumber(phone);
+    // Only offer a recipient-only SMS link for a full-length number, not a short code.
+    return number !== null && /^\+?[0-9]{7,15}$/.test(number) ? `sms:${number}` : null;
   }
 
   function buildMailtoUri(email) {
+    if (!isValidEmail(email) || /[\x00-\x1f\x7f-\x9f]/.test(email)) return null;
     const separator = email.lastIndexOf('@');
-    return `mailto:${encodeURIComponent(email.slice(0, separator))}@${encodeURIComponent(email.slice(separator + 1))}`;
+    try {
+      return `mailto:${encodeURIComponent(email.slice(0, separator))}@${encodeURIComponent(email.slice(separator + 1))}`;
+    } catch {
+      // A lone surrogate in a hosted value cannot be URI encoded.
+      return null;
+    }
   }
 
   function buildMapUrl(coordinate) {
@@ -187,6 +205,7 @@
     temperamentLabels,
     thumbnailUrl,
     buildTelUri,
+    buildSmsUri,
     buildMailtoUri,
     buildMapUrl,
   };

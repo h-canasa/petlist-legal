@@ -29,8 +29,6 @@ test('wordmark declarations match the approved PNG intrinsic dimensions', () => 
   const png = fs.readFileSync(path.join(root, 'assets', 'marketing', 'petlist-wordmark.png'));
   assert.deepEqual([png.readUInt32BE(16), png.readUInt32BE(20)], [1560, 384]);
   assert.match(indexHtml, /petlist-wordmark\.png[^>]*width="1560" height="384"/);
-  assert.match(mainJs, /wordmark\.width = 1560;/);
-  assert.match(mainJs, /wordmark\.height = 384;/);
 });
 
 test('static loading wordmark is the sole same-tab PetList navigation link', () => {
@@ -40,13 +38,10 @@ test('static loading wordmark is the sole same-tab PetList navigation link', () 
   assert.doesNotMatch(link, /target=/);
 });
 
-test('dynamic header links the approved intrinsic-size wordmark in the same tab', () => {
-  assert.match(mainJs, /document\.createElement\('a'\)/);
-  assert.match(mainJs, /wordmarkLink\.href = 'https:\/\/mypetlist\.app\/';/);
-  assert.match(mainJs, /wordmarkLink\.append\(wordmark\)/);
-  assert.match(mainJs, /wordmark\.width = 1560;/);
-  assert.match(mainJs, /wordmark\.height = 384;/);
-  assert.doesNotMatch(mainJs, /wordmarkLink\.target/);
+test('the linked wordmark stays in the static header across card states', () => {
+  assert.match(indexHtml, /<\/header>\s*<article[^>]*data-pet-id-root/);
+  assert.equal((indexHtml.match(/class="wordmark-link"/g) ?? []).length, 1);
+  assert.doesNotMatch(mainJs, /wordmark|mypetlist\.app/);
 });
 
 test('text footer markup, render path, and footer-only CSS are fully removed', () => {
@@ -72,6 +67,7 @@ test('Finder source has no unsafe or prohibited architecture', () => {
   assert.doesNotMatch(source, /analytics|sendBeacon|localStorage|sessionStorage|indexedDB|document\.cookie/i);
   assert.doesNotMatch(source, /documents:runQuery|listDocuments|\/documents\/petIdPublic(?:\?|['"`])/);
   assert.doesNotMatch(source, /\bbreed\b|\bspecies\b/i);
+  assert.doesNotMatch(source, /navigator\.geolocation|send my location|last updated|get petlist for your pets/i);
   assert.doesNotMatch(source, /#v1|payload\.js|sentences\.js/);
 });
 
@@ -88,15 +84,14 @@ test('responsive/accessibility CSS includes hit targets, focus, narrow layout, z
   assert.match(css, /min-height:\s*44px/);
   assert.match(css, /:focus-visible/);
   assert.match(css, /\.wordmark-link\s*\{[^}]*min-height:\s*44px/s);
-  assert.match(css, /\.wordmark\s*\{[^}]*width:\s*124px/s);
   assert.match(css, /@media\s*\(max-width:\s*360px\)/);
   assert.match(css, /overflow-wrap:\s*anywhere/);
   assert.match(css, /prefers-reduced-motion:\s*reduce/);
 });
 
-test('normal recovery separators remain while the final section ends without a floating divider', () => {
-  assert.match(css, /\.recovery-section\s*\{[^}]*border-bottom:\s*1px solid var\(--border\)/s);
-  assert.match(css, /\.recovery-section:last-child\s*\{[^}]*border-bottom:\s*0/s);
+test('recovery detail sections use top separators without a floating final divider', () => {
+  assert.match(css, /\.recovery-section:not\(\.if-found\)\s*\{[^}]*border-top:\s*1px solid var\(--border\)/s);
+  assert.doesNotMatch(css, /\.recovery-section[^{}]*\{[^}]*border-bottom:/s);
 });
 
 test('loading has no forced near-viewport card height and outer gutters honor every safe area inset', () => {
